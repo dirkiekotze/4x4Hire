@@ -40,8 +40,6 @@ class MainFragment : Fragment() {
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == AUTH_REQUEST_CODE) {
                 user = FirebaseAuth.getInstance().currentUser
-                
-
 
             }
 
