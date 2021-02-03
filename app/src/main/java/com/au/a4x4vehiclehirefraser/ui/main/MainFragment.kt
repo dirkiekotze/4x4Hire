@@ -43,11 +43,11 @@ class MainFragment : Fragment() {
                 rego = "264ZGZ"
                 description = "Sand Camo Prado"
                 yearModel = 1
-                kms = 390000
+                kms = 410000
 
             }
 
-            mainViewModel.save(vehicle)
+            mainViewModel.getVehicleIdFromFirestore(vehicle)
         }
     }
 
