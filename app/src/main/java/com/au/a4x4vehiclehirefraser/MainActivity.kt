@@ -2,6 +2,7 @@ package com.au.a4x4vehiclehirefraser
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import androidx.fragment.app.Fragment
 import com.au.a4x4vehiclehirefraser.ui.main.MainFragment
 
@@ -21,4 +22,6 @@ class MainActivity : AppCompatActivity() {
             activeFragment = mainFragment
         }
     }
+
+
 }

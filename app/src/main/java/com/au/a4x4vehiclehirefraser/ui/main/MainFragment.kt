@@ -12,8 +12,10 @@ import android.view.View
 import android.view.ViewGroup
 import com.firebase.ui.auth.AuthUI
 import com.au.a4x4vehiclehirefraser.R
+import com.au.a4x4vehiclehirefraser.dto.Vehicle
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import kotlinx.android.synthetic.main.main_fragment.*
 
 class MainFragment : Fragment() {
 
@@ -21,7 +23,7 @@ class MainFragment : Fragment() {
         fun newInstance() = MainFragment()
     }
 
-    private lateinit var viewModel: MainViewModel
+    private lateinit var mainViewModel: MainViewModel
     private val AUTH_REQUEST_CODE = 2002
     private var user: FirebaseUser? = null
 
@@ -31,8 +33,22 @@ class MainFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
-        logon();
+        mainViewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
+        //logon();
+
+        addVehicle.setOnClickListener {
+
+            var vehicle = Vehicle().apply {
+                id = "0"
+                rego = "264ZGZ"
+                description = "Sand Camo Prado"
+                yearModel = 1
+                kms = 390000
+
+            }
+
+            mainViewModel.save(vehicle)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -44,6 +60,13 @@ class MainFragment : Fragment() {
             }
 
         }
+
+
+
+    }
+
+    private fun addVehicle(){
+
     }
 
     private fun logon() {
