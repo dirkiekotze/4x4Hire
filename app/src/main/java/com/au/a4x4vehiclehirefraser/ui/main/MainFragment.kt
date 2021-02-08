@@ -10,6 +10,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import androidx.lifecycle.Observer
 import com.firebase.ui.auth.AuthUI
 import com.au.a4x4vehiclehirefraser.R
 import com.au.a4x4vehiclehirefraser.dto.Vehicle
@@ -23,7 +25,7 @@ class MainFragment : Fragment() {
         fun newInstance() = MainFragment()
     }
 
-    private lateinit var mainViewModel: MainViewModel
+    private lateinit var viewModel: MainViewModel
     private val AUTH_REQUEST_CODE = 2002
     private var user: FirebaseUser? = null
 
@@ -33,21 +35,25 @@ class MainFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        mainViewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
+        viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
         //logon();
+
+        viewModel.vehicle.observe(viewLifecycleOwner,Observer{
+            vehicle -> vehicleSpinner.setAdapter(ArrayAdapter(context!!, R.layout.support_simple_spinner_dropdown_item, vehicle))
+        })
 
         addVehicle.setOnClickListener {
 
             var vehicle = Vehicle().apply {
                 id = "0"
                 rego = "264ZGZ"
-                description = "Sand Camo Prado"
-                yearModel = 1
-                kms = 410000
+                description = "Sand Camo"
+                yearModel = 2008
+                kms = 370000
 
             }
 
-            mainViewModel.getVehicleIdFromFirestore(vehicle)
+            viewModel.getVehicleIdFromFirestore(vehicle)
         }
     }
 
