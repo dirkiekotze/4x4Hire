@@ -3,6 +3,8 @@ package com.au.a4x4vehiclehirefraser.ui.main
 import android.app.Activity
 import android.content.ContentValues
 import android.content.Intent
+import android.content.res.Resources
+import android.content.res.Resources.*
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.util.Log
@@ -14,6 +16,7 @@ import android.widget.ArrayAdapter
 import androidx.lifecycle.Observer
 import com.firebase.ui.auth.AuthUI
 import com.au.a4x4vehiclehirefraser.R
+import com.au.a4x4vehiclehirefraser.dto.Service
 import com.au.a4x4vehiclehirefraser.dto.Vehicle
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -36,24 +39,48 @@ class MainFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
+
         //logon();
+
+        viewModel.type.observe(viewLifecycleOwner, Observer {
+                type -> typeSpinner.setAdapter(ArrayAdapter(context!!,R.layout.support_simple_spinner_dropdown_item, type))
+        })
 
         viewModel.vehicle.observe(viewLifecycleOwner,Observer{
             vehicle -> vehicleSpinner.setAdapter(ArrayAdapter(context!!, R.layout.support_simple_spinner_dropdown_item, vehicle))
         })
 
+        viewModel.service.observe(viewLifecycleOwner, Observer {
+            //roaservice -> serviceSpinner.setAdapter(ArrayAdapter(context!!,R.layout.support_simple_spinner_dropdown_item, service))
+            service -> serviceSpinner.setAdapter(ArrayAdapter(context!!,R.layout.support_simple_spinner_dropdown_item, service))
+        })
+
         addVehicle.setOnClickListener {
 
             var vehicle = Vehicle().apply {
-                id = "0"
+                id = ""
                 rego = "264ZGZ"
-                description = "Sand Camo"
+                description = "Desert sand camo"
                 yearModel = 2008
                 kms = 370000
 
             }
 
             viewModel.getVehicleIdFromFirestore(vehicle)
+        }
+
+        addService.setOnClickListener {
+
+            var service = Service().apply {
+                id = ""
+                vehicleType = "Prado"
+                description = "Front Roaters"
+                quantity = 2
+                price = 10.00
+
+            }
+
+            viewModel.getServiceIdFromFirestore(service)
         }
     }
 
@@ -66,9 +93,6 @@ class MainFragment : Fragment() {
             }
 
         }
-
-
-
     }
 
     private fun addVehicle(){
@@ -82,8 +106,7 @@ class MainFragment : Fragment() {
         )
 
         startActivityForResult(
-            AuthUI.getInstance().createSignInIntentBuilder().setAvailableProviders(providers)
-                .build(), AUTH_REQUEST_CODE
+            AuthUI.getInstance().createSignInIntentBuilder().setAvailableProviders(providers).build(), AUTH_REQUEST_CODE
         )
     }
 

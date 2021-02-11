@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">4x4VehicleHireFraser</string>
+    <string-array name="type_options">
+        <item>Please Select</item>
+        <item>Service</item>
+        <item>Repair</item>
+    </string-array>
 </resources>

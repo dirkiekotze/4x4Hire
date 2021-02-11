@@ -1,42 +1,28 @@
 package com.au.a4x4vehiclehirefraser
 
+import androidx.lifecycle.MutableLiveData
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.au.a4x4vehiclehirefraser.ui.main.MainViewModel
 import com.google.firebase.FirebaseApp
-
 import org.junit.Test
-import org.junit.runner.RunWith
 
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.rules.TestRule
 
 /**
- * Instrumented test, which will execute on an Android device.
+ * Example local unit test, which will execute on the development machine (host).
  *
  * See [testing documentation](http://d.android.com/tools/testing).
  */
-@RunWith(AndroidJUnit4::class)
-class ExampleInstrumentedTest {
+class HireServiceDataUnitTest {
 
     @get:Rule
     var rule: TestRule = InstantTaskExecutorRule()
     lateinit var mvm: MainViewModel
-    val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-
-
-    @Test
-    fun useAppContext() {
-
-        //val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.au.a4x4vehiclehirefraser", appContext.packageName)
-    }
 
     @Test
     fun searchForSetOfPradoFrontRoaters_ReturnSetOfPRadoFrontRoaters() {
-        FirebaseApp.initializeApp(appContext);
         givenAFeedOfFrontPradoRoatersAreAvailable()
         whenSearchForSetOfPradoFrontRoaters()
         thenResultContainsSetOfPradoFrontRoaters()
@@ -59,15 +45,16 @@ class ExampleInstrumentedTest {
             it.forEach {
                 if((it.description == "Set of Front Roaters") && (it.vehicleType == "Prado")){
                     pradoFrontSetRoatersFound = true
-                    assertTrue(pradoFrontSetRoatersFound)
-                }else{
-                    assertTrue(pradoFrontSetRoatersFound)
-
                 }
             }
 
         }
+        assertTrue(pradoFrontSetRoatersFound)
 
+    }
 
+    @Test
+    fun addition_isCorrect() {
+        assertEquals(4, 2 + 2)
     }
 }
