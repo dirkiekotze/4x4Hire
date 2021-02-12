@@ -21,37 +21,7 @@ class HireServiceDataUnitTest {
     var rule: TestRule = InstantTaskExecutorRule()
     lateinit var mvm: MainViewModel
 
-    @Test
-    fun searchForSetOfPradoFrontRoaters_ReturnSetOfPRadoFrontRoaters() {
-        givenAFeedOfFrontPradoRoatersAreAvailable()
-        whenSearchForSetOfPradoFrontRoaters()
-        thenResultContainsSetOfPradoFrontRoaters()
-    }
 
-    private fun givenAFeedOfFrontPradoRoatersAreAvailable() {
-
-        mvm = MainViewModel()
-    }
-
-    private fun whenSearchForSetOfPradoFrontRoaters() {
-        mvm.fetchServiceItem("Prado", "Set of Front Roaters")
-    }
-
-    private fun thenResultContainsSetOfPradoFrontRoaters() {
-        var pradoFrontSetRoatersFound = false
-        mvm.service.observeForever {
-            assertNotNull(it)
-            assertNotNull(it.size > 0)
-            it.forEach {
-                if((it.description == "Set of Front Roaters") && (it.vehicleType == "Prado")){
-                    pradoFrontSetRoatersFound = true
-                }
-            }
-
-        }
-        assertTrue(pradoFrontSetRoatersFound)
-
-    }
 
     @Test
     fun addition_isCorrect() {

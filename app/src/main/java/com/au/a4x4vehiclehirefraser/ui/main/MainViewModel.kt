@@ -15,10 +15,8 @@ import com.google.firebase.firestore.Query
 class MainViewModel : ViewModel() {
 
     private lateinit var firestore: FirebaseFirestore
-    private var _vehicles: MutableLiveData<ArrayList<Vehicle>> =
-        MutableLiveData<ArrayList<Vehicle>>()
-    private var _service: MutableLiveData<ArrayList<Service>> =
-        MutableLiveData<ArrayList<Service>>()
+    private var _vehicles: MutableLiveData<ArrayList<Vehicle>> = MutableLiveData<ArrayList<Vehicle>>()
+    private var _service: MutableLiveData<ArrayList<Service>> = MutableLiveData<ArrayList<Service>>()
     private var _type: MutableLiveData<ArrayList<Type>> = MutableLiveData<ArrayList<Type>>()
 
     init {
@@ -75,10 +73,6 @@ class MainViewModel : ViewModel() {
         }
     }
 
-
-    /**
-     * This will listen to Firestore for Vehicle updates
-     */
     private fun listenToVehicles() {
         firestore.collection("vehicle").addSnapshotListener { snapshot, e ->
 

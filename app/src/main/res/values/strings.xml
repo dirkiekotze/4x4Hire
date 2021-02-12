@@ -1,8 +1,13 @@
 <resources>
     <string name="app_name">4x4VehicleHireFraser</string>
-    <string-array name="type_options">
+    <string name="vehicle_description">VehicleDescription</string>
+    <string name="vehicle_year_model">Year Model</string>
+    <string name="vehicle_kms">Kms</string>
+    <string name="vehicle_rego">Registration</string>
+    <string-array name="vehicle_model">
         <item>Please Select</item>
-        <item>Service</item>
-        <item>Repair</item>
+        <item>Landcruiser 4.2 Diesel Manual</item>
+        <item>Landcruiser 6 Cylinder Petrol Automatic</item>
+        <item>Landcruiser Prado 8 Seater Automatic Petrol</item>
     </string-array>
 </resources>

@@ -51,8 +51,12 @@ class MainFragment : Fragment() {
         })
 
         viewModel.service.observe(viewLifecycleOwner, Observer {
-            //roaservice -> serviceSpinner.setAdapter(ArrayAdapter(context!!,R.layout.support_simple_spinner_dropdown_item, service))
+            service -> serviceAutoComplete.setAdapter(ArrayAdapter(context!!,R.layout.support_simple_spinner_dropdown_item, service))
+        })
+
+        viewModel.service.observe(viewLifecycleOwner, Observer {
             service -> serviceSpinner.setAdapter(ArrayAdapter(context!!,R.layout.support_simple_spinner_dropdown_item, service))
+
         })
 
         addVehicle.setOnClickListener {
@@ -74,9 +78,9 @@ class MainFragment : Fragment() {
             var service = Service().apply {
                 id = ""
                 vehicleType = "Prado"
-                description = "Front Roaters"
+                description = "2 x Prado Back Roaters"
                 quantity = 2
-                price = 10.00
+                price = 60.00
 
             }
 

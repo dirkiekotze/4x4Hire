@@ -39,6 +39,7 @@ dependencies {
 
     implementation 'com.firebaseui:firebase-ui-auth:6.2.0'
     implementation 'com.google.firebase:firebase-firestore-ktx:22.0.2'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     //implementation 'com.google.firebase:firebase-auth:20.0.2'
     testImplementation 'junit:junit:4.12'
     testImplementation 'androidx.arch.core:core-testing:2.1.0'
