@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import com.au.a4x4vehiclehirefraser.MainActivity
 import com.au.a4x4vehiclehirefraser.R
 import com.au.a4x4vehiclehirefraser.dto.Vehicle
 import com.google.firebase.firestore.DocumentReference
@@ -49,8 +50,7 @@ class VehicleFragment : Fragment() {
         }
 
         cmdReturnFromVehicleToMain.setOnClickListener {
-            vehicleLayout.visibility = View.GONE
-            container.visibility = View.VISIBLE
+            (activity as MainActivity).showMainFragment()
         }
     }
 
@@ -74,8 +74,7 @@ class VehicleFragment : Fragment() {
         val set = document.set(vehicle)
         set.addOnSuccessListener {
             Log.d("Firebase", "Vehicle Saved")
-            vehicleLayout.visibility = View.GONE
-            container.visibility = View.VISIBLE
+            (activity as MainActivity).showMainFragment()
         }
         set.addOnFailureListener {
             Log.d("firestore", "Vehicle not saved")

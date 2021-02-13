@@ -101,23 +101,7 @@ class MainViewModel : ViewModel() {
 
     fun save(vehicle: Vehicle) {
 
-        val document: DocumentReference
 
-        if (vehicle.id == "") {
-            document = firestore.collection("vehicle").document()
-        } else {
-            document = firestore.collection("vehicle").document(vehicle.id)
-        }
-
-        vehicle.id = document.id
-
-        val set = document.set(vehicle)
-        set.addOnCanceledListener {
-            Log.d("Firebase", "Vehicle Saved")
-        }
-        set.addOnFailureListener {
-            Log.d("firestore", "Vehicle not saved")
-        }
     }
 
     fun saveService(service: Service) {

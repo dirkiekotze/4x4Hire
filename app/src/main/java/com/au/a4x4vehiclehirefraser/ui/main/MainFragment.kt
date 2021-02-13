@@ -14,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.lifecycle.Observer
+import com.au.a4x4vehiclehirefraser.MainActivity
 import com.firebase.ui.auth.AuthUI
 import com.au.a4x4vehiclehirefraser.R
 import com.au.a4x4vehiclehirefraser.dto.Service
@@ -61,16 +62,8 @@ class MainFragment : Fragment() {
 
         addVehicle.setOnClickListener {
 
-            var vehicle = Vehicle().apply {
-                id = ""
-                rego = "264ZGZ"
-                description = "Desert sand camo"
-                yearModel = 2008
-                kms = 370000
+            (activity as MainActivity).showVehicleFragment()
 
-            }
-
-            viewModel.getVehicleIdFromFirestore(vehicle)
         }
 
         addService.setOnClickListener {

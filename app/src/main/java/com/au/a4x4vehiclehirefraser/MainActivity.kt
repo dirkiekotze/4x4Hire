@@ -27,16 +27,24 @@ class MainActivity : AppCompatActivity() {
             activeFragment = mainFragment
         }
 
-        cmdAddVehicleMainFragment.setOnClickListener {
 
-            cmdAddVehicleMainFragment.visibility = View.GONE
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.container, vehicleFragment)
-                .commitNow()
-            activeFragment = vehicleFragment
-        }
+    }
+
+    internal fun showVehicleFragment(){
+
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.container, vehicleFragment)
+            .commitNow()
+        activeFragment = vehicleFragment
+    }
 
 
+
+    internal fun showMainFragment(){
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.container, mainFragment)
+            .commitNow()
+        activeFragment = mainFragment
     }
 
 
