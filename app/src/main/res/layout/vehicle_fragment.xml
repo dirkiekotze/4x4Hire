@@ -8,7 +8,7 @@
     tools:context=".ui.main.VehicleFragment" >
 
     <EditText
-        android:id="@+id/vehicleDescripion"
+        android:id="@+id/serviceDescripion"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -28,7 +28,7 @@
         android:layout_marginEnd="24dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/vehicleDescripion" />
+        app:layout_constraintTop_toBottomOf="@+id/serviceDescripion" />
 
     <EditText
         android:id="@+id/vehicleYearModel"
@@ -73,7 +73,7 @@
         app:layout_constraintTop_toBottomOf="@+id/vehicleKms" />
 
     <ImageButton
-        android:id="@+id/saveVehicleBtn"
+        android:id="@+id/saveRepairBtn"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -85,7 +85,7 @@
         app:layout_constraintTop_toBottomOf="@+id/vehicleRego" />
 
     <Button
-        android:id="@+id/cmdReturnFromVehicleToMain"
+        android:id="@+id/cmdReturnFromRepairToMain"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -94,5 +94,5 @@
         android:text="Back"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/saveVehicleBtn" />
+        app:layout_constraintTop_toBottomOf="@+id/saveRepairBtn" />
 </androidx.constraintlayout.widget.ConstraintLayout>

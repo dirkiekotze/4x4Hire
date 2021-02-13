@@ -33,7 +33,11 @@ class MainFragment : Fragment() {
     private val AUTH_REQUEST_CODE = 2002
     private var user: FirebaseUser? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         return inflater.inflate(R.layout.main_fragment, container, false)
     }
 
@@ -43,41 +47,57 @@ class MainFragment : Fragment() {
 
         //logon();
 
-        viewModel.type.observe(viewLifecycleOwner, Observer {
-                type -> typeSpinner.setAdapter(ArrayAdapter(context!!,R.layout.support_simple_spinner_dropdown_item, type))
+        viewModel.type.observe(viewLifecycleOwner, Observer { type ->
+            typeSpinner.setAdapter(
+                ArrayAdapter(
+                    context!!,
+                    R.layout.support_simple_spinner_dropdown_item,
+                    type
+                )
+            )
         })
 
-        viewModel.vehicle.observe(viewLifecycleOwner,Observer{
-            vehicle -> vehicleSpinner.setAdapter(ArrayAdapter(context!!, R.layout.support_simple_spinner_dropdown_item, vehicle))
+        viewModel.vehicle.observe(viewLifecycleOwner, Observer { vehicle ->
+            vehicleSpinner.setAdapter(
+                ArrayAdapter(
+                    context!!,
+                    R.layout.support_simple_spinner_dropdown_item,
+                    vehicle
+                )
+            )
         })
 
-        viewModel.service.observe(viewLifecycleOwner, Observer {
-            service -> serviceAutoComplete.setAdapter(ArrayAdapter(context!!,R.layout.support_simple_spinner_dropdown_item, service))
+        viewModel.service.observe(viewLifecycleOwner, Observer { service ->
+            serviceAutoComplete.setAdapter(
+                ArrayAdapter(
+                    context!!,
+                    R.layout.support_simple_spinner_dropdown_item,
+                    service
+                )
+            )
         })
 
-        viewModel.service.observe(viewLifecycleOwner, Observer {
-            service -> serviceSpinner.setAdapter(ArrayAdapter(context!!,R.layout.support_simple_spinner_dropdown_item, service))
+        viewModel.service.observe(viewLifecycleOwner, Observer { service ->
+            serviceSpinner.setAdapter(
+                ArrayAdapter(
+                    context!!,
+                    R.layout.support_simple_spinner_dropdown_item,
+                    service
+                )
+            )
 
         })
 
         addVehicle.setOnClickListener {
-
             (activity as MainActivity).showVehicleFragment()
-
         }
 
         addService.setOnClickListener {
+            (activity as MainActivity).showServiceFragment()
+        }
 
-            var service = Service().apply {
-                id = ""
-                vehicleType = "Prado"
-                description = "2 x Prado Back Roaters"
-                quantity = 2
-                price = 60.00
-
-            }
-
-            viewModel.getServiceIdFromFirestore(service)
+        addRepair.setOnClickListener {
+            (activity as MainActivity).showRepairFragment()
         }
     }
 
@@ -92,7 +112,7 @@ class MainFragment : Fragment() {
         }
     }
 
-    private fun addVehicle(){
+    private fun addVehicle() {
 
     }
 
@@ -103,7 +123,8 @@ class MainFragment : Fragment() {
         )
 
         startActivityForResult(
-            AuthUI.getInstance().createSignInIntentBuilder().setAvailableProviders(providers).build(), AUTH_REQUEST_CODE
+            AuthUI.getInstance().createSignInIntentBuilder().setAvailableProviders(providers)
+                .build(), AUTH_REQUEST_CODE
         )
     }
 

@@ -2,24 +2,22 @@ package com.au.a4x4vehiclehirefraser.ui.main
 
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import com.au.a4x4vehiclehirefraser.MainActivity
 import com.au.a4x4vehiclehirefraser.R
-import com.au.a4x4vehiclehirefraser.dto.Vehicle
+import com.au.a4x4vehiclehirefraser.dto.Service
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import kotlinx.android.synthetic.main.vehicle_fragment.*
 
-class VehicleFragment : Fragment() {
+class RepairFragment : Fragment() {
 
     companion object {
-        fun newInstance() = VehicleFragment()
+        fun newInstance() = RepairFragment()
     }
 
     private lateinit var viewModel: MainViewModel
@@ -34,7 +32,7 @@ class VehicleFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.vehicle_fragment, container, false)
+        return inflater.inflate(R.layout.service_fragment, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -42,11 +40,10 @@ class VehicleFragment : Fragment() {
         activity.let {
             viewModel = ViewModelProviders.of(it!!).get(MainViewModel::class.java)
         }
-
-        vehicleModelSpinner.setAdapter(ArrayAdapter.createFromResource(context!!, R.array.vehicle_model,android.R.layout.simple_spinner_item))
+        //vehicleModelSpinner.setAdapter(ArrayAdapter.createFromResource(context!!, R.array.vehicle_model,android.R.layout.simple_spinner_item))
 
         saveRepairBtn.setOnClickListener {
-            saveVehicle()
+            saveRepair()
         }
 
         cmdReturnFromRepairToMain.setOnClickListener {
@@ -54,31 +51,31 @@ class VehicleFragment : Fragment() {
         }
     }
 
-    private fun saveVehicle() {
+    private fun saveRepair() {
 
         val document: DocumentReference
-        val vehicle = Vehicle()
+        val service = Service()
 
-        document = firestore.collection("vehicle").document()
-        with(vehicle){
-            id = document.id
-            rego = vehicleRego.text.toString()
-            description = serviceDescripion.text.toString()
-            kms = vehicleKms.text.toString().toInt()
-            model = vehicleModelSpinner.selectedItem.toString()
-            yearModel = vehicleYearModel.text.toString().toInt()
-        }
-
-
-
-        val set = document.set(vehicle)
-        set.addOnSuccessListener {
-            Log.d("Firebase", "Vehicle Saved")
-            (activity as MainActivity).showMainFragment()
-        }
-        set.addOnFailureListener {
-            Log.d("firestore", "Vehicle not saved")
-        }
+//        document = firestore.collection("service").document()
+//        with(service){
+//            id = document.id
+//            rego = vehicleRego.text.toString()
+//            description = serviceDescripion.text.toString()
+//            kms = vehicleKms.text.toString().toInt()
+//            model = vehicleModelSpinner.selectedItem.toString()
+//            yearModel = vehicleYearModel.text.toString().toInt()
+//        }
+//
+//
+//
+//        val set = document.set(vehicle)
+//        set.addOnSuccessListener {
+//            Log.d("Firebase", "Vehicle Saved")
+//            (activity as MainActivity).showMainFragment()
+//        }
+//        set.addOnFailureListener {
+//            Log.d("firestore", "Vehicle not saved")
+//        }
     }
 
 }

@@ -99,10 +99,6 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    fun save(vehicle: Vehicle) {
-
-
-    }
 
     fun saveService(service: Service) {
 
@@ -127,21 +123,21 @@ class MainViewModel : ViewModel() {
 
     internal fun getVehicleIdFromFirestore(vehicle: Vehicle) {
 
-        firestore.collection("vehicle")
-            .whereEqualTo("rego", vehicle.rego)
-            .get()
-            .addOnSuccessListener { documents ->
-                for (document in documents) {
-                    vehicle.id = document.get("id").toString()
-                }
-                Log.d("firestore", "Found Vehicle in Firestore: $vehicle.rego")
-                save(vehicle)
-
-            }
-            .addOnFailureListener {
-                Log.d("firestore", "Unable to find Vehicle in Firestore: $vehicle.rego")
-                save(vehicle)
-            }
+//        firestore.collection("vehicle")
+//            .whereEqualTo("rego", vehicle.rego)
+//            .get()
+//            .addOnSuccessListener { documents ->
+//                for (document in documents) {
+//                    vehicle.id = document.get("id").toString()
+//                }
+//                Log.d("firestore", "Found Vehicle in Firestore: $vehicle.rego")
+//                save(vehicle)
+//
+//            }
+//            .addOnFailureListener {
+//                Log.d("firestore", "Unable to find Vehicle in Firestore: $vehicle.rego")
+//                save(vehicle)
+//            }
     }
 
     internal fun getServiceIdFromFirestore(service: Service) {
