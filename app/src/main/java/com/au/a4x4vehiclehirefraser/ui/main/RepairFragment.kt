@@ -8,11 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import com.au.a4x4vehiclehirefraser.MainActivity
 import com.au.a4x4vehiclehirefraser.R
-import com.au.a4x4vehiclehirefraser.dto.Service
+import com.au.a4x4vehiclehirefraser.dto.ServiceItem
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
-import kotlinx.android.synthetic.main.vehicle_fragment.*
+import kotlinx.android.synthetic.main.add_repair_fragment.*
 
 class RepairFragment : Fragment() {
 
@@ -32,7 +32,7 @@ class RepairFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.service_fragment, container, false)
+        return inflater.inflate(R.layout.add_repair_fragment, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -54,7 +54,7 @@ class RepairFragment : Fragment() {
     private fun saveRepair() {
 
         val document: DocumentReference
-        val service = Service()
+        val service = ServiceItem()
 
 //        document = firestore.collection("service").document()
 //        with(service){

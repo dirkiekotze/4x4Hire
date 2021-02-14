@@ -2,97 +2,97 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/vehicleLayout"
+    android:id="@+id/frameLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.main.VehicleFragment" >
+    tools:context=".ui.main.AddService">
 
-    <EditText
-        android:id="@+id/serviceDescripion"
+
+    <Spinner
+        android:id="@+id/ServiceVehicle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
-        android:hint="@string/vehicle_description"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Spinner
-        android:id="@+id/vehicleModelSpinner"
+    <AutoCompleteTextView
+        android:id="@+id/service_description"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
+        android:hint="@string/search_for_service"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/serviceDescripion" />
+        app:layout_constraintTop_toBottomOf="@+id/ServiceVehicle" />
 
     <EditText
-        android:id="@+id/vehicleYearModel"
+        android:id="@+id/service_date"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
         android:ems="10"
-        android:hint="@string/vehicle_year_model"
-        android:inputType="number"
+        android:hint="@string/service_date"
+        android:inputType="date"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/vehicleModelSpinner" />
+        app:layout_constraintTop_toBottomOf="@+id/service_description" />
 
     <EditText
-        android:id="@+id/vehicleKms"
+        android:id="@+id/service_price"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
         android:ems="10"
-        android:hint="@string/vehicle_kms"
-        android:inputType="number"
+        android:hint="@string/service_price"
+        android:inputType="numberDecimal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/vehicleYearModel" />
+        app:layout_constraintTop_toBottomOf="@+id/service_date" />
 
     <EditText
-        android:id="@+id/vehicleRego"
+        android:id="@+id/service_note"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
-        android:ems="10"
-        android:hint="@string/vehicle_rego"
-        android:inputType="textPersonName"
+        android:hint="@string/service_note"
+        android:text="TextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/vehicleKms" />
+        app:layout_constraintTop_toBottomOf="@+id/service_price" />
 
     <ImageButton
-        android:id="@+id/saveRepairBtn"
+        android:id="@+id/serviceSaveBtn"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
-        android:src="@android:drawable/ic_menu_save"
+        android:src="@drawable/save"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/vehicleRego" />
+        app:layout_constraintTop_toBottomOf="@+id/service_note" />
 
     <Button
-        android:id="@+id/cmdReturnFromRepairToMain"
+        android:id="@+id/serviceBack"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
-        android:text="Back"
+        android:text="Cancel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/saveRepairBtn" />
+        app:layout_constraintTop_toBottomOf="@+id/serviceSaveBtn" />
 </androidx.constraintlayout.widget.ConstraintLayout>

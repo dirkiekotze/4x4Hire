@@ -4,10 +4,26 @@
     <string name="vehicle_year_model">Year Model</string>
     <string name="vehicle_kms">Kms</string>
     <string name="vehicle_rego">Registration</string>
+    <string name="service_description">Description</string>
+    <string name="service_price">Price</string>
+    <string name="service_quantity">Quntity</string>
+    <string name="add_vehicle">Add Vehicle</string>
+    <string name="add_service_item">Add Service Item</string>
+    <string name="add_service">Add Service</string>
+    <string name="add_repair">Add Repair</string>
+    <string name="search_for_service">Search for Service</string>
+    <string name="service_date">Date</string>
+    <string name="service_note">Note</string>
     <string-array name="vehicle_model">
         <item>Please Select</item>
         <item>Landcruiser 4.2 Diesel Manual</item>
         <item>Landcruiser 6 Cylinder Petrol Automatic</item>
         <item>Landcruiser Prado 8 Seater Automatic Petrol</item>
+    </string-array>
+    <string-array name="vehicle_type">
+        <item>Please Select</item>
+        <item>Landcruiser (Petrol)</item>
+        <item>Landcruiser (Diesel)</item>
+        <item>Prado (Petrol)</item>
     </string-array>
 </resources>

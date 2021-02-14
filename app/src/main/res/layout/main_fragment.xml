@@ -8,8 +8,8 @@
     tools:context=".ui.main.MainFragment">
 
     <Spinner
-        android:id="@+id/vehicleSpinner"
-        android:layout_width="wrap_content"
+        android:id="@+id/typeSpinner"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="24dp"
@@ -19,21 +19,9 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="NotSibling" />
 
-
     <Spinner
-        android:id="@+id/typeSpinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="24dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/vehicleSpinner" />
-
-    <Spinner
-        android:id="@+id/serviceSpinner"
-        android:layout_width="wrap_content"
+        android:id="@+id/vehicleSpinner"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="24dp"
@@ -42,42 +30,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/typeSpinner" />
 
-
-    <Button
-        android:id="@+id/addVehicle"
+    <Spinner
+        android:id="@+id/serviceSpinner"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
-        android:text="Add Vehicle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/serviceSpinner" />
+        app:layout_constraintTop_toBottomOf="@id/vehicleSpinner" />
 
-    <Button
-        android:id="@+id/addService"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="24dp"
-        android:text="Add Service"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addVehicle" />
-
-    <Button
-        android:id="@+id/addRepair"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="24dp"
-        android:text="Add Repair"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addService" />
 
     <AutoCompleteTextView
         android:id="@+id/serviceAutoComplete"
@@ -86,9 +49,10 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
+        android:hint="@string/search_for_service"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addRepair" />
+        app:layout_constraintTop_toBottomOf="@+id/serviceSpinner" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

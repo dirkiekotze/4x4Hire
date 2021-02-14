@@ -4,7 +4,7 @@ import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.au.a4x4vehiclehirefraser.dto.Service
+import com.au.a4x4vehiclehirefraser.dto.ServiceItem
 import com.au.a4x4vehiclehirefraser.dto.Type
 import com.au.a4x4vehiclehirefraser.dto.Vehicle
 import com.google.firebase.firestore.DocumentReference
@@ -16,7 +16,7 @@ class MainViewModel : ViewModel() {
 
     private lateinit var firestore: FirebaseFirestore
     private var _vehicles: MutableLiveData<ArrayList<Vehicle>> = MutableLiveData<ArrayList<Vehicle>>()
-    private var _service: MutableLiveData<ArrayList<Service>> = MutableLiveData<ArrayList<Service>>()
+    private var _service: MutableLiveData<ArrayList<ServiceItem>> = MutableLiveData<ArrayList<ServiceItem>>()
     private var _type: MutableLiveData<ArrayList<Type>> = MutableLiveData<ArrayList<Type>>()
 
     init {
@@ -60,10 +60,10 @@ class MainViewModel : ViewModel() {
             }
 
             if (snapshot != null) {
-                val allServices = ArrayList<Service>()
+                val allServices = ArrayList<ServiceItem>()
                 val documents = snapshot.documents
                 documents.forEach {
-                    val service = it.toObject(Service::class.java)
+                    val service = it.toObject(ServiceItem::class.java)
                     if (service != null) {
                         allServices.add(service)
                     }
@@ -100,7 +100,7 @@ class MainViewModel : ViewModel() {
     }
 
 
-    fun saveService(service: Service) {
+    fun saveService(service: ServiceItem) {
 
         val document: DocumentReference
 
@@ -140,7 +140,7 @@ class MainViewModel : ViewModel() {
 //            }
     }
 
-    internal fun getServiceIdFromFirestore(service: Service) {
+    internal fun getServiceIdFromFirestore(service: ServiceItem) {
 
         firestore.collection("service")
             .whereEqualTo("description", service.description)
@@ -182,7 +182,7 @@ class MainViewModel : ViewModel() {
             _vehicles = value
         }
 
-    internal var service: MutableLiveData<ArrayList<Service>>
+    internal var service: MutableLiveData<ArrayList<ServiceItem>>
         get() {
             return _service
         }

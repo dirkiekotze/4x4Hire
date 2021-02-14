@@ -27,12 +27,12 @@ class ExampleInstrumentedTest {
     val appContext = InstrumentationRegistry.getInstrumentation().targetContext
 
 
-    @Test
-    fun useAppContext() {
-
-        //val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.au.a4x4vehiclehirefraser", appContext.packageName)
-    }
+//    @Test
+//    fun useAppContext() {
+//
+//        //val appContext = InstrumentationRegistry.getInstrumentation().targetContext
+//        assertEquals("com.au.a4x4vehiclehirefraser", appContext.packageName)
+//    }
 
     @Test
     fun searchForSetOfPradoFrontRoaters_ReturnSetOfPRadoFrontRoaters() {
@@ -48,7 +48,7 @@ class ExampleInstrumentedTest {
     }
 
     private fun whenSearchForSetOfPradoFrontRoaters() {
-        mvm.fetchServiceItem("Prado", "Set of Front Roaters")
+        mvm.fetchServiceItem("Prado", "Set of Front Rotors")
     }
 
     private fun thenResultContainsSetOfPradoFrontRoaters() {
@@ -57,7 +57,7 @@ class ExampleInstrumentedTest {
             assertNotNull(it)
             assertNotNull(it.size > 0)
             it.forEach {
-                if((it.description == "Set of Front Roaters") && (it.vehicleType == "Prado")){
+                if((it.description == "Set of Front Rotors") && (it.vehicleType == "Prado")){
                     pradoFrontSetRoatersFound = true
                     assertTrue(pradoFrontSetRoatersFound)
                 }else{

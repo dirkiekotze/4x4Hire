@@ -1,24 +1,17 @@
 package com.au.a4x4vehiclehirefraser.ui.main
 
 import android.app.Activity
-import android.content.ContentValues
 import android.content.Intent
-import android.content.res.Resources
-import android.content.res.Resources.*
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.lifecycle.Observer
-import com.au.a4x4vehiclehirefraser.MainActivity
 import com.firebase.ui.auth.AuthUI
 import com.au.a4x4vehiclehirefraser.R
-import com.au.a4x4vehiclehirefraser.dto.Service
-import com.au.a4x4vehiclehirefraser.dto.Vehicle
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.android.synthetic.main.main_fragment.*
@@ -88,17 +81,17 @@ class MainFragment : Fragment() {
 
         })
 
-        addVehicle.setOnClickListener {
-            (activity as MainActivity).showVehicleFragment()
-        }
-
-        addService.setOnClickListener {
-            (activity as MainActivity).showServiceFragment()
-        }
-
-        addRepair.setOnClickListener {
-            (activity as MainActivity).showRepairFragment()
-        }
+//        addVehicle.setOnClickListener {
+//            (activity as MainActivity).showVehicleFragment()
+//        }
+//
+//        addService.setOnClickListener {
+//            (activity as MainActivity).showServiceFragment()
+//        }
+//
+//        addRepair.setOnClickListener {
+//            (activity as MainActivity).showRepairFragment()
+//        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -111,6 +104,8 @@ class MainFragment : Fragment() {
 
         }
     }
+
+
 
     private fun addVehicle() {
 

@@ -2,22 +2,24 @@ package com.au.a4x4vehiclehirefraser.ui.main
 
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import com.au.a4x4vehiclehirefraser.MainActivity
 import com.au.a4x4vehiclehirefraser.R
-import com.au.a4x4vehiclehirefraser.dto.Service
+import com.au.a4x4vehiclehirefraser.dto.Vehicle
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
-import kotlinx.android.synthetic.main.vehicle_fragment.*
+import kotlinx.android.synthetic.main.add_vehicle_fragment.*
 
-class ServiceFragment : Fragment() {
+class AddVehicleFragment : Fragment() {
 
     companion object {
-        fun newInstance() = ServiceFragment()
+        fun newInstance() = AddVehicleFragment()
     }
 
     private lateinit var viewModel: MainViewModel
@@ -32,7 +34,7 @@ class ServiceFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.service_fragment, container, false)
+        return inflater.inflate(R.layout.add_vehicle_fragment, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -40,10 +42,11 @@ class ServiceFragment : Fragment() {
         activity.let {
             viewModel = ViewModelProviders.of(it!!).get(MainViewModel::class.java)
         }
-        //vehicleModelSpinner.setAdapter(ArrayAdapter.createFromResource(context!!, R.array.vehicle_model,android.R.layout.simple_spinner_item))
+
+        vehicleModelSpinner.setAdapter(ArrayAdapter.createFromResource(context!!, R.array.vehicle_model,android.R.layout.simple_spinner_item))
 
         saveRepairBtn.setOnClickListener {
-            saveService()
+            saveVehicle()
         }
 
         cmdReturnFromRepairToMain.setOnClickListener {
@@ -51,31 +54,31 @@ class ServiceFragment : Fragment() {
         }
     }
 
-    private fun saveService() {
+    private fun saveVehicle() {
 
         val document: DocumentReference
-        val service = Service()
+        val vehicle = Vehicle()
 
-//        document = firestore.collection("service").document()
-//        with(service){
-//            id = document.id
-//            rego = vehicleRego.text.toString()
-//            description = serviceDescripion.text.toString()
-//            kms = vehicleKms.text.toString().toInt()
-//            model = vehicleModelSpinner.selectedItem.toString()
-//            yearModel = vehicleYearModel.text.toString().toInt()
-//        }
-//
-//
-//
-//        val set = document.set(vehicle)
-//        set.addOnSuccessListener {
-//            Log.d("Firebase", "Vehicle Saved")
-//            (activity as MainActivity).showMainFragment()
-//        }
-//        set.addOnFailureListener {
-//            Log.d("firestore", "Vehicle not saved")
-//        }
+        document = firestore.collection("vehicle").document()
+        with(vehicle){
+            id = document.id
+            rego = vehicleRego.text.toString()
+            description = vehicleDescripion.text.toString()
+            kms = vehicleKms.text.toString().toInt()
+            model = vehicleModelSpinner.selectedItem.toString()
+            yearModel = vehicleYearModel.text.toString().toInt()
+        }
+
+
+
+        val set = document.set(vehicle)
+        set.addOnSuccessListener {
+            Log.d("Firebase", "Vehicle Saved")
+            (activity as MainActivity).showMainFragment()
+        }
+        set.addOnFailureListener {
+            Log.d("firestore", "Vehicle not saved")
+        }
     }
 
 }

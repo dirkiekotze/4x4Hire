@@ -10,22 +10,22 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import com.au.a4x4vehiclehirefraser.MainActivity
 import com.au.a4x4vehiclehirefraser.R
-import com.au.a4x4vehiclehirefraser.dto.Vehicle
+import com.au.a4x4vehiclehirefraser.dto.ServiceItem
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
-import kotlinx.android.synthetic.main.vehicle_fragment.*
+import kotlinx.android.synthetic.main.add_service_item_fragment.*
 
-class VehicleFragment : Fragment() {
+class AddServiceItemFragment : Fragment() {
 
     companion object {
-        fun newInstance() = VehicleFragment()
+        fun newInstance() = AddServiceItemFragment()
     }
 
     private lateinit var viewModel: MainViewModel
     private lateinit var firestore: FirebaseFirestore
 
-    init{
+    init {
         firestore = FirebaseFirestore.getInstance()
         firestore.firestoreSettings = FirebaseFirestoreSettings.Builder().build()
     }
@@ -34,7 +34,7 @@ class VehicleFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.vehicle_fragment, container, false)
+        return inflater.inflate(R.layout.add_service_item_fragment, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -43,41 +43,47 @@ class VehicleFragment : Fragment() {
             viewModel = ViewModelProviders.of(it!!).get(MainViewModel::class.java)
         }
 
-        vehicleModelSpinner.setAdapter(ArrayAdapter.createFromResource(context!!, R.array.vehicle_model,android.R.layout.simple_spinner_item))
+        clearFields()
+        serviceVehicleTypeSpinner.setAdapter(ArrayAdapter.createFromResource(context!!,R.array.vehicle_type,android.R.layout.simple_spinner_item
+            )
+        )
 
-        saveRepairBtn.setOnClickListener {
-            saveVehicle()
+        serviceSaveBtn.setOnClickListener {
+            saveService()
         }
 
-        cmdReturnFromRepairToMain.setOnClickListener {
+        serviceBackBtn.setOnClickListener {
             (activity as MainActivity).showMainFragment()
         }
     }
 
-    private fun saveVehicle() {
+    private fun clearFields() {
+        serviceDescription.setText("")
+        servicePrice.setText("")
+        serviceQuantity.setText("")
+    }
+
+    private fun saveService() {
 
         val document: DocumentReference
-        val vehicle = Vehicle()
+        val service = ServiceItem()
 
-        document = firestore.collection("vehicle").document()
-        with(vehicle){
+        document = firestore.collection("service").document()
+        with(service) {
             id = document.id
-            rego = vehicleRego.text.toString()
-            description = serviceDescripion.text.toString()
-            kms = vehicleKms.text.toString().toInt()
-            model = vehicleModelSpinner.selectedItem.toString()
-            yearModel = vehicleYearModel.text.toString().toInt()
+            description = serviceDescription.text.toString()
+            price = servicePrice.text.toString().toDouble()
+            quantity = serviceQuantity.text.toString().toInt()
+            vehicleType = serviceVehicleTypeSpinner.selectedItem.toString()
         }
 
-
-
-        val set = document.set(vehicle)
+        val set = document.set(service)
         set.addOnSuccessListener {
-            Log.d("Firebase", "Vehicle Saved")
+            Log.w("Firebase", "Service Saved")
             (activity as MainActivity).showMainFragment()
         }
         set.addOnFailureListener {
-            Log.d("firestore", "Vehicle not saved")
+            Log.w("firestore", "Service not saved")
         }
     }
 
