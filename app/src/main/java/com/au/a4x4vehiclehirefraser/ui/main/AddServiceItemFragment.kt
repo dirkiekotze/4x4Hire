@@ -22,7 +22,7 @@ class AddServiceItemFragment : Fragment() {
         fun newInstance() = AddServiceItemFragment()
     }
 
-    private lateinit var viewModel: MainViewModel
+    private lateinit var mvm: MainViewModel
     private lateinit var firestore: FirebaseFirestore
 
     init {
@@ -40,11 +40,13 @@ class AddServiceItemFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         activity.let {
-            viewModel = ViewModelProviders.of(it!!).get(MainViewModel::class.java)
+            mvm = ViewModelProviders.of(it!!).get(MainViewModel::class.java)
         }
 
         clearFields()
-        serviceVehicleTypeSpinner.setAdapter(ArrayAdapter.createFromResource(context!!,R.array.vehicle_type,android.R.layout.simple_spinner_item
+        serviceVehicleTypeSpinner.setAdapter(
+            ArrayAdapter.createFromResource(
+                context!!, R.array.vehicle_type, android.R.layout.simple_spinner_item
             )
         )
 
@@ -65,26 +67,18 @@ class AddServiceItemFragment : Fragment() {
 
     private fun saveService() {
 
-        val document: DocumentReference
         val service = ServiceItem()
-
-        document = firestore.collection("service").document()
         with(service) {
-            id = document.id
+            id = ""
             description = serviceDescription.text.toString()
             price = servicePrice.text.toString().toDouble()
             quantity = serviceQuantity.text.toString().toInt()
             vehicleType = serviceVehicleTypeSpinner.selectedItem.toString()
         }
 
-        val set = document.set(service)
-        set.addOnSuccessListener {
-            Log.w("Firebase", "Service Saved")
-            (activity as MainActivity).showMainFragment()
-        }
-        set.addOnFailureListener {
-            Log.w("firestore", "Service not saved")
-        }
+        mvm.saveService(service)
+        (activity as MainActivity).showMainFragment()
+
     }
 
 }

@@ -28,6 +28,51 @@ class MainViewModel : ViewModel() {
         listenToType()
     }
 
+    private fun listenToVehicles() {
+        firestore.collection("vehicle").addSnapshotListener { snapshot, e ->
+
+            //Skip if excepion
+            if (e != null) {
+                Log.w(TAG, "Listener for Vehicle Failed")
+                return@addSnapshotListener
+            }
+
+            // if we are here, we did not encounter an exception
+            if (snapshot != null) {
+                val allVehicles = ArrayList<Vehicle>()
+                val documents = snapshot.documents
+                documents.forEach {
+                    val vehicle = it.toObject(Vehicle::class.java)
+                    if (vehicle != null) {
+                        allVehicles.add(vehicle!!)
+                    }
+                }
+                _vehicles.value = allVehicles
+            }
+        }
+    }
+
+    private fun listenToService() {
+        firestore.collection("service").addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                Log.w(TAG, "Listener for Service failed")
+                return@addSnapshotListener
+            }
+
+            if (snapshot != null) {
+                val allServices = ArrayList<ServiceItem>()
+                val documents = snapshot.documents
+                documents.forEach {
+                    val service = it.toObject(ServiceItem::class.java)
+                    if (service != null) {
+                        allServices.add(service)
+                    }
+                }
+                _service.value = allServices
+            }
+        }
+    }
+
     private fun listenToType() {
         firestore.collection("type")
             .orderBy("id", Query.Direction.ASCENDING)
@@ -52,54 +97,6 @@ class MainViewModel : ViewModel() {
             }
     }
 
-    private fun listenToService() {
-        firestore.collection("service").addSnapshotListener { snapshot, error ->
-            if (error != null) {
-                Log.w(TAG, "Listener for Service failed")
-                return@addSnapshotListener
-            }
-
-            if (snapshot != null) {
-                val allServices = ArrayList<ServiceItem>()
-                val documents = snapshot.documents
-                documents.forEach {
-                    val service = it.toObject(ServiceItem::class.java)
-                    if (service != null) {
-                        allServices.add(service)
-                    }
-                }
-                _service.value = allServices
-            }
-        }
-    }
-
-    private fun listenToVehicles() {
-        firestore.collection("vehicle").addSnapshotListener { snapshot, e ->
-
-            //Skip if excepion
-            if (e != null) {
-                Log.w(TAG, "Listener Failed")
-                return@addSnapshotListener
-            }
-
-            // if we are here, we did not encounter an exception
-            if (snapshot != null) {
-                val allVehicles = ArrayList<Vehicle>()
-                val documents = snapshot.documents
-                documents.forEach {
-                    val vehicle = it.toObject(Vehicle::class.java)
-                    if (vehicle != null) {
-                        allVehicles.add(vehicle!!)
-                    }
-                }
-                _vehicles.value = allVehicles
-            }
-
-
-        }
-    }
-
-
     fun saveService(service: ServiceItem) {
 
         val document: DocumentReference
@@ -119,6 +116,20 @@ class MainViewModel : ViewModel() {
         set.addOnFailureListener {
             Log.d("Firebase", "Service not saved")
         }
+    }
+
+    fun deleteService(service: ServiceItem) {
+
+        val document: DocumentReference
+        document = firestore.collection("service").document(service.id)
+        document.delete()
+            .addOnSuccessListener {
+                Log.d(TAG, "Service entry Deleted")
+            }
+            .addOnFailureListener {
+                    e -> Log.w(TAG, "Unable to Delete SErvice Item", e)
+            }
+
     }
 
     internal fun getVehicleIdFromFirestore(vehicle: Vehicle) {
@@ -157,21 +168,6 @@ class MainViewModel : ViewModel() {
                 Log.d("firestore", "Unable to find Service in Firestore: $service.description")
                 saveService(service)
             }
-    }
-
-    fun fetchServiceItem(vehicleType: String, description: String):String {
-
-        var retValue:String = ""
-        firestore.collection("Service")
-            .whereEqualTo("vehicleType", vehicleType)
-            .whereEqualTo("description", description)
-            .get()
-            .addOnSuccessListener {
-                for (document in it.documents) {
-                    retValue = document.get("description").toString()
-                }
-            }
-            return retValue
     }
 
     internal var vehicle: MutableLiveData<ArrayList<Vehicle>>

@@ -5,16 +5,14 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.fragment.app.Fragment
-import com.au.a4x4vehiclehirefraser.ui.main.MainFragment
-import com.au.a4x4vehiclehirefraser.ui.main.RepairFragment
-import com.au.a4x4vehiclehirefraser.ui.main.AddServiceItemFragment
-import com.au.a4x4vehiclehirefraser.ui.main.AddVehicleFragment
+import com.au.a4x4vehiclehirefraser.ui.main.*
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var activeFragment: Fragment
     private lateinit var mainFragment: MainFragment
     private lateinit var vehicleFragment: AddVehicleFragment
+    private lateinit var serviceFragment: AddServiceFragment
     private lateinit var serviceItemFragment: AddServiceItemFragment
     private lateinit var repairFragment: RepairFragment
 
@@ -23,6 +21,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.main_activity)
         mainFragment = MainFragment.newInstance()
         vehicleFragment = AddVehicleFragment.newInstance()
+        serviceFragment = AddServiceFragment.newInstance()
         serviceItemFragment = AddServiceItemFragment.newInstance()
         repairFragment = RepairFragment.newInstance()
 
@@ -47,6 +46,8 @@ class MainActivity : AppCompatActivity() {
             showRepairFragment()
         } else if(item.itemId == R.id.add_service_item){
             showServiceItemFragment()
+        } else if(item.itemId == R.id.add_service){
+            showServiceFragment()
         }
         return true
     }
@@ -65,6 +66,14 @@ class MainActivity : AppCompatActivity() {
             .replace(R.id.container, serviceItemFragment)
             .commitNow()
         activeFragment = serviceItemFragment
+    }
+
+    internal fun showServiceFragment(){
+
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.container, serviceFragment)
+            .commitNow()
+        activeFragment = serviceFragment
     }
 
     internal fun showRepairFragment(){
