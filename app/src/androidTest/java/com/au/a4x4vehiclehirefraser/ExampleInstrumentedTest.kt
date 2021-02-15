@@ -40,13 +40,13 @@ class ExampleInstrumentedTest {
         firestore = FirebaseFirestore.getInstance()
         firestore.firestoreSettings = FirebaseFirestoreSettings.Builder().build()
 
-        givenWhenWeAddTestDataRecord(vehicleType,description)
-        whenSearchForTheTestDataRecord(vehicleType,description)
+        givenWhenWeAddTestDataServiceRecord(vehicleType,description)
+        whenSearchForTheTestDataServiceRecord(vehicleType,description)
         //thenResultContainsSetOfPradoFrontRotors()
 
     }
 
-    private fun givenWhenWeAddTestDataRecord(vehicleType: String, description: String) {
+    private fun givenWhenWeAddTestDataServiceRecord(vehicleType: String, description: String) {
         mvm = MainViewModel()
         val service = ServiceItem()
         service.description = description
@@ -54,7 +54,7 @@ class ExampleInstrumentedTest {
         mvm.saveService(service)
     }
 
-    private fun whenSearchForTheTestDataRecord(vehicleType: String, description: String) {
+    private fun whenSearchForTheTestDataServiceRecord(vehicleType: String, description: String) {
         firestore.collection("Service")
             .whereEqualTo("vehicleType", vehicleType)
             .whereEqualTo("description", description)

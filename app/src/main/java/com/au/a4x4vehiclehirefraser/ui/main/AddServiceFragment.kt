@@ -50,9 +50,7 @@ class AddServiceFragment : Fragment() {
         activity.let {
             viewModel = ViewModelProviders.of(it!!).get(MainViewModel::class.java)
         }
-
         clearFields()
-
 
         serviceSaveBtn.setOnClickListener {
             saveService()
