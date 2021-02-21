@@ -1,6 +1,5 @@
 package com.au.a4x4vehiclehirefraser.ui.main
 
-import android.content.ContentValues
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.util.Log
@@ -8,21 +7,18 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.au.a4x4vehiclehirefraser.MainActivity
 import com.au.a4x4vehiclehirefraser.R
 import com.au.a4x4vehiclehirefraser.dto.ServiceEntry
-import com.au.a4x4vehiclehirefraser.dto.ServiceItem
 import com.au.a4x4vehiclehirefraser.dto.Vehicle
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import kotlinx.android.synthetic.main.add_service_fragment.*
 import kotlinx.android.synthetic.main.add_service_fragment.serviceSaveBtn
-import kotlinx.android.synthetic.main.add_service_item_fragment.*
-import kotlinx.android.synthetic.main.main_fragment.*
 
 class AddServiceFragment : Fragment() {
 
@@ -32,6 +28,7 @@ class AddServiceFragment : Fragment() {
 
     private lateinit var viewModel: MainViewModel
     private lateinit var firestore: FirebaseFirestore
+    private var vehicleItem = Vehicle();
 
     init {
         firestore = FirebaseFirestore.getInstance()
@@ -50,6 +47,7 @@ class AddServiceFragment : Fragment() {
         activity.let {
             viewModel = ViewModelProviders.of(it!!).get(MainViewModel::class.java)
         }
+
         clearFields()
 
         serviceSaveBtn.setOnClickListener {
@@ -61,7 +59,7 @@ class AddServiceFragment : Fragment() {
         }
 
         viewModel.vehicle.observe(viewLifecycleOwner, Observer { vehicle ->
-            serviceVehicle.setAdapter(
+            service_Vehicle.setAdapter(
                 ArrayAdapter(
                     context!!,
                     R.layout.support_simple_spinner_dropdown_item,
@@ -79,6 +77,20 @@ class AddServiceFragment : Fragment() {
                 )
             )
         })
+
+        service_Vehicle.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                vehicleItem = parent?.getItemAtPosition(position) as Vehicle
+
+
+            }
+
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+                TODO("Not yet implemented")
+            }
+
+
+        }
     }
 
 
@@ -101,7 +113,8 @@ class AddServiceFragment : Fragment() {
             price = service_price.text.toString().toDouble()
             date = service_date.text.toString()
             note = service_note.text.toString()
-            vehicle = serviceVehicle.selectedItem.toString()
+            vehicle = service_Vehicle.selectedItem.toString()
+            rego =  vehicleItem.rego
         }
 
         val set = document.set(service)

@@ -4,20 +4,26 @@ import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.au.a4x4vehiclehirefraser.MainActivity
 import com.au.a4x4vehiclehirefraser.dto.ServiceItem
 import com.au.a4x4vehiclehirefraser.dto.Type
 import com.au.a4x4vehiclehirefraser.dto.Vehicle
+import com.au.a4x4vehiclehirefraser.examples.DocSnippets
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.google.firebase.firestore.Query
+import kotlinx.android.synthetic.main.add_vehicle_fragment.*
 
 class MainViewModel : ViewModel() {
 
     private lateinit var firestore: FirebaseFirestore
-    private var _vehicles: MutableLiveData<ArrayList<Vehicle>> = MutableLiveData<ArrayList<Vehicle>>()
-    private var _service: MutableLiveData<ArrayList<ServiceItem>> = MutableLiveData<ArrayList<ServiceItem>>()
+    private var _vehicles: MutableLiveData<ArrayList<Vehicle>> =
+        MutableLiveData<ArrayList<Vehicle>>()
+    private var _service: MutableLiveData<ArrayList<ServiceItem>> =
+        MutableLiveData<ArrayList<ServiceItem>>()
     private var _type: MutableLiveData<ArrayList<Type>> = MutableLiveData<ArrayList<Type>>()
+    private lateinit var addViewModel: AddVehicleFragment
 
     init {
         //Cloud Firestore Initialization
@@ -26,6 +32,12 @@ class MainViewModel : ViewModel() {
         listenToVehicles()
         listenToService()
         listenToType()
+
+        // Run snippets
+
+        // Run snippets
+        val docSnippets = DocSnippets(firestore)
+        docSnippets.runAll()
     }
 
     private fun listenToVehicles() {
@@ -97,6 +109,30 @@ class MainViewModel : ViewModel() {
             }
     }
 
+    fun saveVehicle(vehicle: Vehicle) {
+
+        val document: DocumentReference
+
+        document = firestore.collection("vehicle").document(vehicle.rego)
+        with(vehicle) {
+            rego = vehicle.rego
+            description = vehicle.description
+            kms = vehicle.kms
+            model = vehicle.model
+            yearModel = vehicle.yearModel
+            color = vehicle.color
+        }
+
+        val set = document.set(vehicle)
+        set.addOnSuccessListener {
+            Log.d("Firebase", "Vehicle Saved")
+
+        }
+        set.addOnFailureListener {
+            Log.d("firestore", "Vehicle not saved")
+        }
+    }
+
     fun saveService(service: ServiceItem) {
 
         val document: DocumentReference
@@ -126,10 +162,21 @@ class MainViewModel : ViewModel() {
             .addOnSuccessListener {
                 Log.d(TAG, "Service entry Deleted")
             }
-            .addOnFailureListener {
-                    e -> Log.w(TAG, "Unable to Delete SErvice Item", e)
+            .addOnFailureListener { e ->
+                Log.w(TAG, "Unable to Delete SErvice Item", e)
             }
 
+    }
+
+    fun deleteServicePerId(id: String) {
+
+        val toDelete = firestore.collection("service").whereEqualTo("description", "testVehicle")
+            .get()
+            .addOnSuccessListener {
+                it.documents.forEach {
+                    //it.
+                }
+            }
     }
 
     internal fun getVehicleIdFromFirestore(vehicle: Vehicle) {

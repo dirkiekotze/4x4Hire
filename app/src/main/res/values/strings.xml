@@ -4,6 +4,7 @@
     <string name="vehicle_year_model">Year Model</string>
     <string name="vehicle_kms">Kms</string>
     <string name="vehicle_rego">Registration</string>
+    <string name="vehicle_color">Colour</string>
     <string name="service_description">Description</string>
     <string name="service_price">Price</string>
     <string name="service_quantity">Quntity</string>

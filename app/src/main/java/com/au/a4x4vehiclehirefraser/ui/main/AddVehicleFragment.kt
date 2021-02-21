@@ -43,42 +43,62 @@ class AddVehicleFragment : Fragment() {
             viewModel = ViewModelProviders.of(it!!).get(MainViewModel::class.java)
         }
 
+        clearFields()
+
         vehicleModelSpinner.setAdapter(ArrayAdapter.createFromResource(context!!, R.array.vehicle_model,android.R.layout.simple_spinner_item))
 
         saveRepairBtn.setOnClickListener {
+
             saveVehicle()
         }
 
         cmdReturnFromRepairToMain.setOnClickListener {
+            clearFields()
             (activity as MainActivity).showMainFragment()
+        }
+
+        takePhotoBtn.setOnClickListener {
+
         }
     }
 
+    private fun clearFields() {
+        vehicleRego.text.clear()
+        var rego = vehicleRego.text.toString()
+        vehicleDescripion.setText("")
+        vehicleKms.text.clear()
+        //vehicleModelSpinner.selectedItem.toString()
+        vehicleYearModel.text.clear()
+        vehicleColor.text.clear()
+    }
+
     private fun saveVehicle() {
+        var vehicle = Vehicle()
 
-        val document: DocumentReference
-        val vehicle = Vehicle()
-
-        document = firestore.collection("vehicle").document()
-        with(vehicle){
-            id = document.id
+        vehicle.apply{
             rego = vehicleRego.text.toString()
             description = vehicleDescripion.text.toString()
             kms = vehicleKms.text.toString().toInt()
             model = vehicleModelSpinner.selectedItem.toString()
             yearModel = vehicleYearModel.text.toString().toInt()
-        }
-
-
-
-        val set = document.set(vehicle)
-        set.addOnSuccessListener {
-            Log.d("Firebase", "Vehicle Saved")
+            color = vehicleColor.text.toString()
+        }.apply {
+            clearFields()
+        }.apply {
+            viewModel.saveVehicle(vehicle)
+        }.apply {
             (activity as MainActivity).showMainFragment()
         }
-        set.addOnFailureListener {
-            Log.d("firestore", "Vehicle not saved")
-        }
+
+
+        doThis({
+            val it = ""
+            "something is $it"
+        })
+
     }
 
+    private fun doThis(function: () -> String) {
+
+    }
 }

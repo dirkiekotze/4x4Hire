@@ -9,7 +9,7 @@
 
 
     <Spinner
-        android:id="@+id/serviceVehicle"
+        android:id="@+id/service_Vehicle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -29,7 +29,7 @@
         android:hint="@string/search_for_service"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/serviceVehicle" />
+        app:layout_constraintTop_toBottomOf="@+id/service_Vehicle" />
 
     <EditText
         android:id="@+id/service_date"
