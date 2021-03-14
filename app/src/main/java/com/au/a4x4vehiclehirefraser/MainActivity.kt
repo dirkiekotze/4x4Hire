@@ -11,8 +11,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var activeFragment: Fragment
     private lateinit var mainFragment: MainFragment
-    private lateinit var vehicleFragment: AddVehicleFragment
-    private lateinit var serviceFragment: AddServiceFragment
+    private lateinit var addVehicleFragment: AddVehicleFragment
+    private lateinit var addServiceFragment: AddServiceFragment
     private lateinit var serviceItemFragment: AddServiceItemFragment
     private lateinit var repairFragment: RepairFragment
 
@@ -20,8 +20,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
         mainFragment = MainFragment.newInstance()
-        vehicleFragment = AddVehicleFragment.newInstance()
-        serviceFragment = AddServiceFragment.newInstance()
+        addVehicleFragment = AddVehicleFragment.newInstance()
+        addServiceFragment = AddServiceFragment.newInstance()
         serviceItemFragment = AddServiceItemFragment.newInstance()
         repairFragment = RepairFragment.newInstance()
 
@@ -34,33 +34,41 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu,menu)
+        menuInflater.inflate(R.menu.menu, menu)
         return super.onCreateOptionsMenu(menu)
 
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if(item.itemId == R.id.add_vehicle){
-            showVehicleFragment()
-        } else if(item.itemId == R.id.add_repair){
-            showRepairFragment()
-        } else if(item.itemId == R.id.add_service_item){
-            showServiceItemFragment()
-        } else if(item.itemId == R.id.add_service){
-            showServiceFragment()
+        if (item.itemId == R.id.add_vehicle) {
+            if (activeFragment != addVehicleFragment) {
+                showVehicleFragment()
+            }
+        } else if (item.itemId == R.id.add_repair) {
+            if (activeFragment != repairFragment) {
+                showRepairFragment()
+            }
+        } else if (item.itemId == R.id.add_service_item) {
+            if (activeFragment != serviceItemFragment) {
+                showServiceItemFragment()
+            }
+        } else if (item.itemId == R.id.add_service) {
+            if (activeFragment != addServiceFragment) {
+                showServiceFragment()
+            }
         }
         return true
     }
 
-    internal fun showVehicleFragment(){
+    internal fun showVehicleFragment() {
 
         supportFragmentManager.beginTransaction()
-            .replace(R.id.container, vehicleFragment)
+            .replace(R.id.container, addVehicleFragment)
             .commitNow()
-        activeFragment = vehicleFragment
+        activeFragment = addVehicleFragment
     }
 
-    internal fun showServiceItemFragment(){
+    internal fun showServiceItemFragment() {
 
         supportFragmentManager.beginTransaction()
             .replace(R.id.container, serviceItemFragment)
@@ -68,15 +76,15 @@ class MainActivity : AppCompatActivity() {
         activeFragment = serviceItemFragment
     }
 
-    internal fun showServiceFragment(){
+    internal fun showServiceFragment() {
 
         supportFragmentManager.beginTransaction()
-            .replace(R.id.container, serviceFragment)
+            .replace(R.id.container, addServiceFragment)
             .commitNow()
-        activeFragment = serviceFragment
+        activeFragment = addServiceFragment
     }
 
-    internal fun showRepairFragment(){
+    internal fun showRepairFragment() {
 
         supportFragmentManager.beginTransaction()
             .replace(R.id.container, repairFragment)
@@ -85,8 +93,7 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
-    internal fun showMainFragment(){
+    internal fun showMainFragment() {
         supportFragmentManager.beginTransaction()
             .replace(R.id.container, mainFragment)
             .commitNow()

@@ -1,29 +1,34 @@
 package com.au.a4x4vehiclehirefraser.ui.main
 
 import android.content.ContentValues.TAG
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.au.a4x4vehiclehirefraser.MainActivity
-import com.au.a4x4vehiclehirefraser.dto.ServiceItem
-import com.au.a4x4vehiclehirefraser.dto.Type
-import com.au.a4x4vehiclehirefraser.dto.Vehicle
+import com.au.a4x4vehiclehirefraser.dto.*
 import com.au.a4x4vehiclehirefraser.examples.DocSnippets
+import com.au.a4x4vehiclehirefraser.helper.OneTimeOnly
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.google.firebase.firestore.Query
+import com.google.firebase.storage.FirebaseStorage
+import kotlinx.android.synthetic.main.add_service_fragment.*
 import kotlinx.android.synthetic.main.add_vehicle_fragment.*
 
 class MainViewModel : ViewModel() {
 
-    private lateinit var firestore: FirebaseFirestore
+    public lateinit var firestore: FirebaseFirestore
     private var _vehicles: MutableLiveData<ArrayList<Vehicle>> =
         MutableLiveData<ArrayList<Vehicle>>()
     private var _service: MutableLiveData<ArrayList<ServiceItem>> =
         MutableLiveData<ArrayList<ServiceItem>>()
     private var _type: MutableLiveData<ArrayList<Type>> = MutableLiveData<ArrayList<Type>>()
-    private lateinit var addViewModel: AddVehicleFragment
+    private var storageReferenence = FirebaseStorage.getInstance().getReference()
+    private var _user: FirebaseUser? = null
+    private var _photos: java.util.ArrayList<Photo> = java.util.ArrayList<Photo>()
+    var addServiceId = MutableLiveData<OneTimeOnly<String>>()
 
     init {
         //Cloud Firestore Initialization
@@ -36,8 +41,8 @@ class MainViewModel : ViewModel() {
         // Run snippets
 
         // Run snippets
-        val docSnippets = DocSnippets(firestore)
-        docSnippets.runAll()
+//        val docSnippets = DocSnippets(firestore)
+//        docSnippets.runAll()
     }
 
     private fun listenToVehicles() {
@@ -109,64 +114,96 @@ class MainViewModel : ViewModel() {
             }
     }
 
-    fun saveVehicle(vehicle: Vehicle) {
+    fun saveVehicle(vehicle: Vehicle, photos: java.util.ArrayList<Photo>, userId: String?) {
 
-        val document: DocumentReference
-
-        document = firestore.collection("vehicle").document(vehicle.rego)
-        with(vehicle) {
-            rego = vehicle.rego
-            description = vehicle.description
-            kms = vehicle.kms
-            model = vehicle.model
-            yearModel = vehicle.yearModel
-            color = vehicle.color
-        }
-
+        val document: DocumentReference = firestore.collection("vehicle").document(vehicle.rego)
         val set = document.set(vehicle)
         set.addOnSuccessListener {
             Log.d("Firebase", "Vehicle Saved")
+            if (photos != null && photos.size > 0) {
+                savePhotos(vehicle, photos, userId!!)
+                _photos = java.util.ArrayList<Photo>()
+            }
 
         }
         set.addOnFailureListener {
             Log.d("firestore", "Vehicle not saved")
         }
+
     }
 
-    fun saveService(service: ServiceItem) {
+    private fun savePhotos(vehicle: Vehicle, photos: ArrayList<Photo>, userId: String) {
 
-        val document: DocumentReference
-
-        if (service.id == "") {
-            document = firestore.collection("service").document()
-        } else {
-            document = firestore.collection("service").document(service.id)
-        }
-
-        service.id = document.id
-
-        val set = document.set(service)
-        set.addOnCanceledListener {
-            Log.d("Firebase", "Service Saved")
-        }
-        set.addOnFailureListener {
-            Log.d("Firebase", "Service not saved")
+        //Create document as child of vehicle doc
+        val collection = firestore.collection("vehicle")
+            .document(vehicle.rego)
+            .collection("photos")
+        photos.forEach { photo ->
+            val task = collection.add(photo)
+            task.addOnSuccessListener {
+                photo.id = it.id
+                uploadPhotos(vehicle, photo, userId)
+            }
         }
     }
 
-    fun deleteService(service: ServiceItem) {
+    private fun uploadPhotos(vehicle: Vehicle, photo: Photo, userId: String) {
 
-        val document: DocumentReference
-        document = firestore.collection("service").document(service.id)
-        document.delete()
-            .addOnSuccessListener {
-                Log.d(TAG, "Service entry Deleted")
+        var uri = Uri.parse(photo.localUri)
+        val imageRef = storageReferenence.child("images/" + userId + "/" + uri.lastPathSegment)
+        val uploadTask = imageRef.putFile(uri)
+        uploadTask.addOnSuccessListener {
+            val downloadUrl = imageRef.downloadUrl
+            downloadUrl.addOnSuccessListener {
+                photo.remoteUri = it.toString()
+                // update our Cloud Firestore with the public image URI.
+                updatePhotoDatabase(vehicle, photo)
+
+            }
+
+        }
+        uploadTask.addOnFailureListener {
+            Log.e(TAG, it.message)
+        }
+
+    }
+
+    private fun updatePhotoDatabase(vehicle: Vehicle, photo: Photo) {
+        firestore.collection("vehicle")
+            .document(vehicle.rego)
+            .collection("photos")
+            .document(photo.id)
+            .set(photo)
+    }
+
+    fun saveService(service: Service) {
+        firestore.collection("service")
+            .add(service)
+            .addOnSuccessListener { documentReference ->
+                Log.d("Firebase", "Service Saved")
+                addServiceId.value = OneTimeOnly(documentReference.id)
             }
             .addOnFailureListener { e ->
-                Log.w(TAG, "Unable to Delete SErvice Item", e)
+                Log.d("Firebase", "Service not saved")
             }
-
     }
+
+
+
+
+//    fun deleteService(service: ServiceItem) {
+//
+//        val document: DocumentReference
+//        document = firestore.collection("service").document(service.id)
+//        document.delete()
+//            .addOnSuccessListener {
+//                Log.d(TAG, "Service entry Deleted")
+//            }
+//            .addOnFailureListener { e ->
+//                Log.w(TAG, "Unable to Delete SErvice Item", e)
+//            }
+//
+//    }
 
     fun deleteServicePerId(id: String) {
 
@@ -179,43 +216,47 @@ class MainViewModel : ViewModel() {
             }
     }
 
-    internal fun getVehicleIdFromFirestore(vehicle: Vehicle) {
+    internal fun getAllVehicles(): ArrayList<Vehicle> {
 
-//        firestore.collection("vehicle")
-//            .whereEqualTo("rego", vehicle.rego)
-//            .get()
-//            .addOnSuccessListener { documents ->
-//                for (document in documents) {
-//                    vehicle.id = document.get("id").toString()
-//                }
-//                Log.d("firestore", "Found Vehicle in Firestore: $vehicle.rego")
-//                save(vehicle)
-//
-//            }
-//            .addOnFailureListener {
-//                Log.d("firestore", "Unable to find Vehicle in Firestore: $vehicle.rego")
-//                save(vehicle)
-//            }
-    }
-
-    internal fun getServiceIdFromFirestore(service: ServiceItem) {
-
-        firestore.collection("service")
-            .whereEqualTo("description", service.description)
+        var vehicleArrayList = ArrayList<Vehicle>()
+        firestore.collection("vehicle")
             .get()
             .addOnSuccessListener { documents ->
                 for (document in documents) {
-                    service.id = document.get("id").toString()
+                    vehicleArrayList.add(
+                        Vehicle(
+                            document.get("model").toString(),
+                            document.get("rego").toString(),
+                            document.get("description").toString()
+                        )
+                    )
                 }
-                Log.d("firestore", "Found Service in Firestore: $service.description")
-                saveService(service)
-
             }
             .addOnFailureListener {
-                Log.d("firestore", "Unable to find Service in Firestore: $service.description")
-                saveService(service)
+                Log.d("firestore", "Unable to find Vehicle in Firestore: $vehicle.rego")
             }
+
+        return vehicleArrayList
     }
+
+//    internal fun getServiceIdFromFirestore(service: ServiceItem) {
+//
+//        firestore.collection("service")
+//            .whereEqualTo("description", service.description)
+//            .get()
+//            .addOnSuccessListener { documents ->
+//                for (document in documents) {
+//                    service.id = document.get("id").toString()
+//                }
+//                Log.d("firestore", "Found Service in Firestore: $service.description")
+//                saveService(service)
+//
+//            }
+//            .addOnFailureListener {
+//                Log.d("firestore", "Unable to find Service in Firestore: $service.description")
+//                saveService(service)
+//            }
+//    }
 
     internal var vehicle: MutableLiveData<ArrayList<Vehicle>>
         get() {
@@ -240,5 +281,6 @@ class MainViewModel : ViewModel() {
         set(value) {
             _type = value
         }
+
 
 }

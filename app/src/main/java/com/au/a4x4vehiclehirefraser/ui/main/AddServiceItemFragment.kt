@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import com.au.a4x4vehiclehirefraser.MainActivity
 import com.au.a4x4vehiclehirefraser.R
+import com.au.a4x4vehiclehirefraser.dto.Service
 import com.au.a4x4vehiclehirefraser.dto.ServiceItem
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
@@ -67,13 +68,11 @@ class AddServiceItemFragment : Fragment() {
 
     private fun saveService() {
 
-        val service = ServiceItem()
+        val service = Service()
         with(service) {
-            id = ""
             description = serviceDescription.text.toString()
             price = servicePrice.text.toString().toDouble()
-            quantity = serviceQuantity.text.toString().toInt()
-            vehicleType = serviceVehicleTypeSpinner.selectedItem.toString()
+
         }
 
         mvm.saveService(service)

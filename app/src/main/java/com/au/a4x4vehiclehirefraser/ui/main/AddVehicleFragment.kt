@@ -1,34 +1,37 @@
 package com.au.a4x4vehiclehirefraser.ui.main
 
+import android.app.Activity
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.Toast
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.au.a4x4vehiclehirefraser.MainActivity
 import com.au.a4x4vehiclehirefraser.R
+import com.au.a4x4vehiclehirefraser.dto.Photo
 import com.au.a4x4vehiclehirefraser.dto.Vehicle
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.FirebaseFirestoreSettings
+import com.au.a4x4vehiclehirefraser.helper.SharedPreference
 import kotlinx.android.synthetic.main.add_vehicle_fragment.*
+import kotlin.collections.ArrayList
 
-class AddVehicleFragment : Fragment() {
+class AddVehicleFragment : HelperFragment() {
+
+    private lateinit var mainViewModel: MainViewModel
+    private val IMAGE_GALLERY_REQUEST_CODE: Int = 2001
+    private var photos: ArrayList<Photo> = ArrayList<Photo>()
 
     companion object {
         fun newInstance() = AddVehicleFragment()
     }
 
-    private lateinit var viewModel: MainViewModel
-    private lateinit var firestore: FirebaseFirestore
-
-    init{
-        firestore = FirebaseFirestore.getInstance()
-        firestore.firestoreSettings = FirebaseFirestoreSettings.Builder().build()
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,18 +40,25 @@ class AddVehicleFragment : Fragment() {
         return inflater.inflate(R.layout.add_vehicle_fragment, container, false)
     }
 
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         activity.let {
-            viewModel = ViewModelProviders.of(it!!).get(MainViewModel::class.java)
+            mainViewModel = ViewModelProviders.of(it!!).get(MainViewModel::class.java)
         }
 
+        preference = SharedPreference(requireContext())
         clearFields()
 
-        vehicleModelSpinner.setAdapter(ArrayAdapter.createFromResource(context!!, R.array.vehicle_model,android.R.layout.simple_spinner_item))
+        vehicleModelSpinner.setAdapter(
+            ArrayAdapter.createFromResource(
+                context!!,
+                R.array.vehicle_model,
+                android.R.layout.simple_spinner_item
+            )
+        )
 
         saveRepairBtn.setOnClickListener {
-
             saveVehicle()
         }
 
@@ -58,9 +68,39 @@ class AddVehicleFragment : Fragment() {
         }
 
         takePhotoBtn.setOnClickListener {
-
+            prepTakePhoto()
+            //prepOpenImageGallery()
         }
+
+        rcyVehicle.hasFixedSize()
+        rcyVehicle.layoutManager = LinearLayoutManager(context)
+        rcyVehicle.itemAnimator = DefaultItemAnimator()
+
+        var vehicleArrayList = ArrayList<Vehicle>()
+        mainViewModel.firestore.collection("vehicle")
+            .get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    vehicleArrayList.add(
+                        Vehicle(
+                            document.get("model").toString(),
+                            document.get("rego").toString(),
+                            document.get("description").toString()
+                        )
+                    )
+                }
+                rcyVehicle.adapter = VehicleAdapter(vehicleArrayList,R.layout.add_vehicle_row)
+            }
+            .addOnFailureListener {
+                Log.d("firestore", "Unable to find Vehicle in Firestore:")
+            }
+
+
+
+
     }
+
+
 
     private fun clearFields() {
         vehicleRego.text.clear()
@@ -75,7 +115,13 @@ class AddVehicleFragment : Fragment() {
     private fun saveVehicle() {
         var vehicle = Vehicle()
 
-        vehicle.apply{
+        //Do Login Again
+        if (preference.getValueString("userId") == "") {
+            (activity as MainActivity).showMainFragment()
+        }
+        preference.getValueString("userId") ?: return
+
+        vehicle.apply {
             rego = vehicleRego.text.toString()
             description = vehicleDescripion.text.toString()
             kms = vehicleKms.text.toString().toInt()
@@ -84,21 +130,37 @@ class AddVehicleFragment : Fragment() {
             color = vehicleColor.text.toString()
         }.apply {
             clearFields()
+            rcyVehicle.adapter?.notifyDataSetChanged()
         }.apply {
-            viewModel.saveVehicle(vehicle)
+            mainViewModel.saveVehicle(vehicle, photos, preference.getValueString("userId"))
+
         }.apply {
             (activity as MainActivity).showMainFragment()
         }
-
-
-        doThis({
-            val it = ""
-            "something is $it"
-        })
-
     }
 
-    private fun doThis(function: () -> String) {
-
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == CAMERA_REQUEST_CODE) {
+                // now we can get the thumbnail
+                val imageBitmap = data!!.extras!!.get("data") as Bitmap
+                //vehicleImage.setImageBitmap(imageBitmap)
+            } else if (requestCode == SAVE_IMAGE_REQUEST_CODE) {
+                Toast.makeText(context, "Image Saved", Toast.LENGTH_LONG).show()
+                //Only pass in the one
+                var photo = Photo(localUri = photoURI.toString())
+                photos.add(photo)
+                //vehicleImage.setImageURI(photoURI)
+            } else if (requestCode == IMAGE_GALLERY_REQUEST_CODE) {
+                if (data != null && data.data != null) {
+                    val image = data.data
+                    val source = ImageDecoder.createSource(activity!!.contentResolver, image!!)
+                    val bitmap = ImageDecoder.decodeBitmap(source)
+                    //vehicleImage.setImageBitmap(bitmap)
+                }
+            }
+        }
     }
+
 }
