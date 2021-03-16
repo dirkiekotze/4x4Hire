@@ -3,8 +3,10 @@ package com.au.a4x4vehiclehirefraser.ui.main
 import android.content.ContentValues.TAG
 import android.net.Uri
 import android.util.Log
+import android.view.View
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.au.a4x4vehiclehirefraser.R
 import com.au.a4x4vehiclehirefraser.dto.*
 import com.au.a4x4vehiclehirefraser.examples.DocSnippets
 import com.au.a4x4vehiclehirefraser.helper.OneTimeOnly
@@ -29,6 +31,12 @@ class MainViewModel : ViewModel() {
     private var _user: FirebaseUser? = null
     private var _photos: java.util.ArrayList<Photo> = java.util.ArrayList<Photo>()
     var addServiceId = MutableLiveData<OneTimeOnly<String>>()
+    var addServiceItemId = MutableLiveData<OneTimeOnly<String>>()
+    var showServiceDetail = MutableLiveData<OneTimeOnly<Service>>()
+    var showServiceItems = MutableLiveData<OneTimeOnly<ArrayList<ServiceItem>>>()
+    var serviceSaveBtnVisibility = MutableLiveData<OneTimeOnly<Int>>()
+    var addServiceItemBtnVisibility = MutableLiveData<OneTimeOnly<Int>>()
+    var displayServiceAndItems = MutableLiveData<OneTimeOnly<Boolean>>()
 
     init {
         //Cloud Firestore Initialization
@@ -182,13 +190,37 @@ class MainViewModel : ViewModel() {
             .addOnSuccessListener { documentReference ->
                 Log.d("Firebase", "Service Saved")
                 addServiceId.value = OneTimeOnly(documentReference.id)
+                //Update id in Service to documentId
+                service.id = documentReference.id
+                updateService(service, documentReference.id)
             }
             .addOnFailureListener { e ->
                 Log.d("Firebase", "Service not saved")
             }
     }
 
+    private fun updateService(service: Service, id: String) {
+        firestore.collection("service").document(id)
+            .set(service)
+            .addOnSuccessListener { documentReference ->
+                Log.d("Firebase", "Service Updated")
+            }
+            .addOnFailureListener { e ->
+                Log.d("Firebase", "Service Updated")
+            }
+    }
 
+    fun saveServiceItem(serviceItem: ServiceItem) {
+        firestore.collection("serviceItem")
+            .add(serviceItem)
+            .addOnSuccessListener { documentReference ->
+                Log.d("Firebase", "Service Item Saved")
+                addServiceItemId.value = OneTimeOnly(documentReference.id)
+            }
+            .addOnFailureListener { e ->
+                Log.d("Firebase", "Service not saved")
+            }
+    }
 
 
 //    fun deleteService(service: ServiceItem) {
@@ -237,6 +269,71 @@ class MainViewModel : ViewModel() {
             }
 
         return vehicleArrayList
+    }
+
+    fun getService(serviceId: String) {
+
+        var service = Service()
+        firestore.collection("service").document(serviceId)
+            .get()
+            .addOnSuccessListener { document ->
+                Log.d("firestore", "Select Service from Firestore for ServiceId: $serviceId")
+                with(service) {
+                    id = document.get("id").toString()
+                    description = document.get("description").toString()
+                    date = document.get("date").toString()
+                    kms = document.get("kms").toString().toDouble()
+                    price = document.get("price").toString().toDouble()
+                }
+
+                //Callback to AddService
+                showServiceDetail.value = OneTimeOnly(service)
+            }
+            .addOnFailureListener {
+                Log.d("firestore", "Unable to select Service from Firestore ServiceId: $serviceId")
+            }
+
+    }
+
+    fun getServiceItem(serviceId: String) {
+
+        var serviceItemArrayList = ArrayList<ServiceItem>()
+        firestore.collection("serviceItem")
+            .whereEqualTo("serviceId", serviceId)
+            .get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    serviceItemArrayList.add(
+                        ServiceItem(
+                            price = document.get("price").toString().toDouble(),
+                            description = document.get("description").toString()
+                        )
+                    )
+                }
+
+                showServiceItems.value = OneTimeOnly(serviceItemArrayList)
+
+            }
+            .addOnFailureListener {
+                Log.d("firestore", "Unable to find Service in Firestore:")
+            }
+    }
+
+    fun getServiceSaveBtnVisibility(serviceId: String) {
+        if ((serviceId != "null") && (serviceId != "")) {
+            serviceSaveBtnVisibility.value = OneTimeOnly(View.GONE)
+            displayServiceAndItems.value = OneTimeOnly(true)
+        } else {
+            serviceSaveBtnVisibility.value = OneTimeOnly(View.VISIBLE)
+        }
+    }
+
+    fun getAddServiceItemBtnVisibility(serviceItemId: String){
+        if ((serviceItemId != "null") && (serviceItemId != "")) {
+            addServiceItemBtnVisibility.value = OneTimeOnly(View.VISIBLE)
+        } else {
+            addServiceItemBtnVisibility.value = OneTimeOnly(View.GONE)
+        }
     }
 
 //    internal fun getServiceIdFromFirestore(service: ServiceItem) {

@@ -8,22 +8,26 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import androidx.lifecycle.Observer
 import com.au.a4x4vehiclehirefraser.MainActivity
 import com.au.a4x4vehiclehirefraser.R
 import com.au.a4x4vehiclehirefraser.dto.Service
 import com.au.a4x4vehiclehirefraser.dto.ServiceItem
+import com.au.a4x4vehiclehirefraser.helper.SharedPreference
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
+import kotlinx.android.synthetic.main.add_service_fragment.*
 import kotlinx.android.synthetic.main.add_service_item_fragment.*
+import kotlinx.android.synthetic.main.add_service_item_fragment.serviceSaveBtn
 
-class AddServiceItemFragment : Fragment() {
+class AddServiceItemFragment : HelperFragment() {
 
     companion object {
         fun newInstance() = AddServiceItemFragment()
     }
 
-    private lateinit var mvm: MainViewModel
+    private lateinit var mainViewModel: MainViewModel
     private lateinit var firestore: FirebaseFirestore
 
     init {
@@ -41,23 +45,26 @@ class AddServiceItemFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         activity.let {
-            mvm = ViewModelProviders.of(it!!).get(MainViewModel::class.java)
+            mainViewModel = ViewModelProviders.of(it!!).get(MainViewModel::class.java)
         }
-
+        preference = SharedPreference(requireContext())
         clearFields()
-        serviceVehicleTypeSpinner.setAdapter(
-            ArrayAdapter.createFromResource(
-                context!!, R.array.vehicle_type, android.R.layout.simple_spinner_item
-            )
-        )
 
         serviceSaveBtn.setOnClickListener {
-            saveService()
+            saveServiceItem()
         }
 
         serviceBackBtn.setOnClickListener {
             (activity as MainActivity).showMainFragment()
         }
+
+        //Callback from MainFragment via LifeData
+        mainViewModel.addServiceItemId.observe(viewLifecycleOwner, Observer { id ->
+            id?.getContentIfNotHandledOrReturnNull()?.let {
+                preference.save("serviceItemId", it)
+                (activity as MainActivity).showServiceFragment()
+            }
+        })
     }
 
     private fun clearFields() {
@@ -66,17 +73,18 @@ class AddServiceItemFragment : Fragment() {
         serviceQuantity.setText("")
     }
 
-    private fun saveService() {
+    private fun saveServiceItem() {
 
-        val service = Service()
-        with(service) {
+        val serviceItem = ServiceItem()
+        with(serviceItem) {
             description = serviceDescription.text.toString()
             price = servicePrice.text.toString().toDouble()
+            quantity = serviceQuantity.text.toString().toInt()
 
         }
 
-        mvm.saveService(service)
-        (activity as MainActivity).showMainFragment()
+        serviceItem.serviceId = preference.getValueString("serviceId").toString()
+        mainViewModel.saveServiceItem(serviceItem)
 
     }
 

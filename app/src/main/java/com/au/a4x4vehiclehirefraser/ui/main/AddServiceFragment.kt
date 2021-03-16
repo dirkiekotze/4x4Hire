@@ -2,19 +2,25 @@ package com.au.a4x4vehiclehirefraser.ui.main
 
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.au.a4x4vehiclehirefraser.MainActivity
 import com.au.a4x4vehiclehirefraser.R
 import com.au.a4x4vehiclehirefraser.dto.Service
+import com.au.a4x4vehiclehirefraser.dto.ServiceItem
 import com.au.a4x4vehiclehirefraser.dto.Vehicle
 import com.au.a4x4vehiclehirefraser.helper.SharedPreference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import kotlinx.android.synthetic.main.add_service_fragment.*
 import kotlinx.android.synthetic.main.add_service_fragment.serviceSaveBtn
+import kotlinx.android.synthetic.main.main_fragment.*
+import java.util.ArrayList
 
 class AddServiceFragment : HelperFragment() {
 
@@ -23,15 +29,7 @@ class AddServiceFragment : HelperFragment() {
     }
 
     private lateinit var mainViewModel: MainViewModel
-    private lateinit var firestore: FirebaseFirestore
-    private var vehicleItem = Vehicle();
-
-    init {
-        firestore = FirebaseFirestore.getInstance()
-        firestore.firestoreSettings = FirebaseFirestoreSettings.Builder().build()
-
-    }
-
+    
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -46,13 +44,37 @@ class AddServiceFragment : HelperFragment() {
         }
 
         preference = SharedPreference(requireContext())
-        clearFields()
+        mainViewModel.getServiceSaveBtnVisibility(preference.getValueString("serviceId").toString())
+        mainViewModel.getAddServiceItemBtnVisibility(preference.getValueString("serviceId").toString())
+
+        mainViewModel.serviceSaveBtnVisibility.observe(viewLifecycleOwner, Observer { value ->
+            value?.getContentIfNotHandledOrReturnNull()?.let {
+                serviceSaveBtn.visibility = it
+            }
+        })
+
+        mainViewModel.displayServiceAndItems.observe(viewLifecycleOwner, Observer { value ->
+            value?.getContentIfNotHandledOrReturnNull()?.let {
+                displayService()
+                displayServiceItems()
+            }
+        })
+
+        mainViewModel.addServiceItemBtnVisibility.observe(viewLifecycleOwner, Observer { value ->
+            value?.getContentIfNotHandledOrReturnNull()?.let {
+                addServiceItemBtn.visibility = it
+            }
+        })
+
 
         serviceSaveBtn.setOnClickListener {
             saveService()
         }
 
         serviceBack.setOnClickListener {
+            //Stop
+            preference.save("serviceId", "")
+            preference.save("serviceItemId", "")
             (activity as MainActivity).showMainFragment()
         }
 
@@ -60,46 +82,54 @@ class AddServiceFragment : HelperFragment() {
         mainViewModel.addServiceId.observe(viewLifecycleOwner, Observer { id ->
             id?.getContentIfNotHandledOrReturnNull()?.let {
                 var xx = it
-                preference.save("serviceId",it)
+                preference.save("serviceId", it)
                 addServiceItemBtn.visibility = View.VISIBLE
 
             }
         })
 
+        mainViewModel.showServiceDetail.observe(viewLifecycleOwner, Observer { service ->
+            service?.getContentIfNotHandledOrReturnNull()?.let {
+                var service = it
+                with(it) {
+                    service_date.setText(date)
+                    service_description.setText(description)
+                    service_kms.setText(kms.toString())
+                }
 
-//        mainViewModel.vehicle.observe(viewLifecycleOwner, Observer { vehicle ->
-//            service_Vehicle.setAdapter(
-//                ArrayAdapter(
-//                    context!!,
-//                    R.layout.support_simple_spinner_dropdown_item,
-//                    vehicle
-//                )
-//            )
-//        })
 
-//        mainViewModel.service.observe(viewLifecycleOwner, Observer { service ->
-//            service_description.setAdapter(
-//                ArrayAdapter(
-//                    context!!,
-//                    R.layout.support_simple_spinner_dropdown_item,
-//                    service
-//                )
-//            )
-//        })
+            }
+        })
 
-//        service_Vehicle.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-//            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-//                vehicleItem = parent?.getItemAtPosition(position) as Vehicle
-//
-//
-//            }
-//
-//            override fun onNothingSelected(p0: AdapterView<*>?) {
-//                TODO("Not yet implemented")
-//            }
-//
-//
-//        }
+        mainViewModel.showServiceItems.observe(viewLifecycleOwner, Observer { service ->
+            service?.getContentIfNotHandledOrReturnNull()?.let {
+                rcyServiceItem.visibility = View.VISIBLE
+                rcyServiceItem.hasFixedSize()
+                rcyServiceItem.layoutManager = LinearLayoutManager(context)
+                rcyServiceItem.itemAnimator = DefaultItemAnimator()
+                rcyServiceItem.adapter = ServiceItemAdapter(it, R.layout.add_service_item_row)
+
+            }
+        })
+
+        addServiceItemBtn.setOnClickListener {
+            (activity as MainActivity).showServiceItemFragment()
+        }
+
+
+    }
+
+    private fun displayService() {
+        //This calls
+        //mainViewModel.showServiceDetail.observe
+        mainViewModel.getService(preference.getValueString("serviceId").toString())
+
+    }
+
+    private fun displayServiceItems() {
+        //This will be the callback from the ViewModel
+        //mainViewModel.showServiceItems.observe
+        mainViewModel.getServiceItem(preference.getValueString("serviceId").toString())
     }
 
 
@@ -117,7 +147,7 @@ class AddServiceFragment : HelperFragment() {
             date = service_date.text.toString()
             rego = preference.getValueString("vehicleRego")!!
         }
-
+        clearFields()
         mainViewModel.saveService(service)
 
     }

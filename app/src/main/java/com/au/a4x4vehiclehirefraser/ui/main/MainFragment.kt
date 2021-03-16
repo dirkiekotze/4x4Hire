@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.au.a4x4vehiclehirefraser.MainActivity
 import com.firebase.ui.auth.AuthUI
 import com.au.a4x4vehiclehirefraser.R
 import com.au.a4x4vehiclehirefraser.dto.Photo
@@ -55,11 +56,6 @@ class MainFragment : HelperFragment() {
         }
 
         preference = SharedPreference(requireContext())
-
-        if((preference.getValueString("userId") == null) || (preference.getValueString("userId") == "")){
-            logon();
-        }
-
 
         mainViewModel.type.observe(viewLifecycleOwner, Observer { type ->
             typeSpinner.setAdapter(
@@ -125,50 +121,20 @@ class MainFragment : HelperFragment() {
                 preference.save("type",type.id)
 
                 if(type.value.equals("Vehicle Service")){
-
                     displayServices()
-
-
                 }
             }
 
         }
 
-//        mainViewModel.service.observe(viewLifecycleOwner, Observer { service ->
-//            serviceAutoComplete.setAdapter(
-//                ArrayAdapter(
-//                    context!!,
-//                    R.layout.support_simple_spinner_dropdown_item,
-//                    service
-//                )
-//            )
-//        })
+        if((preference.getValueString("userId") == null) || (preference.getValueString("userId") == "")){
+            logon();
+        }
 
-//        mainViewModel.service.observe(viewLifecycleOwner, Observer { service ->
-//            serviceSpinner.setAdapter(
-//                ArrayAdapter(
-//                    context!!,
-//                    R.layout.support_simple_spinner_dropdown_item,
-//                    service
-//                )
-//            )
-//
-//        })
-
-//        addVehicle.setOnClickListener {
-//            (activity as MainActivity).showVehicleFragment()
-//        }
-//
-//        addService.setOnClickListener {
-//            (activity as MainActivity).showServiceFragment()
-//        }
-//
-//        addRepair.setOnClickListener {
-//            (activity as MainActivity).showRepairFragment()
-//        }
     }
 
     private fun displayServices() {
+
         rcyService.visibility = View.VISIBLE
         rcyService.hasFixedSize()
         rcyService.layoutManager = LinearLayoutManager(context)
@@ -182,18 +148,30 @@ class MainFragment : HelperFragment() {
                 for (document in documents) {
                     serviceArrayList.add(
                         Service(
+                            id = document.get("id").toString(),
                             date = document.get("date").toString(),
                             description =  document.get("description").toString(),
-                            kms = document.get("kms").toString().toDouble()
+                            kms = document.get("kms").toString().toDouble(),
+                            rego = document.get("rego").toString()
                         )
                     )
                 }
-                rcyService.adapter = ServiceAdapter(serviceArrayList,R.layout.add_service_row)
+                rcyService.adapter = ServiceAdapter(serviceArrayList,
+                    R.layout.add_service_row,
+                    onClickListener = { view, service -> openService(view, service) })
             }
             .addOnFailureListener {
                 Log.d("firestore", "Unable to find Service in Firestore:")
             }
 
+    }
+
+    private fun openService(view: View, service: Service) {
+
+        var xx = service.description
+        preference.save("serviceId",service.id)
+        preference.save("serviceItemId",service.id)
+        (activity as MainActivity).showServiceFragment()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
