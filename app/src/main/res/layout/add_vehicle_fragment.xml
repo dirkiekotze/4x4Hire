@@ -10,31 +10,52 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <EditText
-            android:id="@+id/vehicleDescripion"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+        <TextView
+            android:id="@+id/vehicle_add_header"
+            android:gravity="center"
+            android:textSize="28dp"
+            android:textStyle="bold"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="24dp"
             android:layout_marginEnd="24dp"
-            android:hint="@string/vehicle_description" />
+            android:text="Add Vehicle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <Spinner
             android:id="@+id/vehicleModelSpinner"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/vehicleDescripion"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="24dp"
-            android:layout_marginEnd="24dp" />
+            android:layout_marginEnd="24dp"
+            app:layout_constraintTop_toBottomOf="@+id/vehicle_add_header"/>
+
+        <EditText
+            android:id="@+id/vehicleDescripion"
+            android:background="@drawable/rounded_corners"
+            android:paddingLeft="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="24dp"
+            android:hint="@string/vehicle_description"
+            app:layout_constraintTop_toBottomOf="@+id/vehicleModelSpinner"/>
+
+
 
         <EditText
             android:id="@+id/vehicleYearModel"
+            android:paddingLeft="10dp"
+            android:background="@drawable/rounded_corners"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/vehicleModelSpinner"
@@ -49,6 +70,8 @@
 
         <EditText
             android:id="@+id/vehicleKms"
+            android:paddingLeft="10dp"
+            android:background="@drawable/rounded_corners"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/vehicleYearModel"
@@ -63,6 +86,8 @@
 
         <EditText
             android:id="@+id/vehicleRego"
+            android:paddingLeft="10dp"
+            android:background="@drawable/rounded_corners"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/vehicleKms"
@@ -77,6 +102,8 @@
 
         <EditText
             android:id="@+id/vehicleColor"
+            android:paddingLeft="10dp"
+            android:background="@drawable/rounded_corners"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/vehicleRego"
@@ -91,32 +118,35 @@
 
         <ImageButton
             android:id="@+id/takePhotoBtn"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/vehicleColor"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_marginStart="24dp"
             android:layout_marginTop="24dp"
             android:layout_marginEnd="24dp"
-            android:src="@drawable/camera" />
-
+            android:background="@drawable/button_blue"
+            android:src="@drawable/camera_white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/vehicleColor" />
 
 
         <ImageButton
             android:id="@+id/saveRepairBtn"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/takePhotoBtn"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_marginStart="24dp"
             android:layout_marginTop="24dp"
             android:layout_marginEnd="24dp"
-            android:src="@drawable/save" />
+            android:background="@drawable/button_blue"
+            android:src="@drawable/save_white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/takePhotoBtn" />
 
         <Button
             android:id="@+id/cmdReturnFromRepairToMain"
+            android:textColor="@color/white"
+            android:background="@drawable/button_blue"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/saveRepairBtn"

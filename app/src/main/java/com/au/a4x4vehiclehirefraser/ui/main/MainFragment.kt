@@ -20,11 +20,19 @@ import com.au.a4x4vehiclehirefraser.dto.Photo
 import com.au.a4x4vehiclehirefraser.dto.Service
 import com.au.a4x4vehiclehirefraser.dto.Type
 import com.au.a4x4vehiclehirefraser.dto.Vehicle
+import com.au.a4x4vehiclehirefraser.helper.Constants.REGO
+import com.au.a4x4vehiclehirefraser.helper.Constants.SERVICE_ID
+import com.au.a4x4vehiclehirefraser.helper.Constants.SERVICE_ITEM_ID
+import com.au.a4x4vehiclehirefraser.helper.Constants.TYPE
+import com.au.a4x4vehiclehirefraser.helper.Constants.USER_ID
 import com.au.a4x4vehiclehirefraser.helper.SharedPreference
+import com.au.a4x4vehiclehirefraser.helper.Variables
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import kotlinx.android.synthetic.main.add_service_fragment.*
 import kotlinx.android.synthetic.main.add_vehicle_fragment.*
 import kotlinx.android.synthetic.main.main_fragment.*
+import kotlinx.android.synthetic.main.main_fragment.service_Recycler_Header
 import java.util.ArrayList
 
 class MainFragment : HelperFragment() {
@@ -70,7 +78,7 @@ class MainFragment : HelperFragment() {
         mainViewModel.vehicle.observe(viewLifecycleOwner, Observer { vehicle ->
 
             //Add default value for Spinner
-            vehicle.add(Vehicle(description = "Select Vehicle",yearModel = -1))
+            vehicle.add(Vehicle(description = "Select Vehicle", yearModel = -1))
             vehicle.sortBy {
                 it.yearModel
             }
@@ -84,9 +92,23 @@ class MainFragment : HelperFragment() {
             )
         })
 
+        mainViewModel.showServiceDetailPerRego.observe(viewLifecycleOwner, Observer { serviceList ->
+            serviceList?.getContentIfNotHandledOrReturnNull()?.let {
+                service_Recycler_Header.visibility = View.VISIBLE
+                rcyService.visibility = View.VISIBLE
+                rcyService.hasFixedSize()
+                rcyService.layoutManager = LinearLayoutManager(context)
+                rcyService.itemAnimator = DefaultItemAnimator()
+                rcyService.adapter = ServiceAdapter(
+                    it,
+                    R.layout.add_service_row,
+                    onClickListener = { view, service -> openService(view, service) })
+            }
+        })
+
 
         //Spinner select
-        vehicleSpinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+        vehicleSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
                 //Do nothing
@@ -99,13 +121,13 @@ class MainFragment : HelperFragment() {
                 id: Long
             ) {
                 var vehicle = parent?.getItemAtPosition(position) as Vehicle
-                preference.save("vehicleRego",vehicle.rego)
+                preference.save(REGO, vehicle.rego)
             }
 
         }
 
 
-        typeSpinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+        typeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
                 //Do nothing
@@ -118,16 +140,17 @@ class MainFragment : HelperFragment() {
                 id: Long
             ) {
                 var type = parent?.getItemAtPosition(position) as Type
-                preference.save("type",type.id)
+                preference.save(TYPE, type.id)
 
-                if(type.value.equals("Vehicle Service")){
+                if (type.value.equals("Vehicle Service")) {
                     displayServices()
                 }
             }
 
         }
 
-        if((preference.getValueString("userId") == null) || (preference.getValueString("userId") == "")){
+        if ((preference.getValueString(USER_ID) == null) || (preference.getValueString(USER_ID) == "")) {
+
             logon();
         }
 
@@ -135,42 +158,14 @@ class MainFragment : HelperFragment() {
 
     private fun displayServices() {
 
-        rcyService.visibility = View.VISIBLE
-        rcyService.hasFixedSize()
-        rcyService.layoutManager = LinearLayoutManager(context)
-        rcyService.itemAnimator = DefaultItemAnimator()
-
-        var serviceArrayList = ArrayList<Service>()
-        mainViewModel.firestore.collection("service")
-            .whereEqualTo("rego",preference.getValueString("vehicleRego"))
-            .get()
-            .addOnSuccessListener { documents ->
-                for (document in documents) {
-                    serviceArrayList.add(
-                        Service(
-                            id = document.get("id").toString(),
-                            date = document.get("date").toString(),
-                            description =  document.get("description").toString(),
-                            kms = document.get("kms").toString().toDouble(),
-                            rego = document.get("rego").toString()
-                        )
-                    )
-                }
-                rcyService.adapter = ServiceAdapter(serviceArrayList,
-                    R.layout.add_service_row,
-                    onClickListener = { view, service -> openService(view, service) })
-            }
-            .addOnFailureListener {
-                Log.d("firestore", "Unable to find Service in Firestore:")
-            }
-
+        mainViewModel.getServicePerRego(preference.getValueString("rego").toString())
     }
 
     private fun openService(view: View, service: Service) {
 
         var xx = service.description
-        preference.save("serviceId",service.id)
-        preference.save("serviceItemId",service.id)
+        preference.save(SERVICE_ID, service.id)
+        preference.save(SERVICE_ITEM_ID, service.id)
         (activity as MainActivity).showServiceFragment()
     }
 
@@ -179,14 +174,13 @@ class MainFragment : HelperFragment() {
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == AUTH_REQUEST_CODE) {
                 user = FirebaseAuth.getInstance().currentUser
-                preference.save("userId", user!!.uid)
+                preference.save(USER_ID, user!!.uid)
 
             } else {
                 super.onActivityResult(requestCode, resultCode, data)
             }
         }
     }
-
 
 
     private fun logon() {

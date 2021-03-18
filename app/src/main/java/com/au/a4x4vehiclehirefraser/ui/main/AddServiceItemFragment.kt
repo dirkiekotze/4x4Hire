@@ -13,6 +13,9 @@ import com.au.a4x4vehiclehirefraser.MainActivity
 import com.au.a4x4vehiclehirefraser.R
 import com.au.a4x4vehiclehirefraser.dto.Service
 import com.au.a4x4vehiclehirefraser.dto.ServiceItem
+import com.au.a4x4vehiclehirefraser.helper.Constants
+import com.au.a4x4vehiclehirefraser.helper.Constants.SERVICE_ID
+import com.au.a4x4vehiclehirefraser.helper.Constants.SERVICE_ITEM_ID
 import com.au.a4x4vehiclehirefraser.helper.SharedPreference
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
@@ -61,7 +64,7 @@ class AddServiceItemFragment : HelperFragment() {
         //Callback from MainFragment via LifeData
         mainViewModel.addServiceItemId.observe(viewLifecycleOwner, Observer { id ->
             id?.getContentIfNotHandledOrReturnNull()?.let {
-                preference.save("serviceItemId", it)
+                preference.save(SERVICE_ITEM_ID, it)
                 (activity as MainActivity).showServiceFragment()
             }
         })
@@ -83,7 +86,7 @@ class AddServiceItemFragment : HelperFragment() {
 
         }
 
-        serviceItem.serviceId = preference.getValueString("serviceId").toString()
+        serviceItem.serviceId = preference.getValueString(SERVICE_ID).toString()
         mainViewModel.saveServiceItem(serviceItem)
 
     }

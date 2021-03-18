@@ -6,6 +6,8 @@ import android.util.Log
 import android.view.View
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.au.a4x4vehiclehirefraser.R
 import com.au.a4x4vehiclehirefraser.dto.*
 import com.au.a4x4vehiclehirefraser.examples.DocSnippets
@@ -18,6 +20,7 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.add_service_fragment.*
 import kotlinx.android.synthetic.main.add_vehicle_fragment.*
+import kotlinx.android.synthetic.main.main_fragment.*
 
 class MainViewModel : ViewModel() {
 
@@ -33,6 +36,7 @@ class MainViewModel : ViewModel() {
     var addServiceId = MutableLiveData<OneTimeOnly<String>>()
     var addServiceItemId = MutableLiveData<OneTimeOnly<String>>()
     var showServiceDetail = MutableLiveData<OneTimeOnly<Service>>()
+    var showServiceDetailPerRego = MutableLiveData<OneTimeOnly<ArrayList<Service>>>()
     var showServiceItems = MutableLiveData<OneTimeOnly<ArrayList<ServiceItem>>>()
     var serviceSaveBtnVisibility = MutableLiveData<OneTimeOnly<Int>>()
     var addServiceItemBtnVisibility = MutableLiveData<OneTimeOnly<Int>>()
@@ -295,6 +299,36 @@ class MainViewModel : ViewModel() {
 
     }
 
+    fun getServicePerRego(rego: String) {
+
+        var serviceArrayList = java.util.ArrayList<Service>()
+        firestore.collection("service")
+            .whereEqualTo("rego", rego)
+            .get()
+            .addOnSuccessListener { documents ->
+
+                for (document in documents) {
+                    serviceArrayList.add(
+                        Service(
+                            id = document.get("id").toString(),
+                            date = document.get("date").toString(),
+                            description = document.get("description").toString(),
+                            kms = document.get("kms").toString().toDouble(),
+                            rego = document.get("rego").toString()
+                        )
+                    )
+                }
+
+                showServiceDetailPerRego.value = OneTimeOnly(serviceArrayList)
+
+            }
+            .addOnFailureListener {
+                Log.d("firestore", "Unable to find Service in Firestore:")
+            }
+
+
+    }
+
     fun getServiceItem(serviceId: String) {
 
         var serviceItemArrayList = ArrayList<ServiceItem>()
@@ -328,7 +362,7 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    fun getAddServiceItemBtnVisibility(serviceItemId: String){
+    fun getAddServiceItemBtnVisibility(serviceItemId: String) {
         if ((serviceItemId != "null") && (serviceItemId != "")) {
             addServiceItemBtnVisibility.value = OneTimeOnly(View.VISIBLE)
         } else {

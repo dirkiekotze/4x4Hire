@@ -18,6 +18,7 @@ import com.au.a4x4vehiclehirefraser.MainActivity
 import com.au.a4x4vehiclehirefraser.R
 import com.au.a4x4vehiclehirefraser.dto.Photo
 import com.au.a4x4vehiclehirefraser.dto.Vehicle
+import com.au.a4x4vehiclehirefraser.helper.Constants.USER_ID
 import com.au.a4x4vehiclehirefraser.helper.SharedPreference
 import kotlinx.android.synthetic.main.add_vehicle_fragment.*
 import kotlin.collections.ArrayList
@@ -116,10 +117,10 @@ class AddVehicleFragment : HelperFragment() {
         var vehicle = Vehicle()
 
         //Do Login Again
-        if (preference.getValueString("userId") == "") {
+        if (preference.getValueString(USER_ID) == "") {
             (activity as MainActivity).showMainFragment()
         }
-        preference.getValueString("userId") ?: return
+        preference.getValueString(USER_ID) ?: return
 
         vehicle.apply {
             rego = vehicleRego.text.toString()
@@ -132,7 +133,7 @@ class AddVehicleFragment : HelperFragment() {
             clearFields()
             rcyVehicle.adapter?.notifyDataSetChanged()
         }.apply {
-            mainViewModel.saveVehicle(vehicle, photos, preference.getValueString("userId"))
+            mainViewModel.saveVehicle(vehicle, photos, preference.getValueString(USER_ID))
 
         }.apply {
             (activity as MainActivity).showMainFragment()

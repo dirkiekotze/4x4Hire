@@ -7,19 +7,27 @@
     android:layout_height="match_parent"
     tools:context=".ui.main.AddServiceItemFragment" >
 
-<!--    <Spinner-->
-<!--        android:id="@+id/serviceVehicleTypeSpinner"-->
-<!--        android:layout_width="0dp"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginStart="24dp"-->
-<!--        android:layout_marginTop="24dp"-->
-<!--        android:layout_marginEnd="24dp"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent" />-->
+    <TextView
+        android:id="@+id/service_item_add_header"
+        android:background="@drawable/rounded_corners"
+        android:gravity="center"
+        android:textSize="28dp"
+        android:textStyle="bold"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="24dp"
+        android:text="Add Service Item"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/serviceDescription"
+        android:paddingLeft="10dp"
+        android:background="@drawable/rounded_corners"
+        android:textAllCaps="false"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -28,10 +36,13 @@
         android:hint="@string/service_description"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/service_item_add_header" />
 
     <EditText
         android:id="@+id/servicePrice"
+        android:paddingLeft="10dp"
+        android:background="@drawable/rounded_corners"
+        android:textAllCaps="false"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -45,6 +56,9 @@
 
     <EditText
         android:id="@+id/serviceQuantity"
+        android:paddingLeft="10dp"
+        android:background="@drawable/rounded_corners"
+        android:textAllCaps="false"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -58,18 +72,22 @@
 
     <ImageButton
         android:id="@+id/serviceSaveBtn"
+        android:background="@drawable/button_blue"
         android:layout_width="0dp"
         android:layout_height="50dp"
         android:layout_marginStart="24dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
-        android:src="@drawable/save"
+        android:src="@drawable/save_white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/serviceQuantity" />
 
     <Button
         android:id="@+id/serviceBackBtn"
+        android:background="@drawable/button_blue"
+        android:textColor="@color/white"
+        android:textAllCaps="false"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"

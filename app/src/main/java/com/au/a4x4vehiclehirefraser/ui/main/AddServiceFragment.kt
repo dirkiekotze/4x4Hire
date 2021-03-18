@@ -14,6 +14,9 @@ import com.au.a4x4vehiclehirefraser.R
 import com.au.a4x4vehiclehirefraser.dto.Service
 import com.au.a4x4vehiclehirefraser.dto.ServiceItem
 import com.au.a4x4vehiclehirefraser.dto.Vehicle
+import com.au.a4x4vehiclehirefraser.helper.Constants
+import com.au.a4x4vehiclehirefraser.helper.Constants.REGO
+import com.au.a4x4vehiclehirefraser.helper.Constants.SERVICE_ID
 import com.au.a4x4vehiclehirefraser.helper.SharedPreference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
@@ -29,7 +32,7 @@ class AddServiceFragment : HelperFragment() {
     }
 
     private lateinit var mainViewModel: MainViewModel
-    
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -44,8 +47,8 @@ class AddServiceFragment : HelperFragment() {
         }
 
         preference = SharedPreference(requireContext())
-        mainViewModel.getServiceSaveBtnVisibility(preference.getValueString("serviceId").toString())
-        mainViewModel.getAddServiceItemBtnVisibility(preference.getValueString("serviceId").toString())
+        mainViewModel.getServiceSaveBtnVisibility(preference.getValueString(SERVICE_ID).toString())
+        mainViewModel.getAddServiceItemBtnVisibility(preference.getValueString(SERVICE_ID).toString())
 
         mainViewModel.serviceSaveBtnVisibility.observe(viewLifecycleOwner, Observer { value ->
             value?.getContentIfNotHandledOrReturnNull()?.let {
@@ -73,8 +76,9 @@ class AddServiceFragment : HelperFragment() {
 
         serviceBack.setOnClickListener {
             //Stop
-            preference.save("serviceId", "")
-            preference.save("serviceItemId", "")
+            preference.save(SERVICE_ID, "")
+            preference.save(SERVICE_ID, "")
+            clearFields()
             (activity as MainActivity).showMainFragment()
         }
 
@@ -82,7 +86,7 @@ class AddServiceFragment : HelperFragment() {
         mainViewModel.addServiceId.observe(viewLifecycleOwner, Observer { id ->
             id?.getContentIfNotHandledOrReturnNull()?.let {
                 var xx = it
-                preference.save("serviceId", it)
+                preference.save(SERVICE_ID, it)
                 addServiceItemBtn.visibility = View.VISIBLE
 
             }
@@ -122,20 +126,21 @@ class AddServiceFragment : HelperFragment() {
     private fun displayService() {
         //This calls
         //mainViewModel.showServiceDetail.observe
-        mainViewModel.getService(preference.getValueString("serviceId").toString())
+        mainViewModel.getService(preference.getValueString(SERVICE_ID).toString())
 
     }
 
     private fun displayServiceItems() {
         //This will be the callback from the ViewModel
         //mainViewModel.showServiceItems.observe
-        mainViewModel.getServiceItem(preference.getValueString("serviceId").toString())
+        mainViewModel.getServiceItem(preference.getValueString(SERVICE_ID).toString())
     }
 
 
     private fun clearFields() {
         service_description.setText("")
         service_date.setText("")
+        service_kms.setText("")
     }
 
     private fun saveService() {
@@ -145,11 +150,9 @@ class AddServiceFragment : HelperFragment() {
             description = service_description.text.toString()
             kms = service_kms.text.toString().toDouble()
             date = service_date.text.toString()
-            rego = preference.getValueString("vehicleRego")!!
+            rego = preference.getValueString(REGO)!!
         }
-        clearFields()
         mainViewModel.saveService(service)
 
     }
-
 }
