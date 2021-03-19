@@ -22,6 +22,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import kotlinx.android.synthetic.main.add_service_fragment.*
 import kotlinx.android.synthetic.main.add_service_fragment.serviceSaveBtn
+import kotlinx.android.synthetic.main.add_service_item_fragment.*
 import kotlinx.android.synthetic.main.main_fragment.*
 import java.util.ArrayList
 
@@ -96,6 +97,7 @@ class AddServiceFragment : HelperFragment() {
             service?.getContentIfNotHandledOrReturnNull()?.let {
                 var service = it
                 with(it) {
+                    service_price.setText(price.toString())
                     service_date.setText(date)
                     service_description.setText(description)
                     service_kms.setText(kms.toString())

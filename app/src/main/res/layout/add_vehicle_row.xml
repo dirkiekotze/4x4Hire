@@ -5,21 +5,26 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="10dp">
+    android:paddingLeft="10dp">
 
-    <ImageView
-        android:id="@+id/vehicle_image"
+    <TextView
+        android:id="@+id/lblYearModel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        tools:srcCompat="@tools:sample/avatars" />
+        android:text="TextView" />
+    <TextView
+        android:id="@+id/lblRego"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView" />
 
     <TextView
         android:id="@+id/lblVehicle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:text="TextView" />
+    <!--White Spacer-->
+    <include layout="@layout/grey_line" />
 
 
 </LinearLayout>

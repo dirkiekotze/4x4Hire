@@ -8,10 +8,25 @@
     android:padding="10dp">
 
     <TextView
-        android:id="@+id/lblService"
+        android:id="@+id/lblServiceDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="TextView" />
+
+    <TextView
+        android:id="@+id/lblServicePrice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/lblServiceDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView" />
+
+    <!--White Spacer-->
+    <include layout="@layout/grey_line" />
 
 
 </LinearLayout>

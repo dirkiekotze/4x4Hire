@@ -72,6 +72,22 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/service_description" />
 
+        <EditText
+            android:id="@+id/service_price"
+            android:paddingLeft="10dp"
+            android:background="@drawable/rounded_corners"
+            android:textAllCaps="false"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="24dp"
+            android:hint="@string/service_price"
+            android:inputType="numberDecimal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/service_kms" />
+
         <ImageButton
             android:id="@+id/serviceSaveBtn"
             android:background="@drawable/button_blue"
@@ -83,7 +99,7 @@
             android:src="@drawable/save_white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/service_kms" />
+            app:layout_constraintTop_toBottomOf="@+id/service_price" />
 
         <Button
             android:id="@+id/addServiceItemBtn"

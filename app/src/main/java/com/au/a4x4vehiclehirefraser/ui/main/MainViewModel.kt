@@ -35,6 +35,7 @@ class MainViewModel : ViewModel() {
     private var _photos: java.util.ArrayList<Photo> = java.util.ArrayList<Photo>()
     var addServiceId = MutableLiveData<OneTimeOnly<String>>()
     var addServiceItemId = MutableLiveData<OneTimeOnly<String>>()
+    var showAllVehicles = MutableLiveData<OneTimeOnly<ArrayList<Vehicle>>>()
     var showServiceDetail = MutableLiveData<OneTimeOnly<Service>>()
     var showServiceDetailPerRego = MutableLiveData<OneTimeOnly<ArrayList<Service>>>()
     var showServiceItems = MutableLiveData<OneTimeOnly<ArrayList<ServiceItem>>>()
@@ -267,6 +268,7 @@ class MainViewModel : ViewModel() {
                         )
                     )
                 }
+                showAllVehicles.value = OneTimeOnly(vehicleArrayList)
             }
             .addOnFailureListener {
                 Log.d("firestore", "Unable to find Vehicle in Firestore: $vehicle.rego")
@@ -340,6 +342,7 @@ class MainViewModel : ViewModel() {
                     serviceItemArrayList.add(
                         ServiceItem(
                             price = document.get("price").toString().toDouble(),
+                            quantity = document.get("quantity").toString(),
                             description = document.get("description").toString()
                         )
                     )

@@ -22,7 +22,9 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import kotlinx.android.synthetic.main.add_service_fragment.*
 import kotlinx.android.synthetic.main.add_service_item_fragment.*
+import kotlinx.android.synthetic.main.add_service_item_fragment.serviceDescription
 import kotlinx.android.synthetic.main.add_service_item_fragment.serviceSaveBtn
+import kotlinx.android.synthetic.main.add_service_item_row.*
 
 class AddServiceItemFragment : HelperFragment() {
 
@@ -80,9 +82,9 @@ class AddServiceItemFragment : HelperFragment() {
 
         val serviceItem = ServiceItem()
         with(serviceItem) {
-            description = serviceDescription.text.toString()
-            price = servicePrice.text.toString().toDouble()
-            quantity = serviceQuantity.text.toString().toInt()
+            description = lblServiceItemDescription.text.toString()
+            price = lblServiceItemPrice.text.toString().toDouble()
+            quantity = lblServiceItemQuantity.text.toString()
 
         }
 

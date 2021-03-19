@@ -36,7 +36,6 @@
 
         <TextView
             android:id="@+id/service_Recycler_Header"
-            android:background="@drawable/rounded_corners"
             android:visibility="gone"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

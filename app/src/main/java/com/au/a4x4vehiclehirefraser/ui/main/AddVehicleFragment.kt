@@ -12,14 +12,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.au.a4x4vehiclehirefraser.MainActivity
 import com.au.a4x4vehiclehirefraser.R
 import com.au.a4x4vehiclehirefraser.dto.Photo
 import com.au.a4x4vehiclehirefraser.dto.Vehicle
+import com.au.a4x4vehiclehirefraser.helper.Constants
 import com.au.a4x4vehiclehirefraser.helper.Constants.USER_ID
 import com.au.a4x4vehiclehirefraser.helper.SharedPreference
+import kotlinx.android.synthetic.main.add_service_fragment.*
 import kotlinx.android.synthetic.main.add_vehicle_fragment.*
 import kotlin.collections.ArrayList
 
@@ -73,34 +76,21 @@ class AddVehicleFragment : HelperFragment() {
             //prepOpenImageGallery()
         }
 
-        rcyVehicle.hasFixedSize()
-        rcyVehicle.layoutManager = LinearLayoutManager(context)
-        rcyVehicle.itemAnimator = DefaultItemAnimator()
+        mainViewModel.getAllVehicles()
 
-        var vehicleArrayList = ArrayList<Vehicle>()
-        mainViewModel.firestore.collection("vehicle")
-            .get()
-            .addOnSuccessListener { documents ->
-                for (document in documents) {
-                    vehicleArrayList.add(
-                        Vehicle(
-                            document.get("model").toString(),
-                            document.get("rego").toString(),
-                            document.get("description").toString()
-                        )
-                    )
-                }
-                rcyVehicle.adapter = VehicleAdapter(vehicleArrayList,R.layout.add_vehicle_row)
+        //Callback from MainViewModel --> getAllVehicles
+        mainViewModel.showAllVehicles.observe(viewLifecycleOwner, Observer { lstVehicle ->
+            lstVehicle?.getContentIfNotHandledOrReturnNull()?.let {
+
+                rcyVehicle.hasFixedSize()
+                rcyVehicle.layoutManager = LinearLayoutManager(context)
+                rcyVehicle.itemAnimator = DefaultItemAnimator()
+                vehicle_Recycler_Header.visibility = View.VISIBLE
+                rcyVehicle.adapter = VehicleAdapter(it, R.layout.add_vehicle_row)
+
             }
-            .addOnFailureListener {
-                Log.d("firestore", "Unable to find Vehicle in Firestore:")
-            }
-
-
-
-
+        })
     }
-
 
 
     private fun clearFields() {
@@ -108,7 +98,6 @@ class AddVehicleFragment : HelperFragment() {
         var rego = vehicleRego.text.toString()
         vehicleDescripion.setText("")
         vehicleKms.text.clear()
-        //vehicleModelSpinner.selectedItem.toString()
         vehicleYearModel.text.clear()
         vehicleColor.text.clear()
     }

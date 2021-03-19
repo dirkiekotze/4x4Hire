@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -22,6 +23,8 @@ import com.au.a4x4vehiclehirefraser.dto.Service
 import com.au.a4x4vehiclehirefraser.dto.ServiceItem
 import com.au.a4x4vehiclehirefraser.dto.Vehicle
 import com.au.a4x4vehiclehirefraser.helper.SharedPreference
+import kotlinx.android.synthetic.main.add_service_item_row.*
+import kotlinx.android.synthetic.main.add_service_row.*
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -120,11 +123,14 @@ open class HelperFragment:Fragment() {
 
     inner class VehicleViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
 
-        private var imgVehicle : ImageView = itemView.findViewById(R.id.vehicle_image)
+        private var lblYearModel : TextView = itemView.findViewById(R.id.lblYearModel)
+        private var lblRego : TextView = itemView.findViewById(R.id.lblRego)
         private var lblVehicleDescription: TextView = itemView.findViewById(R.id.lblVehicle)
 
         fun showVehicles(vehicle:Vehicle){
 
+            lblYearModel.setText(vehicle.yearModel.toString())
+            lblRego.setText(vehicle.rego)
             lblVehicleDescription.setText(vehicle.toString())
 
         }
@@ -147,7 +153,7 @@ open class HelperFragment:Fragment() {
 
         override fun onBindViewHolder(holder: ServiceViewHolder, position: Int) {
             val service = services.get(position)
-            holder.showVehicles(service)
+            holder.showService(service)
             holder.itemView.setOnClickListener { view ->
                 onClickListener(view, service)
             }
@@ -156,10 +162,16 @@ open class HelperFragment:Fragment() {
 
     inner class ServiceViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
 
-        private var lblService: TextView = itemView.findViewById(R.id.lblService)
+        private var lblServiceDate: TextView = itemView.findViewById(R.id.lblServiceDate)
+        private var lblServicePrice: TextView = itemView.findViewById(R.id.lblServicePrice)
+        private var lblServiceDescription: TextView = itemView.findViewById(R.id.lblServiceDescription)
 
-        fun showVehicles(service:Service){
-            lblService.setText(service.toString())
+        fun showService(service:Service){
+            with(service){
+                lblServiceDate.setText(date.toString())
+                lblServicePrice.setText(price.toString())
+                lblServiceDescription.setText(description.toString())
+            }
         }
     }
 
@@ -183,11 +195,19 @@ open class HelperFragment:Fragment() {
 
     inner class ServiceItemViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
 
-        private var lblServiceItem: TextView = itemView.findViewById(R.id.lblServiceItem)
+        private var serviceItemWrapper: LinearLayout = itemView.findViewById(R.id.wrapperServiceItem)
+        private var lblDescription: TextView = itemView.findViewById(R.id.lblServiceItemDescription)
+        private var lblPrice: TextView = itemView.findViewById(R.id.lblServiceItemPrice)
+        private var lblQuantity: TextView = itemView.findViewById(R.id.lblServiceItemQuantity)
 
         fun showVehicles(serviceItem: ServiceItem){
-            lblServiceItem.setText(serviceItem.toString())
-            lblServiceItem.setOnClickListener {
+            with(serviceItem){
+                lblDescription.setText(description)
+                lblPrice.setText(price.toString())
+                lblQuantity.setText(quantity)
+            }
+
+            serviceItemWrapper.setOnClickListener {
                 var xx = serviceItem.description
             }
         }
