@@ -82,9 +82,9 @@ class AddServiceItemFragment : HelperFragment() {
 
         val serviceItem = ServiceItem()
         with(serviceItem) {
-            description = lblServiceItemDescription.text.toString()
-            price = lblServiceItemPrice.text.toString().toDouble()
-            quantity = lblServiceItemQuantity.text.toString()
+            description = serviceDescription.text.toString()
+            price = servicePrice.text.toString().toDouble()
+            quantity = serviceQuantity.text.toString()
 
         }
 

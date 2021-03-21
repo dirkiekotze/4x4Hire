@@ -38,10 +38,12 @@ class MainViewModel : ViewModel() {
     var showAllVehicles = MutableLiveData<OneTimeOnly<ArrayList<Vehicle>>>()
     var showServiceDetail = MutableLiveData<OneTimeOnly<Service>>()
     var showServiceDetailPerRego = MutableLiveData<OneTimeOnly<ArrayList<Service>>>()
+    var hideServiceDetailPerRego = MutableLiveData<OneTimeOnly<String>>()
     var showServiceItems = MutableLiveData<OneTimeOnly<ArrayList<ServiceItem>>>()
     var serviceSaveBtnVisibility = MutableLiveData<OneTimeOnly<Int>>()
     var addServiceItemBtnVisibility = MutableLiveData<OneTimeOnly<Int>>()
     var displayServiceAndItems = MutableLiveData<OneTimeOnly<Boolean>>()
+    var displayToast = MutableLiveData<OneTimeOnly<String>>()
 
     init {
         //Cloud Firestore Initialization
@@ -321,7 +323,12 @@ class MainViewModel : ViewModel() {
                     )
                 }
 
-                showServiceDetailPerRego.value = OneTimeOnly(serviceArrayList)
+                if(serviceArrayList.size == 0){
+                    hideServiceDetailPerRego.value = OneTimeOnly("Nothing to Display")
+                }else{
+                    showServiceDetailPerRego.value = OneTimeOnly(serviceArrayList)
+                }
+
 
             }
             .addOnFailureListener {

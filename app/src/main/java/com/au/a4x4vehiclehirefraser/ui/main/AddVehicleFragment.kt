@@ -120,7 +120,7 @@ class AddVehicleFragment : HelperFragment() {
             color = vehicleColor.text.toString()
         }.apply {
             clearFields()
-            rcyVehicle.adapter?.notifyDataSetChanged()
+            //rcyVehicle.adapter?.notifyDataSetChanged()
         }.apply {
             mainViewModel.saveVehicle(vehicle, photos, preference.getValueString(USER_ID))
 

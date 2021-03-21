@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,6 +26,8 @@ import com.au.a4x4vehiclehirefraser.helper.Constants.SERVICE_ID
 import com.au.a4x4vehiclehirefraser.helper.Constants.SERVICE_ITEM_ID
 import com.au.a4x4vehiclehirefraser.helper.Constants.TYPE
 import com.au.a4x4vehiclehirefraser.helper.Constants.USER_ID
+import com.au.a4x4vehiclehirefraser.helper.Helper.makeToast
+import com.au.a4x4vehiclehirefraser.helper.OneTimeOnly
 import com.au.a4x4vehiclehirefraser.helper.SharedPreference
 import com.au.a4x4vehiclehirefraser.helper.Variables
 import com.google.firebase.auth.FirebaseAuth
@@ -92,20 +95,33 @@ class MainFragment : HelperFragment() {
             )
         })
 
-        mainViewModel.showServiceDetailPerRego.observe(viewLifecycleOwner, Observer { serviceList ->
-            serviceList?.getContentIfNotHandledOrReturnNull()?.let {
-                service_Recycler_Header.visibility = View.VISIBLE
-                rcyService.visibility = View.VISIBLE
-                rcyService.hasFixedSize()
-                rcyService.layoutManager = LinearLayoutManager(context)
-                rcyService.itemAnimator = DefaultItemAnimator()
-                rcyService.adapter = ServiceAdapter(
-                    it,
-                    R.layout.add_service_row,
-                    onClickListener = { view, service -> openService(view, service) })
+        mainViewModel.hideServiceDetailPerRego.observe(viewLifecycleOwner, Observer { text ->
+            text?.getContentIfNotHandledOrReturnNull()?.let {
+                makeToast(context, false, it)
+                service_Recycler_Header.visibility = View.GONE
+                rcyService.visibility = View.GONE
             }
         })
 
+        mainViewModel.showServiceDetailPerRego.observe(viewLifecycleOwner, Observer { serviceList ->
+            serviceList?.getContentIfNotHandledOrReturnNull()?.let {
+                if (it.size == 0) {
+                    makeToast(context, false, "Nothing to Display")
+                    service_Recycler_Header.visibility = View.GONE
+                } else {
+                    service_Recycler_Header.visibility = View.VISIBLE
+                    rcyService.visibility = View.VISIBLE
+                    rcyService.hasFixedSize()
+                    rcyService.layoutManager = LinearLayoutManager(context)
+                    rcyService.itemAnimator = DefaultItemAnimator()
+                    rcyService.adapter = ServiceAdapter(
+                        it,
+                        R.layout.add_service_row,
+                        onClickListener = { view, service -> openService(view, service) })
+                }
+
+            }
+        })
 
         //Spinner select
         vehicleSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -122,6 +138,9 @@ class MainFragment : HelperFragment() {
             ) {
                 var vehicle = parent?.getItemAtPosition(position) as Vehicle
                 preference.save(REGO, vehicle.rego)
+                if (typeSpinner.selectedItem.toString().equals("Vehicle Service")) {
+                    displayServices()
+                }
             }
 
         }
