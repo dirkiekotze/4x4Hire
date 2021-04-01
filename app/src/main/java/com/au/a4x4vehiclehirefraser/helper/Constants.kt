@@ -6,5 +6,12 @@ object Constants {
     const val REGO = "rego"
     const val USER_ID = "userId"
     const val TYPE = "type"
+    const val NOTHING_TO_DISPLAY = "Nothing to Display"
+    const val VEHICLE_INDEX = "vehicle_index"
+    const val TYPE_INDEX = "type_index"
+    const val DELETED_VEHICLE = "deleted_Vehicle"
+    const val REQUIRED = "Required"
+    const val REQUIRED_COMPLETE = "Please complete Required fields"
+    const val SUCCESSFULLY_ADDED_SERVICE = "Successfully updated service"
 
 }

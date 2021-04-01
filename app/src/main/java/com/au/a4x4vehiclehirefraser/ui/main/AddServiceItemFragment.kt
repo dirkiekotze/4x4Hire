@@ -2,29 +2,26 @@ package com.au.a4x4vehiclehirefraser.ui.main
 
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import androidx.lifecycle.Observer
 import com.au.a4x4vehiclehirefraser.MainActivity
 import com.au.a4x4vehiclehirefraser.R
-import com.au.a4x4vehiclehirefraser.dto.Service
 import com.au.a4x4vehiclehirefraser.dto.ServiceItem
 import com.au.a4x4vehiclehirefraser.helper.Constants
 import com.au.a4x4vehiclehirefraser.helper.Constants.SERVICE_ID
 import com.au.a4x4vehiclehirefraser.helper.Constants.SERVICE_ITEM_ID
+import com.au.a4x4vehiclehirefraser.helper.Helper.textIsEmpty
+import com.au.a4x4vehiclehirefraser.helper.Helper.toast
+import com.au.a4x4vehiclehirefraser.helper.Helper.validate
 import com.au.a4x4vehiclehirefraser.helper.SharedPreference
-import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import kotlinx.android.synthetic.main.add_service_fragment.*
 import kotlinx.android.synthetic.main.add_service_item_fragment.*
 import kotlinx.android.synthetic.main.add_service_item_fragment.serviceDescription
-import kotlinx.android.synthetic.main.add_service_item_fragment.serviceSaveBtn
-import kotlinx.android.synthetic.main.add_service_item_row.*
+import kotlinx.android.synthetic.main.add_service_item_fragment.addServiceBtn
 
 class AddServiceItemFragment : HelperFragment() {
 
@@ -55,8 +52,21 @@ class AddServiceItemFragment : HelperFragment() {
         preference = SharedPreference(requireContext())
         clearFields()
 
-        serviceSaveBtn.setOnClickListener {
-            saveServiceItem()
+        mainViewModel.validToAddServiceItem.observe(viewLifecycleOwner, Observer { valid ->
+            valid?.getContentIfNotHandledOrReturnNull()?.let {
+
+                if(it){
+                    saveServiceItem()
+                }else{
+                    Constants.REQUIRED_COMPLETE.toString().toast(context!!, false)
+                }
+
+            }
+        })
+
+        addServiceBtn.setOnClickListener {
+            mainViewModel.validateServiceItem(serviceDescription.text.length,servicePrice.text.length,serviceQuantity.text.length)
+
         }
 
         serviceBackBtn.setOnClickListener {
@@ -70,6 +80,11 @@ class AddServiceItemFragment : HelperFragment() {
                 (activity as MainActivity).showServiceFragment()
             }
         })
+
+        serviceDescription.validate(Constants.REQUIRED) { s -> s.textIsEmpty()}
+        servicePrice.validate(Constants.REQUIRED) { s -> s.textIsEmpty()}
+        serviceQuantity.validate(Constants.REQUIRED){ s -> s.textIsEmpty()}
+
     }
 
     private fun clearFields() {

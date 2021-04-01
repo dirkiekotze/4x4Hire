@@ -1,32 +1,43 @@
 package com.au.a4x4vehiclehirefraser.ui.main
 
+import android.app.DatePickerDialog
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.DatePicker
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.au.a4x4vehiclehirefraser.MainActivity
 import com.au.a4x4vehiclehirefraser.R
 import com.au.a4x4vehiclehirefraser.dto.Service
-import com.au.a4x4vehiclehirefraser.dto.ServiceItem
-import com.au.a4x4vehiclehirefraser.dto.Vehicle
-import com.au.a4x4vehiclehirefraser.helper.Constants
 import com.au.a4x4vehiclehirefraser.helper.Constants.REGO
+import com.au.a4x4vehiclehirefraser.helper.Constants.REQUIRED
+import com.au.a4x4vehiclehirefraser.helper.Constants.REQUIRED_COMPLETE
 import com.au.a4x4vehiclehirefraser.helper.Constants.SERVICE_ID
+import com.au.a4x4vehiclehirefraser.helper.Constants.SUCCESSFULLY_ADDED_SERVICE
+import com.au.a4x4vehiclehirefraser.helper.Helper.textIsEmpty
+import com.au.a4x4vehiclehirefraser.helper.Helper.toMillis
+import com.au.a4x4vehiclehirefraser.helper.Helper.toast
+import com.au.a4x4vehiclehirefraser.helper.Helper.validate
 import com.au.a4x4vehiclehirefraser.helper.SharedPreference
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.FirebaseFirestoreSettings
 import kotlinx.android.synthetic.main.add_service_fragment.*
-import kotlinx.android.synthetic.main.add_service_fragment.serviceSaveBtn
+import kotlinx.android.synthetic.main.add_service_fragment.addServiceBtn
+import kotlinx.android.synthetic.main.add_service_fragment.service_date
+import kotlinx.android.synthetic.main.add_service_fragment.service_description
+import kotlinx.android.synthetic.main.add_service_fragment.service_kms
 import kotlinx.android.synthetic.main.add_service_item_fragment.*
-import kotlinx.android.synthetic.main.main_fragment.*
-import java.util.ArrayList
+import java.text.SimpleDateFormat
+import java.util.*
 
 class AddServiceFragment : HelperFragment() {
+
+    var _cal = Calendar.getInstance()
+    var _valid = false
+    var _milliseconds:Long = 0
+    var _serviceId = ""
 
     companion object {
         fun newInstance() = AddServiceFragment()
@@ -53,7 +64,13 @@ class AddServiceFragment : HelperFragment() {
 
         mainViewModel.serviceSaveBtnVisibility.observe(viewLifecycleOwner, Observer { value ->
             value?.getContentIfNotHandledOrReturnNull()?.let {
-                serviceSaveBtn.visibility = it
+                addServiceBtn.visibility = it
+            }
+        })
+
+        mainViewModel.serviceSaveBtnText.observe(viewLifecycleOwner, Observer { value ->
+            value?.getContentIfNotHandledOrReturnNull()?.let {
+                addServiceBtn.setText(it)
             }
         })
 
@@ -70,11 +87,6 @@ class AddServiceFragment : HelperFragment() {
             }
         })
 
-
-        serviceSaveBtn.setOnClickListener {
-            saveService()
-        }
-
         serviceBack.setOnClickListener {
             //Stop
             preference.save(SERVICE_ID, "")
@@ -86,9 +98,10 @@ class AddServiceFragment : HelperFragment() {
         //Callback from MainFragment via LifeData
         mainViewModel.addServiceId.observe(viewLifecycleOwner, Observer { id ->
             id?.getContentIfNotHandledOrReturnNull()?.let {
-                var xx = it
                 preference.save(SERVICE_ID, it)
                 addServiceItemBtn.visibility = View.VISIBLE
+                addServiceBtn.setText(R.string.edit_service)
+                SUCCESSFULLY_ADDED_SERVICE.toast(context!!,false)
 
             }
         })
@@ -97,6 +110,7 @@ class AddServiceFragment : HelperFragment() {
             service?.getContentIfNotHandledOrReturnNull()?.let {
                 var service = it
                 with(it) {
+                    _serviceId = service.id
                     service_price.setText(price.toString())
                     service_date.setText(date)
                     service_description.setText(description)
@@ -122,7 +136,56 @@ class AddServiceFragment : HelperFragment() {
             (activity as MainActivity).showServiceItemFragment()
         }
 
+        val dateSetListener = object : DatePickerDialog.OnDateSetListener {
+            override fun onDateSet(view: DatePicker, year: Int, monthOfYear: Int,dayOfMonth: Int) {
+                _cal.set(Calendar.YEAR, year)
+                _cal.set(Calendar.MONTH, monthOfYear)
+                _cal.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+                updateDateInView()
+            }
+        }
 
+        service_date.setFocusable(false);
+        service_date.setKeyListener(null);
+
+        service_date.setOnClickListener {
+
+            DatePickerDialog(requireContext(),
+                dateSetListener,
+                // set DatePickerDialog to point to today's date when it loads up
+                _cal.get(Calendar.YEAR),
+                _cal.get(Calendar.MONTH),
+                _cal.get(Calendar.DAY_OF_MONTH)).show()
+        }
+
+        service_date.validate(REQUIRED) {s -> s.textIsEmpty()}
+        service_description.validate(REQUIRED) {s -> s.textIsEmpty()}
+        service_kms.validate(REQUIRED){s -> s.textIsEmpty()}
+        service_price.validate(REQUIRED){s -> s.textIsEmpty()}
+
+        mainViewModel.validToAddService.observe(viewLifecycleOwner, Observer { valid ->
+            valid?.getContentIfNotHandledOrReturnNull()?.let {
+
+                if(it){
+                    saveService()
+                }else{
+                    REQUIRED_COMPLETE.toString().toast(context!!, false)
+                }
+
+            }
+        })
+
+        addServiceBtn.setOnClickListener {
+            mainViewModel.validateService(service_date.text.length,service_description.text.length,service_kms.text.length,service_price.text.length)
+        }
+
+    }
+
+    private fun updateDateInView() {
+        val myFormat = "dd/MM/yyyy" // mention the format you need
+        val sdf = SimpleDateFormat(myFormat, Locale.US)
+        service_date!!.setText(sdf.format(_cal.getTime()))
+        _milliseconds = _cal.timeInMillis
     }
 
     private fun displayService() {
@@ -149,10 +212,13 @@ class AddServiceFragment : HelperFragment() {
 
         val service = Service()
         with(service) {
+            id = _serviceId
             description = service_description.text.toString()
             kms = service_kms.text.toString().toDouble()
             date = service_date.text.toString()
             rego = preference.getValueString(REGO)!!
+            dateMilliseconds = _milliseconds
+            price = service_price.text.toString().toDouble()
         }
         mainViewModel.saveService(service)
 

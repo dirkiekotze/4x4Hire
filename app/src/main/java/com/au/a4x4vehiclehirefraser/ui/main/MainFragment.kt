@@ -4,39 +4,37 @@ import android.app.Activity
 import android.content.Intent
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.Toast
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.au.a4x4vehiclehirefraser.MainActivity
 import com.firebase.ui.auth.AuthUI
 import com.au.a4x4vehiclehirefraser.R
-import com.au.a4x4vehiclehirefraser.dto.Photo
 import com.au.a4x4vehiclehirefraser.dto.Service
 import com.au.a4x4vehiclehirefraser.dto.Type
 import com.au.a4x4vehiclehirefraser.dto.Vehicle
+import com.au.a4x4vehiclehirefraser.helper.Constants.NOTHING_TO_DISPLAY
 import com.au.a4x4vehiclehirefraser.helper.Constants.REGO
 import com.au.a4x4vehiclehirefraser.helper.Constants.SERVICE_ID
 import com.au.a4x4vehiclehirefraser.helper.Constants.SERVICE_ITEM_ID
 import com.au.a4x4vehiclehirefraser.helper.Constants.TYPE
+import com.au.a4x4vehiclehirefraser.helper.Constants.TYPE_INDEX
 import com.au.a4x4vehiclehirefraser.helper.Constants.USER_ID
-import com.au.a4x4vehiclehirefraser.helper.Helper.makeToast
+import com.au.a4x4vehiclehirefraser.helper.Constants.VEHICLE_INDEX
+import com.au.a4x4vehiclehirefraser.helper.Helper.toast
 import com.au.a4x4vehiclehirefraser.helper.OneTimeOnly
 import com.au.a4x4vehiclehirefraser.helper.SharedPreference
-import com.au.a4x4vehiclehirefraser.helper.Variables
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import kotlinx.android.synthetic.main.add_service_fragment.*
-import kotlinx.android.synthetic.main.add_vehicle_fragment.*
 import kotlinx.android.synthetic.main.main_fragment.*
 import kotlinx.android.synthetic.main.main_fragment.service_Recycler_Header
-import java.util.ArrayList
 
 class MainFragment : HelperFragment() {
 
@@ -47,6 +45,7 @@ class MainFragment : HelperFragment() {
     private lateinit var mainViewModel: MainViewModel
     private val AUTH_REQUEST_CODE = 2002
     private var user: FirebaseUser? = null
+    var redirectToMainActivity = MutableLiveData<OneTimeOnly<Boolean>>()
 
 
     override fun onCreateView(
@@ -68,60 +67,7 @@ class MainFragment : HelperFragment() {
 
         preference = SharedPreference(requireContext())
 
-        mainViewModel.type.observe(viewLifecycleOwner, Observer { type ->
-            typeSpinner.setAdapter(
-                ArrayAdapter(
-                    context!!,
-                    R.layout.support_simple_spinner_dropdown_item,
-                    type
-                )
-            )
-        })
-
-        mainViewModel.vehicle.observe(viewLifecycleOwner, Observer { vehicle ->
-
-            //Add default value for Spinner
-            vehicle.add(Vehicle(description = "Select Vehicle", yearModel = -1))
-            vehicle.sortBy {
-                it.yearModel
-            }
-
-            vehicleSpinner.setAdapter(
-                ArrayAdapter(
-                    context!!,
-                    R.layout.support_simple_spinner_dropdown_item,
-                    vehicle
-                )
-            )
-        })
-
-        mainViewModel.hideServiceDetailPerRego.observe(viewLifecycleOwner, Observer { text ->
-            text?.getContentIfNotHandledOrReturnNull()?.let {
-                makeToast(context, false, it)
-                service_Recycler_Header.visibility = View.GONE
-                rcyService.visibility = View.GONE
-            }
-        })
-
-        mainViewModel.showServiceDetailPerRego.observe(viewLifecycleOwner, Observer { serviceList ->
-            serviceList?.getContentIfNotHandledOrReturnNull()?.let {
-                if (it.size == 0) {
-                    makeToast(context, false, "Nothing to Display")
-                    service_Recycler_Header.visibility = View.GONE
-                } else {
-                    service_Recycler_Header.visibility = View.VISIBLE
-                    rcyService.visibility = View.VISIBLE
-                    rcyService.hasFixedSize()
-                    rcyService.layoutManager = LinearLayoutManager(context)
-                    rcyService.itemAnimator = DefaultItemAnimator()
-                    rcyService.adapter = ServiceAdapter(
-                        it,
-                        R.layout.add_service_row,
-                        onClickListener = { view, service -> openService(view, service) })
-                }
-
-            }
-        })
+        doStartup()
 
         //Spinner select
         vehicleSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -138,6 +84,7 @@ class MainFragment : HelperFragment() {
             ) {
                 var vehicle = parent?.getItemAtPosition(position) as Vehicle
                 preference.save(REGO, vehicle.rego)
+                preference.save(VEHICLE_INDEX, position)
                 if (typeSpinner.selectedItem.toString().equals("Vehicle Service")) {
                     displayServices()
                 }
@@ -160,6 +107,7 @@ class MainFragment : HelperFragment() {
             ) {
                 var type = parent?.getItemAtPosition(position) as Type
                 preference.save(TYPE, type.id)
+                preference.save(TYPE_INDEX, position)
 
                 if (type.value.equals("Vehicle Service")) {
                     displayServices()
@@ -170,10 +118,80 @@ class MainFragment : HelperFragment() {
 
         if ((preference.getValueString(USER_ID) == null) || (preference.getValueString(USER_ID) == "")) {
 
+            doLoginBtn.visibility = View.VISIBLE
+
+        }
+
+
+        doLoginBtn.setOnClickListener {
             logon();
         }
 
     }
+
+    private fun doStartup() {
+        mainViewModel.type.observe(viewLifecycleOwner, Observer { type ->
+            typeSpinner.setAdapter(
+                ArrayAdapter(
+                    context!!,
+                    R.layout.support_simple_spinner_dropdown_item,
+                    type
+                )
+            )
+
+            typeSpinner.setSelection(preference.getValueInt(TYPE_INDEX))
+
+
+        })
+
+        mainViewModel.vehicle.observe(viewLifecycleOwner, Observer { vehicle ->
+
+            vehicle.sortBy {
+                it.yearModel
+            }
+
+            vehicleSpinner.setAdapter(
+                ArrayAdapter(
+                    context!!,
+                    R.layout.support_simple_spinner_dropdown_item,
+                    vehicle
+                )
+            )
+
+            vehicleSpinner.setSelection(preference.getValueInt(VEHICLE_INDEX))
+
+        })
+
+        mainViewModel.hideServiceDetailPerRego.observe(viewLifecycleOwner, Observer { text ->
+            text?.getContentIfNotHandledOrReturnNull()?.let {
+                it.toast(context!!, false)
+                service_Recycler_Header.visibility = View.GONE
+                rcyService.visibility = View.GONE
+            }
+        })
+
+        mainViewModel.showServiceDetailPerRego.observe(viewLifecycleOwner, Observer { serviceList ->
+            serviceList?.getContentIfNotHandledOrReturnNull()?.let {
+                if (it.size == 0) {
+                    //makeToast(context, false, "Nothing to Display")
+                    NOTHING_TO_DISPLAY.toString().toast(context!!, false)
+                    service_Recycler_Header.visibility = View.GONE
+                } else {
+                    service_Recycler_Header.visibility = View.VISIBLE
+                    rcyService.visibility = View.VISIBLE
+                    rcyService.hasFixedSize()
+                    rcyService.layoutManager = LinearLayoutManager(context)
+                    rcyService.itemAnimator = DefaultItemAnimator()
+                    rcyService.adapter = ServiceAdapter(
+                        it,
+                        R.layout.add_service_row,
+                        onClickListener = { view, service -> openService(view, service) })
+                }
+
+            }
+        })
+    }
+
 
     private fun displayServices() {
 
@@ -188,20 +206,6 @@ class MainFragment : HelperFragment() {
         (activity as MainActivity).showServiceFragment()
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-
-        if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == AUTH_REQUEST_CODE) {
-                user = FirebaseAuth.getInstance().currentUser
-                preference.save(USER_ID, user!!.uid)
-
-            } else {
-                super.onActivityResult(requestCode, resultCode, data)
-            }
-        }
-    }
-
-
     private fun logon() {
         var providers = arrayListOf(
             AuthUI.IdpConfig.EmailBuilder().build(),
@@ -212,6 +216,27 @@ class MainFragment : HelperFragment() {
             AuthUI.getInstance().createSignInIntentBuilder().setAvailableProviders(providers)
                 .build(), AUTH_REQUEST_CODE
         )
+    }
+
+    fun redirectToMainActivity() {
+        (activity as MainActivity).redirectToMainFragment()
+    }
+
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == AUTH_REQUEST_CODE) {
+                user = FirebaseAuth.getInstance().currentUser
+                preference.save(USER_ID, user!!.uid)
+                doLoginBtn.visibility = View.GONE
+                redirectToMainActivity()
+
+            } else {
+                super.onActivityResult(requestCode, resultCode, data)
+            }
+        }
     }
 
 }

@@ -19,7 +19,7 @@
             android:layout_marginStart="24dp"
             android:layout_marginTop="24dp"
             android:layout_marginEnd="24dp"
-            android:text="Add Service"
+            android:text="@string/service_page_heading"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -88,15 +88,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/service_kms" />
 
-        <ImageButton
-            android:id="@+id/serviceSaveBtn"
+        <Button
+            android:id="@+id/addServiceBtn"
+            android:textColor="@color/white"
             android:background="@drawable/button_blue"
+            android:textAllCaps="false"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_marginStart="24dp"
             android:layout_marginTop="24dp"
             android:layout_marginEnd="24dp"
-            android:src="@drawable/save_white"
+            android:text="@string/add_service"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/service_price" />
@@ -111,11 +113,11 @@
             android:layout_marginStart="24dp"
             android:layout_marginTop="24dp"
             android:layout_marginEnd="24dp"
-            android:text="Add Service Item"
+            android:text="@string/add_service_item"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/serviceSaveBtn" />
+            app:layout_constraintTop_toBottomOf="@+id/addServiceBtn" />
 
         <Button
             android:id="@+id/serviceBack"
@@ -140,7 +142,7 @@
             android:layout_marginTop="24dp"
             android:layout_marginEnd="24dp"
             android:gravity="center"
-            android:text="Service Items"
+            android:text="@string/service_item"
             android:textSize="28dp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"

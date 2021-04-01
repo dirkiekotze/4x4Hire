@@ -102,7 +102,9 @@ open class HelperFragment:Fragment() {
         }
     }
 
-    inner class VehicleAdapter(val vehicles: List<Vehicle>, val itemLayout: Int) : RecyclerView.Adapter<HelperFragment.VehicleViewHolder>() {
+    inner class VehicleAdapter(val vehicles: List<Vehicle>,
+                               val itemLayout: Int,
+                               private val onClickListener: (View, Vehicle) -> Unit) : RecyclerView.Adapter<HelperFragment.VehicleViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VehicleViewHolder {
             val view = LayoutInflater.from(parent.context).inflate(itemLayout, parent, false)
@@ -117,25 +119,27 @@ open class HelperFragment:Fragment() {
         override fun onBindViewHolder(holder: VehicleViewHolder, position: Int) {
             val vehicle = vehicles.get(position)
             holder.showVehicles(vehicle)
-        }
-
-    }
-
-    inner class VehicleViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
-
-        private var lblYearModel : TextView = itemView.findViewById(R.id.lblYearModel)
-        private var lblRego : TextView = itemView.findViewById(R.id.lblRego)
-        private var lblVehicleDescription: TextView = itemView.findViewById(R.id.lblVehicle)
-
-        fun showVehicles(vehicle:Vehicle){
-
-            lblYearModel.setText(vehicle.yearModel.toString())
-            lblRego.setText(vehicle.rego)
-            lblVehicleDescription.setText(vehicle.toString())
+            holder.itemView.setOnClickListener { view -> onClickListener(view, vehicle) }
 
         }
-
     }
+
+        inner class VehicleViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
+            private var lblYearModel: TextView = itemView.findViewById(R.id.lblYearModel)
+            private var lblRego: TextView = itemView.findViewById(R.id.lblRego)
+            private var lblVehicleDescription: TextView = itemView.findViewById(R.id.lblVehicle)
+
+            fun showVehicles(vehicle: Vehicle) {
+
+                lblYearModel.setText(vehicle.yearModel.toString())
+                lblRego.setText(vehicle.rego)
+                lblVehicleDescription.setText(vehicle.toString())
+
+            }
+
+        }
+
 
     inner class ServiceAdapter(val services: List<Service>,
                                val itemLayout: Int,
@@ -154,9 +158,7 @@ open class HelperFragment:Fragment() {
         override fun onBindViewHolder(holder: ServiceViewHolder, position: Int) {
             val service = services.get(position)
             holder.showService(service)
-            holder.itemView.setOnClickListener { view ->
-                onClickListener(view, service)
-            }
+            holder.itemView.setOnClickListener { view -> onClickListener(view, service)}
         }
     }
 

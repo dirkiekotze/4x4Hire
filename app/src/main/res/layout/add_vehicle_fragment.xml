@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/vehicle_add_scrollview"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -56,7 +56,7 @@
             android:background="@drawable/rounded_corners"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/vehicleModelSpinner"
+            app:layout_constraintTop_toBottomOf="@+id/vehicleDescripion"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
@@ -141,13 +141,26 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/takePhotoBtn" />
 
+        <ImageButton
+            android:id="@+id/deleteVehicleBtn"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="24dp"
+            android:background="@drawable/button_blue"
+            android:src="@drawable/delete_white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/saveRepairBtn" />
+
         <Button
             android:id="@+id/cmdReturnFromRepairToMain"
             android:textColor="@color/white"
             android:background="@drawable/button_blue"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/saveRepairBtn"
+            app:layout_constraintTop_toBottomOf="@+id/deleteVehicleBtn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"

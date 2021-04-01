@@ -4,27 +4,30 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.ScrollView
 import android.widget.Toast
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.au.a4x4vehiclehirefraser.MainActivity
 import com.au.a4x4vehiclehirefraser.R
 import com.au.a4x4vehiclehirefraser.dto.Photo
 import com.au.a4x4vehiclehirefraser.dto.Vehicle
-import com.au.a4x4vehiclehirefraser.helper.Constants
+import com.au.a4x4vehiclehirefraser.helper.Constants.DELETED_VEHICLE
+import com.au.a4x4vehiclehirefraser.helper.Constants.REGO
+import com.au.a4x4vehiclehirefraser.helper.Constants.TYPE_INDEX
 import com.au.a4x4vehiclehirefraser.helper.Constants.USER_ID
+import com.au.a4x4vehiclehirefraser.helper.Constants.VEHICLE_INDEX
+import com.au.a4x4vehiclehirefraser.helper.Helper.toast
 import com.au.a4x4vehiclehirefraser.helper.SharedPreference
 import kotlinx.android.synthetic.main.add_service_fragment.*
 import kotlinx.android.synthetic.main.add_vehicle_fragment.*
-import kotlin.collections.ArrayList
 
 class AddVehicleFragment : HelperFragment() {
 
@@ -76,6 +79,11 @@ class AddVehicleFragment : HelperFragment() {
             //prepOpenImageGallery()
         }
 
+
+        deleteVehicleBtn.setOnClickListener {
+            deleteVehicle()
+        }
+
         mainViewModel.getAllVehicles()
 
         //Callback from MainViewModel --> getAllVehicles
@@ -86,10 +94,60 @@ class AddVehicleFragment : HelperFragment() {
                 rcyVehicle.layoutManager = LinearLayoutManager(context)
                 rcyVehicle.itemAnimator = DefaultItemAnimator()
                 vehicle_Recycler_Header.visibility = View.VISIBLE
-                rcyVehicle.adapter = VehicleAdapter(it, R.layout.add_vehicle_row)
+                rcyVehicle.adapter = VehicleAdapter(it, R.layout.add_vehicle_row,
+                    onClickListener = { view, vehicle -> openVehicle(view, vehicle) })
 
             }
         })
+
+        mainViewModel.showVehiclePerRego.observe(viewLifecycleOwner, Observer { vehicle ->
+            vehicle?.getContentIfNotHandledOrReturnNull()?.let { vehicle ->
+
+                var models = resources.getStringArray(R.array.vehicle_model)
+                var index = 0
+
+
+                //Todo:Fix This
+                run breaker@{
+                    models.forEach {
+                        if (it.equals(vehicle.model)) {
+                            return@breaker
+                        }
+                        index++
+                    }
+                }
+
+                with(vehicle) {
+                    vehicleModelSpinner.setSelection(index)
+                    vehicleDescripion.setText(description)
+                    vehicleYearModel.setText(yearModel.toString())
+                    vehicleKms.setText(kms.toString())
+                    vehicleRego.setText(rego)
+                    vehicleColor.setText(color)
+                }
+
+                preference.save(REGO,vehicle.rego)
+                vehicle_add_scrollview.fullScroll(ScrollView.FOCUS_UP)
+            }
+        })
+
+        mainViewModel.displayToast.observe(viewLifecycleOwner, Observer { message ->
+            message?.getContentIfNotHandledOrReturnNull()?.let {
+               DELETED_VEHICLE.toast(context!!,false)
+                preference.save(VEHICLE_INDEX,0)
+                preference.save(TYPE_INDEX,0)
+                startActivity(Intent(activity,MainActivity::class.java))
+            }
+        })
+    }
+
+    private fun deleteVehicle() {
+        mainViewModel.deleteVehicle(preference.getValueString(REGO))
+
+    }
+
+    private fun openVehicle(view: View, vehicle: Vehicle) {
+        mainViewModel.getVehiclePerRego(vehicle.rego)
     }
 
 
