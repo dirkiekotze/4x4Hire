@@ -1,6 +1,9 @@
 package com.au.a4x4vehiclehirefraser.ui.main
 
+import android.app.AlertDialog
 import android.app.DatePickerDialog
+import android.content.DialogInterface
+import android.content.Intent
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.au.a4x4vehiclehirefraser.MainActivity
 import com.au.a4x4vehiclehirefraser.R
 import com.au.a4x4vehiclehirefraser.dto.Service
+import com.au.a4x4vehiclehirefraser.helper.Constants
 import com.au.a4x4vehiclehirefraser.helper.Constants.REGO
 import com.au.a4x4vehiclehirefraser.helper.Constants.REQUIRED
 import com.au.a4x4vehiclehirefraser.helper.Constants.REQUIRED_COMPLETE
@@ -175,10 +179,69 @@ class AddServiceFragment : HelperFragment() {
             }
         })
 
+        mainViewModel.displayToast.observe(viewLifecycleOwner, Observer { message ->
+            message?.getContentIfNotHandledOrReturnNull()?.let {
+                it.toast(context!!,false)
+                startActivity(Intent(activity,MainActivity::class.java))
+            }
+        })
+
         addServiceBtn.setOnClickListener {
             mainViewModel.validateService(service_date.text.length,service_description.text.length,service_kms.text.length,service_price.text.length)
         }
 
+
+        serviceDelete.setOnClickListener {
+            showDialog()
+
+        }
+
+    }
+
+
+
+    private fun deleteService() {
+        mainViewModel.deleteServicePerId(preference.getValueString(SERVICE_ID)!!)
+    }
+
+    // Method to show an alert dialog with yes, no and cancel button
+    private fun showDialog(){
+        // Late initialize an alert dialog object
+        lateinit var dialog: AlertDialog
+
+
+        // Initialize a new instance of alert dialog builder object
+        val builder = AlertDialog.Builder(context)
+
+        // Set a title for alert dialog
+        builder.setTitle("Are you sure ?.")
+
+        // Set a message for alert dialog
+        builder.setMessage("Do you want to delete the selected Service.")
+
+
+        // On click listener for dialog buttons
+        val dialogClickListener = DialogInterface.OnClickListener{ _, which ->
+            when(which){
+                DialogInterface.BUTTON_POSITIVE -> deleteService()
+                //DialogInterface.BUTTON_NEGATIVE -> toast("No.")
+
+            }
+        }
+
+
+        // Set the alert dialog positive/yes button
+        builder.setPositiveButton("YES",dialogClickListener)
+
+        // Set the alert dialog negative/no button
+        builder.setNegativeButton("NO",dialogClickListener)
+
+
+        // Initialize the AlertDialog using builder object
+        dialog = builder.create()
+
+        // Finally, display the alert dialog
+        dialog.show()
     }
 
     private fun updateDateInView() {

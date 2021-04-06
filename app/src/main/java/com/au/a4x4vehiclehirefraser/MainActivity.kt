@@ -70,14 +70,6 @@ class MainActivity : AppCompatActivity() {
             if (activeFragment != addVehicleFragment) {
                 showVehicleFragment()
             }
-        } else if (item.itemId == R.id.add_repair) {
-            if (activeFragment != repairFragment) {
-                showRepairFragment()
-            }
-        } else if (item.itemId == R.id.add_service_item) {
-            if (activeFragment != serviceItemFragment) {
-                showServiceItemFragment()
-            }
         } else if (item.itemId == R.id.add_service) {
             if (activeFragment != addServiceFragment) {
                 showServiceFragment()

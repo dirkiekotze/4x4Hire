@@ -22,6 +22,7 @@ import com.au.a4x4vehiclehirefraser.dto.Type
 import com.au.a4x4vehiclehirefraser.dto.Vehicle
 import com.au.a4x4vehiclehirefraser.helper.Constants.NOTHING_TO_DISPLAY
 import com.au.a4x4vehiclehirefraser.helper.Constants.REGO
+import com.au.a4x4vehiclehirefraser.helper.Constants.REPAIRS_OR_SERVICE
 import com.au.a4x4vehiclehirefraser.helper.Constants.SERVICE_ID
 import com.au.a4x4vehiclehirefraser.helper.Constants.SERVICE_ITEM_ID
 import com.au.a4x4vehiclehirefraser.helper.Constants.TYPE
@@ -67,59 +68,62 @@ class MainFragment : HelperFragment() {
 
         preference = SharedPreference(requireContext())
 
-        doStartup()
-
-        //Spinner select
-        vehicleSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                //Do nothing
-            }
-
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                var vehicle = parent?.getItemAtPosition(position) as Vehicle
-                preference.save(REGO, vehicle.rego)
-                preference.save(VEHICLE_INDEX, position)
-                if (typeSpinner.selectedItem.toString().equals("Vehicle Service")) {
-                    displayServices()
-                }
-            }
-
-        }
-
-
-        typeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                //Do nothing
-            }
-
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                var type = parent?.getItemAtPosition(position) as Type
-                preference.save(TYPE, type.id)
-                preference.save(TYPE_INDEX, position)
-
-                if (type.value.equals("Vehicle Service")) {
-                    displayServices()
-                }
-            }
-
-        }
-
-        if ((preference.getValueString(USER_ID) == null) || (preference.getValueString(USER_ID) == "")) {
-
+        if (preference.getValueString(USER_ID).isNullOrEmpty()) {
             doLoginBtn.visibility = View.VISIBLE
+            typeSpinner.visibility = View.GONE
+            vehicleSpinner.visibility = View.GONE
+        } else{
+            doLoginBtn.visibility = View.GONE
+            typeSpinner.visibility = View.VISIBLE
+            vehicleSpinner.visibility = View.VISIBLE
+            doStartup()
 
+            //Spinner select
+            vehicleSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                    //Do nothing
+                }
+
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    var vehicle = parent?.getItemAtPosition(position) as Vehicle
+                    preference.save(REGO, vehicle.rego)
+                    preference.save(VEHICLE_INDEX, position)
+                    if (typeSpinner.selectedItem.toString().equals(REPAIRS_OR_SERVICE)) {
+                        displayServices()
+                    }
+                }
+
+            }
+
+
+            typeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                    //Do nothing
+                }
+
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    var type = parent?.getItemAtPosition(position) as Type
+                    preference.save(TYPE, type.id)
+                    preference.save(TYPE_INDEX, position)
+
+                    if (type.value.equals(REPAIRS_OR_SERVICE)) {
+                        displayServices()
+                    }
+                }
+
+            }
         }
 
 

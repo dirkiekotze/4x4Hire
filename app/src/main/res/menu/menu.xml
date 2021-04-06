@@ -8,14 +8,6 @@
         android:title="@string/add_vehicle"
         app:showAsAction="collapseActionView|withText" />
     <item
-        android:id="@+id/add_service_item"
-        android:title="@string/add_service_item"
-        app:showAsAction="collapseActionView" />
-    <item
         android:id="@+id/add_service"
-        android:title="@string/add_service" />
-    <item
-        android:id="@+id/add_repair"
-        android:title="@string/add_repair"
-        app:showAsAction="collapseActionView" />
+        android:title="@string/add_service_repair" />
 </menu>

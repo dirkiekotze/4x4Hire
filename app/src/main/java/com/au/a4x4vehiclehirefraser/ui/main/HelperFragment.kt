@@ -22,6 +22,7 @@ import com.au.a4x4vehiclehirefraser.R
 import com.au.a4x4vehiclehirefraser.dto.Service
 import com.au.a4x4vehiclehirefraser.dto.ServiceItem
 import com.au.a4x4vehiclehirefraser.dto.Vehicle
+import com.au.a4x4vehiclehirefraser.helper.Helper.roundTo
 import com.au.a4x4vehiclehirefraser.helper.SharedPreference
 import kotlinx.android.synthetic.main.add_service_item_row.*
 import kotlinx.android.synthetic.main.add_service_row.*
@@ -171,7 +172,7 @@ open class HelperFragment:Fragment() {
         fun showService(service:Service){
             with(service){
                 lblServiceDate.setText(date.toString())
-                lblServicePrice.setText(price.toString())
+                lblServicePrice.setText("$" + price!!.roundTo(2).toString())
                 lblServiceDescription.setText(description.toString())
             }
         }
@@ -205,7 +206,7 @@ open class HelperFragment:Fragment() {
         fun showVehicles(serviceItem: ServiceItem){
             with(serviceItem){
                 lblDescription.setText(description)
-                lblPrice.setText(price.toString())
+                lblPrice.setText("$" + price.toString())
                 lblQuantity.setText(quantity)
             }
 

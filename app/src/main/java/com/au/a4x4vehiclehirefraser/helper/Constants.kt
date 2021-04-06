@@ -10,7 +10,9 @@ object Constants {
     const val VEHICLE_INDEX = "vehicle_index"
     const val TYPE_INDEX = "type_index"
     const val DELETED_VEHICLE = "deleted_Vehicle"
+    const val DELETED_SERVICE = "Deleted Service"
     const val REQUIRED = "Required"
+    const val REPAIRS_OR_SERVICE = "Repairs / Service"
     const val REQUIRED_COMPLETE = "Please complete Required fields"
     const val SUCCESSFULLY_ADDED_SERVICE = "Successfully updated service"
 

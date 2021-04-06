@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.au.a4x4vehiclehirefraser.R
 import com.au.a4x4vehiclehirefraser.dto.*
 import com.au.a4x4vehiclehirefraser.examples.DocSnippets
+import com.au.a4x4vehiclehirefraser.helper.Constants.DELETED_SERVICE
 import com.au.a4x4vehiclehirefraser.helper.Constants.DELETED_VEHICLE
 import com.au.a4x4vehiclehirefraser.helper.Constants.NOTHING_TO_DISPLAY
 import com.au.a4x4vehiclehirefraser.helper.Helper.toast
@@ -202,7 +203,7 @@ class MainViewModel : ViewModel() {
     fun saveService(service: Service) {
         //Update if you have Id already
         if (!service.id.isNullOrEmpty()) {
-            updateService(service, service.id,true)
+            updateService(service, service.id, true)
         } else {
             firestore.collection("service")
                 .add(service)
@@ -211,7 +212,7 @@ class MainViewModel : ViewModel() {
                     addServiceId.value = OneTimeOnly(documentReference.id)
                     //Update id in Service to documentId
                     service.id = documentReference.id
-                    updateService(service, documentReference.id,false)
+                    updateService(service, documentReference.id, false)
                 }
                 .addOnFailureListener { e ->
                     Log.d("Firebase", "Service not saved")
@@ -220,12 +221,12 @@ class MainViewModel : ViewModel() {
 
     }
 
-    private fun updateService(service: Service, id: String,showToast:Boolean) {
+    private fun updateService(service: Service, id: String, showToast: Boolean) {
         firestore.collection("service").document(id)
             .set(service)
             .addOnSuccessListener { documentReference ->
                 Log.d("Firebase", "Service Updated")
-                if(showToast){
+                if (showToast) {
                     addServiceId.value = OneTimeOnly(id)
                 }
             }
@@ -249,13 +250,23 @@ class MainViewModel : ViewModel() {
 
     fun deleteServicePerId(id: String) {
 
-        val toDelete = firestore.collection("service").whereEqualTo("description", "testVehicle")
-            .get()
+        firestore.collection("service").whereEqualTo("id", id).get()
             .addOnSuccessListener {
-                it.documents.forEach {
-                    //it.
+                var batch = firestore.batch();
+                it.forEach {
+                    //Todo: Test to see if this works
+                    it.reference.delete()
                 }
+
+                batch.commit();
+                Log.w("firestore", "Deleted $id")
+                displayToast.value = OneTimeOnly(DELETED_SERVICE)
             }
+            .addOnFailureListener {
+                Log.w("firestore", "Unable to delete $id")
+            }
+
+
     }
 
     fun validateService(
@@ -336,8 +347,10 @@ class MainViewModel : ViewModel() {
         var serviceArrayList = java.util.ArrayList<Service>()
         firestore.collection("service")
             .whereEqualTo("rego", rego)
+            .orderBy("dateMilliseconds",Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { documents ->
+
 
                 for (document in documents) {
                     serviceArrayList.add(
@@ -347,7 +360,9 @@ class MainViewModel : ViewModel() {
                             description = document.get("description").toString(),
                             kms = document.get("kms").toString().toDouble(),
                             rego = document.get("rego").toString(),
-                            price = document.get("price").toString().toDouble()
+                            price = document.get("price").toString().toDouble(),
+                            dateMilliseconds = document.get("dateMilliseconds").toString().toLong()
+
                         )
                     )
                 }
@@ -361,7 +376,7 @@ class MainViewModel : ViewModel() {
 
             }
             .addOnFailureListener {
-                Log.d("firestore", "Unable to find Service in Firestore:")
+                Log.d("firestore", "Unable to find Service in Firestore:Message $it")
             }
 
 

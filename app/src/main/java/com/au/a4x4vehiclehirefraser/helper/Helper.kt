@@ -7,8 +7,11 @@ import android.view.Gravity
 import android.widget.EditText
 import android.widget.Toast
 import com.au.a4x4vehiclehirefraser.R
+import java.lang.Math.round
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.pow
+import kotlin.math.roundToInt
 
 object Helper {
 
@@ -90,6 +93,13 @@ object Helper {
                 .forEach { text += "$it " }
         }
         return text.trim { it <= ' ' }
+    }
+
+    fun Double.roundTo(decimals: Int): Double {
+        var multiplier = 1.0
+        repeat(decimals) { multiplier *= 10 }
+        return round(this * multiplier) / multiplier
+        return 0.0
     }
 
 
