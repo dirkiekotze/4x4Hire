@@ -1,5 +1,8 @@
 package com.au.a4x4vehiclehirefraser.ui.main
 
+import android.app.AlertDialog
+import android.content.DialogInterface
+import android.content.Intent
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -52,6 +55,10 @@ class AddServiceItemFragment : HelperFragment() {
         preference = SharedPreference(requireContext())
         clearFields()
 
+        if(!preference.getValueString(SERVICE_ITEM_ID).isNullOrEmpty()){
+            getServiceItem(preference.getValueString(SERVICE_ITEM_ID))
+        }
+
         mainViewModel.validToAddServiceItem.observe(viewLifecycleOwner, Observer { valid ->
             valid?.getContentIfNotHandledOrReturnNull()?.let {
 
@@ -81,9 +88,84 @@ class AddServiceItemFragment : HelperFragment() {
             }
         })
 
+        mainViewModel.showServiceItem.observe(viewLifecycleOwner, Observer { serviceItem ->
+            serviceItem?.getContentIfNotHandledOrReturnNull()?.let {
+                serviceDescription.setText(it.description)
+                servicePrice.setText(it.price.toString())
+                serviceQuantity.setText(it.quantity)
+                preference.save("SERVICE_ITEM_ID",it.id)
+            }
+        })
+
+        mainViewModel.deletedServiceItem.observe(viewLifecycleOwner, Observer { message ->
+            message?.getContentIfNotHandledOrReturnNull()?.let {
+                it.toast(context!!,false)
+                preference.save(SERVICE_ITEM_ID,0)
+                startActivity(Intent(activity,MainActivity::class.java))
+            }
+        })
+
+
+
+        deleteServiveItemBtn.setOnClickListener {
+            showDeleteDialog()
+        }
+
         serviceDescription.validate(Constants.REQUIRED) { s -> s.textIsEmpty()}
         servicePrice.validate(Constants.REQUIRED) { s -> s.textIsEmpty()}
         serviceQuantity.validate(Constants.REQUIRED){ s -> s.textIsEmpty()}
+
+    }
+
+    private fun deleteServiceItem() {
+        mainViewModel.deleteServiceItem(preference.getValueString(SERVICE_ITEM_ID))
+    }
+
+    // Method to show an alert dialog with yes, no and cancel button
+    private fun showDeleteDialog(){
+        // Late initialize an alert dialog object
+        lateinit var dialog: AlertDialog
+
+
+        // Initialize a new instance of alert dialog builder object
+        val builder = AlertDialog.Builder(context)
+
+        // Set a title for alert dialog
+        builder.setTitle("Are you sure ?.")
+
+        // Set a message for alert dialog
+        builder.setMessage("Do you want to delete the selected Service Item.")
+
+
+        // On click listener for dialog buttons
+        val dialogClickListener = DialogInterface.OnClickListener{ _, which ->
+            when(which){
+                DialogInterface.BUTTON_POSITIVE -> deleteServiceItem()
+                //DialogInterface.BUTTON_NEGATIVE -> toast("No.")
+
+            }
+        }
+
+
+        // Set the alert dialog positive/yes button
+        builder.setPositiveButton("YES",dialogClickListener)
+
+        // Set the alert dialog negative/no button
+        builder.setNegativeButton("NO",dialogClickListener)
+
+
+        // Initialize the AlertDialog using builder object
+        dialog = builder.create()
+
+        // Finally, display the alert dialog
+        dialog.show()
+    }
+
+
+
+    private fun getServiceItem(id: String?) {
+
+        mainViewModel.getServiceItemPerId(id!!)
 
     }
 
@@ -100,7 +182,7 @@ class AddServiceItemFragment : HelperFragment() {
             description = serviceDescription.text.toString()
             price = servicePrice.text.toString().toDouble()
             quantity = serviceQuantity.text.toString()
-
+            id = preference.getValueString(SERVICE_ITEM_ID)!!
         }
 
         serviceItem.serviceId = preference.getValueString(SERVICE_ID).toString()

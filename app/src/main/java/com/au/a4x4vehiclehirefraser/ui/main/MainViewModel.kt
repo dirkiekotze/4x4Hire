@@ -12,6 +12,7 @@ import com.au.a4x4vehiclehirefraser.R
 import com.au.a4x4vehiclehirefraser.dto.*
 import com.au.a4x4vehiclehirefraser.examples.DocSnippets
 import com.au.a4x4vehiclehirefraser.helper.Constants.DELETED_SERVICE
+import com.au.a4x4vehiclehirefraser.helper.Constants.DELETED_SERVICE_ITEM
 import com.au.a4x4vehiclehirefraser.helper.Constants.DELETED_VEHICLE
 import com.au.a4x4vehiclehirefraser.helper.Constants.NOTHING_TO_DISPLAY
 import com.au.a4x4vehiclehirefraser.helper.Helper.toast
@@ -45,6 +46,7 @@ class MainViewModel : ViewModel() {
     var showServiceDetailPerRego = MutableLiveData<OneTimeOnly<ArrayList<Service>>>()
     var hideServiceDetailPerRego = MutableLiveData<OneTimeOnly<String>>()
     var showServiceItems = MutableLiveData<OneTimeOnly<ArrayList<ServiceItem>>>()
+    var showServiceItem = MutableLiveData<OneTimeOnly<ServiceItem>>()
     var serviceSaveBtnVisibility = MutableLiveData<OneTimeOnly<Int>>()
     var serviceSaveBtnText = MutableLiveData<OneTimeOnly<Int>>()
     var addServiceItemBtnVisibility = MutableLiveData<OneTimeOnly<Int>>()
@@ -52,6 +54,7 @@ class MainViewModel : ViewModel() {
     var validToAddService = MutableLiveData<OneTimeOnly<Boolean>>()
     var validToAddServiceItem = MutableLiveData<OneTimeOnly<Boolean>>()
     var displayToast = MutableLiveData<OneTimeOnly<String>>()
+    var deletedServiceItem = MutableLiveData<OneTimeOnly<String>>()
 
 
     init {
@@ -210,7 +213,6 @@ class MainViewModel : ViewModel() {
                 .addOnSuccessListener { documentReference ->
                     Log.d("Firebase", "Service Saved")
                     addServiceId.value = OneTimeOnly(documentReference.id)
-                    //Update id in Service to documentId
                     service.id = documentReference.id
                     updateService(service, documentReference.id, false)
                 }
@@ -236,14 +238,34 @@ class MainViewModel : ViewModel() {
     }
 
     fun saveServiceItem(serviceItem: ServiceItem) {
-        firestore.collection("serviceItem")
-            .add(serviceItem)
+        if (!serviceItem.id.isNullOrEmpty()) {
+            updateServiceItem(serviceItem, serviceItem.id, true)
+        } else {
+            firestore.collection("serviceItem")
+                .add(serviceItem)
+                .addOnSuccessListener { documentReference ->
+                    Log.d("Firebase", "ServiceItem Saved")
+                    addServiceItemId.value = OneTimeOnly(documentReference.id)
+                    serviceItem.id = documentReference.id
+                    updateServiceItem(serviceItem, documentReference.id, false)
+                }
+                .addOnFailureListener { e ->
+                    Log.d("Firebase", "ServiceItem not saved")
+                }
+        }
+    }
+
+    private fun updateServiceItem(serviceItem: ServiceItem, id: String, showToast: Boolean) {
+        firestore.collection("serviceItem").document(id)
+            .set(serviceItem)
             .addOnSuccessListener { documentReference ->
-                Log.d("Firebase", "Service Item Saved")
-                addServiceItemId.value = OneTimeOnly(documentReference.id)
+                Log.d("Firebase", "Service Updated")
+                if (showToast) {
+                    addServiceItemId.value = OneTimeOnly(id)
+                }
             }
             .addOnFailureListener { e ->
-                Log.d("Firebase", "Service not saved")
+                Log.d("Firebase", "Service Updated")
             }
     }
 
@@ -261,6 +283,7 @@ class MainViewModel : ViewModel() {
                 batch.commit();
                 Log.w("firestore", "Deleted $id")
                 displayToast.value = OneTimeOnly(DELETED_SERVICE)
+
             }
             .addOnFailureListener {
                 Log.w("firestore", "Unable to delete $id")
@@ -347,7 +370,7 @@ class MainViewModel : ViewModel() {
         var serviceArrayList = java.util.ArrayList<Service>()
         firestore.collection("service")
             .whereEqualTo("rego", rego)
-            .orderBy("dateMilliseconds",Query.Direction.DESCENDING)
+            .orderBy("dateMilliseconds", Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { documents ->
 
@@ -394,7 +417,9 @@ class MainViewModel : ViewModel() {
                         ServiceItem(
                             price = document.get("price").toString().toDouble(),
                             quantity = document.get("quantity").toString(),
-                            description = document.get("description").toString()
+                            description = document.get("description").toString(),
+                            id = document.get("id").toString(),
+                            serviceId = document.get("serviceId").toString()
                         )
                     )
                 }
@@ -404,6 +429,34 @@ class MainViewModel : ViewModel() {
             }
             .addOnFailureListener {
                 Log.d("firestore", "Unable to find Service in Firestore:")
+            }
+    }
+
+    fun getServiceItemPerId(id: String) {
+
+        var serviceItem = ServiceItem()
+        serviceItem = ServiceItem()
+        firestore.collection("serviceItem")
+            .whereEqualTo("id", id)
+            .get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+
+                    serviceItem = ServiceItem(
+                        price = document.get("price").toString().toDouble(),
+                        quantity = document.get("quantity").toString(),
+                        description = document.get("description").toString(),
+                        id = document.get("id").toString(),
+                        serviceId = document.get("serviceId").toString()
+                    )
+
+                }
+
+                showServiceItem.value = OneTimeOnly(serviceItem)
+
+            }
+            .addOnFailureListener {
+                Log.d("firestore", "Unable to find Service ITem in Firestore:")
             }
     }
 
@@ -476,6 +529,24 @@ class MainViewModel : ViewModel() {
             }
             .addOnFailureListener {
                 Log.w("firestore", "Unable to delete $rego")
+            }
+    }
+
+    fun deleteServiceItem(id: String?) {
+        firestore.collection("serviceItem").whereEqualTo("id",id).get()
+            .addOnSuccessListener {
+                var batch = firestore.batch();
+                it.forEach {
+                    //Todo: Test to see if this works
+                    it.reference.delete()
+                }
+
+                batch.commit();
+                Log.w("firestore", "Deleted ServiceItem $id")
+                deletedServiceItem.value = OneTimeOnly(DELETED_SERVICE_ITEM)
+            }
+            .addOnFailureListener {
+                Log.w("firestore", "Unable to delete ServiceItem $id")
             }
     }
 

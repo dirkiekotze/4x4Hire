@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.au.a4x4vehiclehirefraser.MainActivity
 import com.au.a4x4vehiclehirefraser.R
 import com.au.a4x4vehiclehirefraser.dto.Service
+import com.au.a4x4vehiclehirefraser.dto.ServiceItem
 import com.au.a4x4vehiclehirefraser.helper.Constants
 import com.au.a4x4vehiclehirefraser.helper.Constants.REGO
 import com.au.a4x4vehiclehirefraser.helper.Constants.REQUIRED
@@ -125,13 +126,16 @@ class AddServiceFragment : HelperFragment() {
             }
         })
 
-        mainViewModel.showServiceItems.observe(viewLifecycleOwner, Observer { service ->
-            service?.getContentIfNotHandledOrReturnNull()?.let {
+        mainViewModel.showServiceItems.observe(viewLifecycleOwner, Observer { serviceItem ->
+            serviceItem?.getContentIfNotHandledOrReturnNull()?.let {
                 rcyServiceItem.visibility = View.VISIBLE
                 rcyServiceItem.hasFixedSize()
                 rcyServiceItem.layoutManager = LinearLayoutManager(context)
                 rcyServiceItem.itemAnimator = DefaultItemAnimator()
-                rcyServiceItem.adapter = ServiceItemAdapter(it, R.layout.add_service_item_row)
+                rcyServiceItem.adapter = ServiceItemAdapter(
+                    it,
+                    R.layout.add_service_item_row,
+                    onClickListener = { view, serviceItem -> openServiceItem(view, serviceItem) })
 
             }
         })
@@ -198,6 +202,18 @@ class AddServiceFragment : HelperFragment() {
 
     }
 
+    private fun openService(view: View, service: Service) {
+
+        preference.save(SERVICE_ID, service.id)
+        preference.save(Constants.SERVICE_ITEM_ID, service.id)
+        (activity as MainActivity).showServiceFragment()
+    }
+
+    private fun openServiceItem(view: View, serviceItem: ServiceItem) {
+        preference.save(SERVICE_ID, serviceItem.serviceId)
+        preference.save(Constants.SERVICE_ITEM_ID, serviceItem.id)
+        (activity as MainActivity).showServiceItemFragment()
+    }
 
 
     private fun deleteService() {

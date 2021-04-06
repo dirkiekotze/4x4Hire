@@ -204,7 +204,6 @@ class MainFragment : HelperFragment() {
 
     private fun openService(view: View, service: Service) {
 
-        var xx = service.description
         preference.save(SERVICE_ID, service.id)
         preference.save(SERVICE_ITEM_ID, service.id)
         (activity as MainActivity).showServiceFragment()

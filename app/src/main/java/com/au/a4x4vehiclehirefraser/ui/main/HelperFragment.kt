@@ -3,14 +3,12 @@ package com.au.a4x4vehiclehirefraser.ui.main
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.icu.util.ULocale
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -22,10 +20,9 @@ import com.au.a4x4vehiclehirefraser.R
 import com.au.a4x4vehiclehirefraser.dto.Service
 import com.au.a4x4vehiclehirefraser.dto.ServiceItem
 import com.au.a4x4vehiclehirefraser.dto.Vehicle
+import com.au.a4x4vehiclehirefraser.helper.Constants.SERVICE_ITEM_ID
 import com.au.a4x4vehiclehirefraser.helper.Helper.roundTo
 import com.au.a4x4vehiclehirefraser.helper.SharedPreference
-import kotlinx.android.synthetic.main.add_service_item_row.*
-import kotlinx.android.synthetic.main.add_service_row.*
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -178,7 +175,9 @@ open class HelperFragment:Fragment() {
         }
     }
 
-    inner class ServiceItemAdapter(val services: List<ServiceItem>, val itemLayout: Int) : RecyclerView.Adapter<HelperFragment.ServiceItemViewHolder>() {
+    inner class ServiceItemAdapter(val services: List<ServiceItem>,
+                                   val itemLayout: Int,
+                                   private val onClickListener: (View, ServiceItem) -> Unit) : RecyclerView.Adapter<HelperFragment.ServiceItemViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ServiceItemViewHolder {
             val view = LayoutInflater.from(parent.context).inflate(itemLayout, parent, false)
@@ -192,7 +191,10 @@ open class HelperFragment:Fragment() {
 
         override fun onBindViewHolder(holder: ServiceItemViewHolder, position: Int) {
             val serviceItem = services.get(position)
-            holder.showVehicles(serviceItem)
+            holder.showService(serviceItem)
+            holder.itemView.setOnClickListener { view ->
+                onClickListener(view, serviceItem)
+            }
         }
     }
 
@@ -203,16 +205,17 @@ open class HelperFragment:Fragment() {
         private var lblPrice: TextView = itemView.findViewById(R.id.lblServiceItemPrice)
         private var lblQuantity: TextView = itemView.findViewById(R.id.lblServiceItemQuantity)
 
-        fun showVehicles(serviceItem: ServiceItem){
+        fun showService(serviceItem: ServiceItem){
             with(serviceItem){
                 lblDescription.setText(description)
-                lblPrice.setText("$" + price.toString())
+                lblPrice.setText("$" + price!!.roundTo(2).toString())
                 lblQuantity.setText(quantity)
+
             }
 
-            serviceItemWrapper.setOnClickListener {
-                var xx = serviceItem.description
-            }
+//            serviceItemWrapper.setOnClickListener {
+//                var xx = serviceItem.description
+//            }
         }
     }
 }
