@@ -24,6 +24,7 @@
     <string name="edit_service">Edit Service</string>
     <string name="save_service_item">Save service item</string>
     <string name="service_item">Service Item</string>
+    <string name="hire_detail">Hire Detail</string>
     <string name="do_login">Login</string>
     <string name="home_page">Home Page</string>
     <string-array name="vehicle_model">

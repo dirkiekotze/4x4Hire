@@ -77,7 +77,7 @@ class AddServiceItemFragment : HelperFragment() {
         }
 
         serviceBackBtn.setOnClickListener {
-            (activity as MainActivity).showMainFragment()
+            (activity as MainActivity).showServiceFragment()
         }
 
         //Callback from MainFragment via LifeData
@@ -105,10 +105,15 @@ class AddServiceItemFragment : HelperFragment() {
             }
         })
 
+        mainViewModel.displayToast.observe(viewLifecycleOwner, Observer { message ->
+            message?.getContentIfNotHandledOrReturnNull()?.let {
+                it.toast(context!!,false)
 
+            }
+        })
 
         deleteServiveItemBtn.setOnClickListener {
-            showDeleteDialog()
+            showDialog()
         }
 
         serviceDescription.validate(Constants.REQUIRED) { s -> s.textIsEmpty()}
@@ -122,7 +127,7 @@ class AddServiceItemFragment : HelperFragment() {
     }
 
     // Method to show an alert dialog with yes, no and cancel button
-    private fun showDeleteDialog(){
+    private fun showDialog(){
         // Late initialize an alert dialog object
         lateinit var dialog: AlertDialog
 
@@ -134,7 +139,7 @@ class AddServiceItemFragment : HelperFragment() {
         builder.setTitle("Are you sure ?.")
 
         // Set a message for alert dialog
-        builder.setMessage("Do you want to delete the selected Service Item.")
+        builder.setMessage("Do you want to delete the selected Service.")
 
 
         // On click listener for dialog buttons

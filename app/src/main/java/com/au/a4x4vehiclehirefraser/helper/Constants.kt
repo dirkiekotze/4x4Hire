@@ -11,10 +11,12 @@ object Constants {
     const val TYPE_INDEX = "type_index"
     const val DELETED_VEHICLE = "deleted_Vehicle"
     const val DELETED_SERVICE = "Deleted Service"
-    const val DELETED_SERVICE_ITEM = "Deleted Service Iem"
+    const val DELETED_SERVICE_ITEM = "Deleted Service Item"
     const val REQUIRED = "Required"
     const val REPAIRS_OR_SERVICE = "Repairs / Service"
     const val REQUIRED_COMPLETE = "Please complete Required fields"
     const val SUCCESSFULLY_ADDED_SERVICE = "Successfully updated service"
+    const val ADDED_SERVICE_ITEM = "Added service ITem"
+    const val MILLISECONDS = "milliseconds"
 
 }

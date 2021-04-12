@@ -10,4 +10,7 @@
     <item
         android:id="@+id/add_service"
         android:title="@string/add_service_repair" />
+    <item
+        android:id="@+id/hire"
+        android:title="@string/hire_detail" />
 </menu>

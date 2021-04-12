@@ -18,16 +18,19 @@ import com.au.a4x4vehiclehirefraser.R
 import com.au.a4x4vehiclehirefraser.dto.Service
 import com.au.a4x4vehiclehirefraser.dto.ServiceItem
 import com.au.a4x4vehiclehirefraser.helper.Constants
+import com.au.a4x4vehiclehirefraser.helper.Constants.MILLISECONDS
 import com.au.a4x4vehiclehirefraser.helper.Constants.REGO
 import com.au.a4x4vehiclehirefraser.helper.Constants.REQUIRED
 import com.au.a4x4vehiclehirefraser.helper.Constants.REQUIRED_COMPLETE
 import com.au.a4x4vehiclehirefraser.helper.Constants.SERVICE_ID
+import com.au.a4x4vehiclehirefraser.helper.Constants.SERVICE_ITEM_ID
 import com.au.a4x4vehiclehirefraser.helper.Constants.SUCCESSFULLY_ADDED_SERVICE
 import com.au.a4x4vehiclehirefraser.helper.Helper.textIsEmpty
 import com.au.a4x4vehiclehirefraser.helper.Helper.toMillis
 import com.au.a4x4vehiclehirefraser.helper.Helper.toast
 import com.au.a4x4vehiclehirefraser.helper.Helper.validate
 import com.au.a4x4vehiclehirefraser.helper.SharedPreference
+import kotlinx.android.synthetic.main.add_repair_fragment.*
 import kotlinx.android.synthetic.main.add_service_fragment.*
 import kotlinx.android.synthetic.main.add_service_fragment.addServiceBtn
 import kotlinx.android.synthetic.main.add_service_fragment.service_date
@@ -41,7 +44,6 @@ class AddServiceFragment : HelperFragment() {
 
     var _cal = Calendar.getInstance()
     var _valid = false
-    var _milliseconds:Long = 0
     var _serviceId = ""
 
     companion object {
@@ -95,7 +97,7 @@ class AddServiceFragment : HelperFragment() {
         serviceBack.setOnClickListener {
             //Stop
             preference.save(SERVICE_ID, "")
-            preference.save(SERVICE_ID, "")
+            preference.save(SERVICE_ITEM_ID, "")
             clearFields()
             (activity as MainActivity).showMainFragment()
         }
@@ -120,6 +122,7 @@ class AddServiceFragment : HelperFragment() {
                     service_date.setText(date)
                     service_description.setText(description)
                     service_kms.setText(kms.toString())
+                    preference.save(MILLISECONDS,service.dateMilliseconds.toString())
                 }
 
 
@@ -141,6 +144,7 @@ class AddServiceFragment : HelperFragment() {
         })
 
         addServiceItemBtn.setOnClickListener {
+            preference.save(SERVICE_ITEM_ID,"")
             (activity as MainActivity).showServiceItemFragment()
         }
 
@@ -175,6 +179,8 @@ class AddServiceFragment : HelperFragment() {
             valid?.getContentIfNotHandledOrReturnNull()?.let {
 
                 if(it){
+                    preference.save(SERVICE_ID,"")
+                    preference.save(SERVICE_ITEM_ID,"")
                     saveService()
                 }else{
                     REQUIRED_COMPLETE.toString().toast(context!!, false)
@@ -264,7 +270,7 @@ class AddServiceFragment : HelperFragment() {
         val myFormat = "dd/MM/yyyy" // mention the format you need
         val sdf = SimpleDateFormat(myFormat, Locale.US)
         service_date!!.setText(sdf.format(_cal.getTime()))
-        _milliseconds = _cal.timeInMillis
+        preference.save(MILLISECONDS,_cal.timeInMillis.toString())
     }
 
     private fun displayService() {
@@ -296,7 +302,7 @@ class AddServiceFragment : HelperFragment() {
             kms = service_kms.text.toString().toDouble()
             date = service_date.text.toString()
             rego = preference.getValueString(REGO)!!
-            dateMilliseconds = _milliseconds
+            dateMilliseconds = preference.getValueString(MILLISECONDS)!!.toLong()
             price = service_price.text.toString().toDouble()
         }
         mainViewModel.saveService(service)

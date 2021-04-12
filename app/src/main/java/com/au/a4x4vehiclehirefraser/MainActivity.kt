@@ -24,6 +24,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mainFragment: MainFragment
     private lateinit var addVehicleFragment: AddVehicleFragment
     private lateinit var addServiceFragment: AddServiceFragment
+    private lateinit var hireDetailsFragment: HireDetailFragment
     private lateinit var serviceItemFragment: AddServiceItemFragment
     private lateinit var repairFragment: RepairFragment
     private lateinit var mainViewModel: MainViewModel
@@ -40,6 +41,7 @@ class MainActivity : AppCompatActivity() {
         addVehicleFragment = AddVehicleFragment.newInstance()
         addServiceFragment = AddServiceFragment.newInstance()
         serviceItemFragment = AddServiceItemFragment.newInstance()
+        hireDetailsFragment = HireDetailFragment.newInstance()
         repairFragment = RepairFragment.newInstance()
 
 
@@ -72,11 +74,17 @@ class MainActivity : AppCompatActivity() {
             }
         } else if (item.itemId == R.id.add_service) {
             if (activeFragment != addServiceFragment) {
+                preference.save(SERVICE_ID,"")
+                preference.save(SERVICE_ITEM_ID,"")
                 showServiceFragment()
             }
+        }else if(item.itemId == R.id.hire){
+            showHireFragment()
         }
         return true
     }
+
+
 
     fun doRediredtToMainActivity() {
         startActivity(Intent(this, MainFragment::class.java))
@@ -104,6 +112,13 @@ class MainActivity : AppCompatActivity() {
             .replace(R.id.container, addServiceFragment)
             .commitNow()
         activeFragment = addServiceFragment
+    }
+
+    private fun showHireFragment() {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.container, hireDetailsFragment)
+            .commitNow()
+        activeFragment = hireDetailsFragment
     }
 
     internal fun showRepairFragment() {

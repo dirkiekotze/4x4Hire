@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.au.a4x4vehiclehirefraser.R
 import com.au.a4x4vehiclehirefraser.dto.*
 import com.au.a4x4vehiclehirefraser.examples.DocSnippets
+import com.au.a4x4vehiclehirefraser.helper.Constants.ADDED_SERVICE_ITEM
 import com.au.a4x4vehiclehirefraser.helper.Constants.DELETED_SERVICE
 import com.au.a4x4vehiclehirefraser.helper.Constants.DELETED_SERVICE_ITEM
 import com.au.a4x4vehiclehirefraser.helper.Constants.DELETED_VEHICLE
@@ -247,7 +248,7 @@ class MainViewModel : ViewModel() {
                     Log.d("Firebase", "ServiceItem Saved")
                     addServiceItemId.value = OneTimeOnly(documentReference.id)
                     serviceItem.id = documentReference.id
-                    updateServiceItem(serviceItem, documentReference.id, false)
+                    updateServiceItem(serviceItem, documentReference.id, true)
                 }
                 .addOnFailureListener { e ->
                     Log.d("Firebase", "ServiceItem not saved")
@@ -255,13 +256,13 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    private fun updateServiceItem(serviceItem: ServiceItem, id: String, showToast: Boolean) {
+    private fun updateServiceItem(serviceItem: ServiceItem, id: String, showToastFlag: Boolean) {
         firestore.collection("serviceItem").document(id)
             .set(serviceItem)
             .addOnSuccessListener { documentReference ->
                 Log.d("Firebase", "Service Updated")
-                if (showToast) {
-                    addServiceItemId.value = OneTimeOnly(id)
+                if (showToastFlag) {
+                    displayToast.value = OneTimeOnly(ADDED_SERVICE_ITEM)
                 }
             }
             .addOnFailureListener { e ->
@@ -351,6 +352,7 @@ class MainViewModel : ViewModel() {
                     date = document.get("date").toString()
                     kms = document.get("kms").toString().toDouble()
                     price = document.get("price").toString().toDouble()
+                    dateMilliseconds = document.get("dateMilliseconds").toString().toLong()
                 }
 
                 //Callback to AddService
@@ -533,7 +535,7 @@ class MainViewModel : ViewModel() {
     }
 
     fun deleteServiceItem(id: String?) {
-        firestore.collection("serviceItem").whereEqualTo("id",id).get()
+        firestore.collection("serviceItem").whereEqualTo("id", id).get()
             .addOnSuccessListener {
                 var batch = firestore.batch();
                 it.forEach {
