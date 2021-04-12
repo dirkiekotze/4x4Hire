@@ -161,7 +161,6 @@ class AddServiceFragment : HelperFragment() {
         service_date.setKeyListener(null);
 
         service_date.setOnClickListener {
-
             DatePickerDialog(requireContext(),
                 dateSetListener,
                 // set DatePickerDialog to point to today's date when it loads up
