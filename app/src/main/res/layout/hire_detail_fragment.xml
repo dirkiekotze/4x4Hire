@@ -32,7 +32,7 @@
             android:layout_marginTop="24dp"
             android:layout_marginEnd="24dp"
             android:background="@drawable/rounded_corners"
-            android:hint="@string/service_date"
+            android:hint="@string/hire_start_date"
             android:inputType="date"
             android:paddingLeft="10dp"
             android:textAllCaps="false"
@@ -48,13 +48,29 @@
             android:layout_marginTop="24dp"
             android:layout_marginEnd="24dp"
             android:background="@drawable/rounded_corners"
-            android:hint="@string/service_date"
+            android:hint="@string/hire_end_date"
             android:inputType="date"
             android:paddingLeft="10dp"
             android:textAllCaps="false"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/hire_start_date" />
+
+        <EditText
+            android:id="@+id/hire_days"
+            android:paddingLeft="10dp"
+            android:background="@drawable/rounded_corners"
+            android:inputType="number"
+            android:textAllCaps="false"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="24dp"
+            android:hint="@string/hire_days"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/hire_end_date" />
 
         <EditText
             android:id="@+id/hire_name"
@@ -69,7 +85,7 @@
             android:hint="@string/hire_name"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/hire_end_date" />
+            app:layout_constraintTop_toBottomOf="@+id/hire_days" />
 
         <EditText
             android:id="@+id/hire_email"
@@ -98,7 +114,7 @@
             android:layout_marginTop="24dp"
             android:layout_marginEnd="24dp"
             android:hint="@string/hire_price"
-            android:inputType="number"
+            android:inputType="numberDecimal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/hire_email" />

@@ -27,11 +27,14 @@
     <string name="service_item">Service Item</string>
     <string name="hire_detail">Hire Detail</string>
     <string name="hire_name">Name</string>
+    <string name="hire_days">Days</string>
     <string name="hire_email">Email</string>
     <string name="hire_price">Price</string>
     <string name="hire_note">Note(s)</string>
     <string name="hire_add">Add Hire</string>
     <string name="hire_edit">Edit Hire</string>
+    <string name="hire_start_date">Start Date</string>
+    <string name="hire_end_date">End Date</string>
     <string name="hire_back">Back</string>
     <string name="do_login">Login</string>
     <string name="home_page">Home Page</string>

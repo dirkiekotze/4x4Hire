@@ -17,6 +17,7 @@ object Constants {
     const val REQUIRED_COMPLETE = "Please complete Required fields"
     const val SUCCESSFULLY_ADDED_SERVICE = "Successfully updated service"
     const val ADDED_SERVICE_ITEM = "Added service ITem"
+    const val SUCCESS_HIRE = "Successfully updated Hire : "
     const val MILLISECONDS = "milliseconds"
 
 }

@@ -40,6 +40,7 @@ class MainViewModel : ViewModel() {
     private var _user: FirebaseUser? = null
     private var _photos: java.util.ArrayList<Photo> = java.util.ArrayList<Photo>()
     var addServiceId = MutableLiveData<OneTimeOnly<String>>()
+    var hireId = MutableLiveData<OneTimeOnly<String>>()
     var addServiceItemId = MutableLiveData<OneTimeOnly<String>>()
     var showVehiclePerRego = MutableLiveData<OneTimeOnly<Vehicle>>()
     var showAllVehicles = MutableLiveData<OneTimeOnly<ArrayList<Vehicle>>>()
@@ -54,6 +55,7 @@ class MainViewModel : ViewModel() {
     var displayServiceAndItems = MutableLiveData<OneTimeOnly<Boolean>>()
     var validToAddService = MutableLiveData<OneTimeOnly<Boolean>>()
     var validToAddServiceItem = MutableLiveData<OneTimeOnly<Boolean>>()
+    var validToAddHire = MutableLiveData<OneTimeOnly<Boolean>>()
     var displayToast = MutableLiveData<OneTimeOnly<String>>()
     var deletedServiceItem = MutableLiveData<OneTimeOnly<String>>()
 
@@ -204,6 +206,39 @@ class MainViewModel : ViewModel() {
             .set(photo)
     }
 
+    fun saveHire(hire: Hire) {
+        //Update if you have Id already
+        if (!hire.id.isNullOrEmpty()) {
+            updateHire(hire, hire.id, true)
+        } else {
+            firestore.collection("hire")
+                .add(hire)
+                .addOnSuccessListener { documentReference ->
+                    Log.d("Firebase", "Hire Saved")
+                    hire.id = documentReference.id
+                    updateHire(hire, documentReference.id, true)
+                }
+                .addOnFailureListener { e ->
+                    Log.d("Firebase", "Service not saved")
+                }
+        }
+
+    }
+
+    private fun updateHire(hire: Hire, id: String, showToast: Boolean) {
+        firestore.collection("hire").document(id)
+            .set(hire)
+            .addOnSuccessListener { documentReference ->
+                Log.d("Firebase", "Hire Updated")
+                if (showToast) {
+                    hireId.value = OneTimeOnly(id)
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.d("Firebase", "Hire Updated")
+            }
+    }
+
     fun saveService(service: Service) {
         //Update if you have Id already
         if (!service.id.isNullOrEmpty()) {
@@ -303,6 +338,20 @@ class MainViewModel : ViewModel() {
             validToAddService.value = OneTimeOnly(true)
         } else {
             validToAddService.value = OneTimeOnly(false)
+        }
+    }
+
+    fun validateHire(
+        hireStartDate: Int,
+        hireEndDate: Int,
+        hireName: Int,
+        hireEmail: Int,
+        hireNote:Int
+    ) {
+        if ((hireStartDate > 0) && (hireEndDate > 0) && (hireName > 0) && (hireEmail > 0) && (hireNote > 0)) {
+            validToAddHire.value = OneTimeOnly(true)
+        } else {
+            validToAddHire.value = OneTimeOnly(false)
         }
     }
 

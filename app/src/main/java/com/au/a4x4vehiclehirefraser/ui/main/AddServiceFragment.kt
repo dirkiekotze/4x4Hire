@@ -169,10 +169,7 @@ class AddServiceFragment : HelperFragment() {
                 _cal.get(Calendar.DAY_OF_MONTH)).show()
         }
 
-        service_date.validate(REQUIRED) {s -> s.textIsEmpty()}
-        service_description.validate(REQUIRED) {s -> s.textIsEmpty()}
-        service_kms.validate(REQUIRED){s -> s.textIsEmpty()}
-        service_price.validate(REQUIRED){s -> s.textIsEmpty()}
+        doValidation()
 
         mainViewModel.validToAddService.observe(viewLifecycleOwner, Observer { valid ->
             valid?.getContentIfNotHandledOrReturnNull()?.let {
@@ -205,6 +202,13 @@ class AddServiceFragment : HelperFragment() {
 
         }
 
+    }
+
+    private fun doValidation() {
+        service_date.validate(REQUIRED) { s -> s.textIsEmpty() }
+        service_description.validate(REQUIRED) { s -> s.textIsEmpty() }
+        service_kms.validate(REQUIRED) { s -> s.textIsEmpty() }
+        service_price.validate(REQUIRED) { s -> s.textIsEmpty() }
     }
 
     private fun openService(view: View, service: Service) {
