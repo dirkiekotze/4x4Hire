@@ -17,6 +17,7 @@ import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.au.a4x4vehiclehirefraser.R
+import com.au.a4x4vehiclehirefraser.dto.Hire
 import com.au.a4x4vehiclehirefraser.dto.Service
 import com.au.a4x4vehiclehirefraser.dto.ServiceItem
 import com.au.a4x4vehiclehirefraser.dto.Vehicle
@@ -200,7 +201,6 @@ open class HelperFragment:Fragment() {
 
     inner class ServiceItemViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
 
-        private var serviceItemWrapper: LinearLayout = itemView.findViewById(R.id.wrapperServiceItem)
         private var lblDescription: TextView = itemView.findViewById(R.id.lblServiceItemDescription)
         private var lblPrice: TextView = itemView.findViewById(R.id.lblServiceItemPrice)
         private var lblQuantity: TextView = itemView.findViewById(R.id.lblServiceItemQuantity)
@@ -212,10 +212,52 @@ open class HelperFragment:Fragment() {
                 lblQuantity.setText(quantity)
 
             }
+        }
+    }
 
-//            serviceItemWrapper.setOnClickListener {
-//                var xx = serviceItem.description
-//            }
+    inner class HireAdapter(val hires: List<Hire>,
+                            val itemLayout: Int,
+                            private val onClickListener: (View, Hire) -> Unit) : RecyclerView.Adapter<HelperFragment.HireViewHolder>() {
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HireViewHolder {
+            val view = LayoutInflater.from(parent.context).inflate(itemLayout, parent, false)
+            return HireViewHolder(view)
+        }
+
+
+        override fun getItemCount(): Int {
+            return hires.size
+        }
+
+        override fun onBindViewHolder(holder: HireViewHolder, position: Int) {
+            val hire = hires.get(position)
+            holder.showHire(hire)
+            holder.itemView.setOnClickListener { view -> onClickListener(view, hire)}
+        }
+    }
+
+    inner class HireViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
+
+        private var lblStartDate: TextView = itemView.findViewById(R.id.lblHireStartDate)
+        private var lblEndDate: TextView = itemView.findViewById(R.id.lblHireEndDate)
+        private var lblDays: TextView = itemView.findViewById(R.id.lblHireDays)
+        private var lblName: TextView = itemView.findViewById(R.id.lblHireName)
+        private var lblEmail: TextView = itemView.findViewById(R.id.lblHireEmail)
+        private var lblNote: TextView = itemView.findViewById(R.id.lblHireNote)
+        private var lblPrice: TextView = itemView.findViewById(R.id.lblHirePrice)
+
+
+        fun showHire(hire:Hire){
+            with(hire){
+                lblStartDate.setText(startDate.toString())
+                lblEndDate.setText(endDate.toString())
+                lblDays.setText(days.toString())
+                lblName.setText(name.toString())
+                lblEmail.setText(email.toString())
+                lblPrice.setText("$" + price!!.roundTo(2).toString())
+                lblNote.setText(note)
+
+            }
         }
     }
 }

@@ -30,8 +30,10 @@
     <string name="hire_days">Days</string>
     <string name="hire_email">Email</string>
     <string name="hire_price">Price</string>
+    <string name="hire_kms">Current Kms</string>
     <string name="hire_note">Note(s)</string>
     <string name="hire_add">Add Hire</string>
+    <string name="hire_delete">Delete Hire</string>
     <string name="hire_edit">Edit Hire</string>
     <string name="hire_start_date">Start Date</string>
     <string name="hire_end_date">End Date</string>

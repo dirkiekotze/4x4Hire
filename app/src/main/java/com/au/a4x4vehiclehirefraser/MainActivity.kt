@@ -114,20 +114,13 @@ class MainActivity : AppCompatActivity() {
         activeFragment = addServiceFragment
     }
 
-    private fun showHireFragment() {
+    internal fun showHireFragment() {
         supportFragmentManager.beginTransaction()
             .replace(R.id.container, hireDetailsFragment)
             .commitNow()
         activeFragment = hireDetailsFragment
     }
 
-    internal fun showRepairFragment() {
-
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.container, repairFragment)
-            .commitNow()
-        activeFragment = repairFragment
-    }
 
     internal fun showMainFragment() {
         supportFragmentManager.beginTransaction()

@@ -124,8 +124,6 @@ class AddServiceFragment : HelperFragment() {
                     service_kms.setText(kms.toString())
                     preference.save(MILLISECONDS,service.dateMilliseconds.toString())
                 }
-
-
             }
         })
 
@@ -195,7 +193,6 @@ class AddServiceFragment : HelperFragment() {
         addServiceBtn.setOnClickListener {
             mainViewModel.validateService(service_date.text.length,service_description.text.length,service_kms.text.length,service_price.text.length)
         }
-
 
         serviceDelete.setOnClickListener {
             showDialog()

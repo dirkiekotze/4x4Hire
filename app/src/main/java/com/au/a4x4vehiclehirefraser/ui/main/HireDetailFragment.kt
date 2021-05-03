@@ -1,9 +1,9 @@
 package com.au.a4x4vehiclehirefraser.ui.main
 
+import android.app.AlertDialog
 import android.app.DatePickerDialog
-import androidx.lifecycle.ViewModelProvider
+import android.content.DialogInterface
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,8 +13,8 @@ import androidx.lifecycle.Observer
 import com.au.a4x4vehiclehirefraser.MainActivity
 import com.au.a4x4vehiclehirefraser.R
 import com.au.a4x4vehiclehirefraser.dto.Hire
-import com.au.a4x4vehiclehirefraser.dto.Service
 import com.au.a4x4vehiclehirefraser.helper.Constants
+import com.au.a4x4vehiclehirefraser.helper.Constants.HIRE_ID
 import com.au.a4x4vehiclehirefraser.helper.Constants.REGO
 import com.au.a4x4vehiclehirefraser.helper.Constants.SUCCESS_HIRE
 import com.au.a4x4vehiclehirefraser.helper.Helper.textIsEmpty
@@ -22,7 +22,9 @@ import com.au.a4x4vehiclehirefraser.helper.Helper.toast
 import com.au.a4x4vehiclehirefraser.helper.Helper.validate
 import com.au.a4x4vehiclehirefraser.helper.SharedPreference
 import kotlinx.android.synthetic.main.add_service_fragment.*
+import kotlinx.android.synthetic.main.add_service_fragment.service_Recycler_Header
 import kotlinx.android.synthetic.main.hire_detail_fragment.*
+import kotlinx.android.synthetic.main.main_fragment.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -50,17 +52,29 @@ class HireDetailFragment : HelperFragment() {
             mainViewModel = ViewModelProviders.of(it!!).get(MainViewModel::class.java)
         }
 
+        clearFields()
+
         preference = SharedPreference(requireContext())
         setupDateFields()
+
+        if (!preference.getValueString(HIRE_ID).isNullOrEmpty()) {
+            showHire()
+        }
 
         hireAddBtn.setOnClickListener {
             mainViewModel.validateHire(
                 hire_start_date.text.length,
                 hire_end_date.text.length,
+                hire_days.text.length,
                 hire_name.text.length,
                 hire_email.text.length,
-                hire_note.text.length
+                hire_note.text.length,
+                hire_kms.text.length
             )
+        }
+
+        hireDeleteBtn.setOnClickListener {
+            showDialog()
         }
 
         hireBack.setOnClickListener {
@@ -68,12 +82,26 @@ class HireDetailFragment : HelperFragment() {
             (activity as MainActivity).showMainFragment()
         }
 
+        mainViewModel.showHireDetailSingle.observe(viewLifecycleOwner, Observer { hire ->
+            hire?.getContentIfNotHandledOrReturnNull()?.let {
+                with(it) {
+                    hire_start_date.setText(startDate)
+                    hire_end_date.setText(endDate)
+                    hire_days.setText(days.toString())
+                    hire_name.setText(name)
+                    hire_email.setText(email)
+                    hire_note.setText(note)
+                    hire_price.setText(price.toString())
+                    hire_kms.setText(kms.toString())
+                }
+            }
+        })
+
         mainViewModel.validToAddHire.observe(viewLifecycleOwner, Observer { valid ->
             valid?.getContentIfNotHandledOrReturnNull()?.let {
 
                 if (it) {
-//                    preference.save(Constants.SERVICE_ID,"")
-//                    preference.save(Constants.SERVICE_ITEM_ID,"")
+                    preference.save(Constants.HIRE_ID, "")
                     saveHire()
                 } else {
                     Constants.REQUIRED_COMPLETE.toString().toast(context!!, false)
@@ -85,7 +113,31 @@ class HireDetailFragment : HelperFragment() {
         mainViewModel.hireId.observe(viewLifecycleOwner, Observer { id ->
             id?.getContentIfNotHandledOrReturnNull()?.let {
                 "$SUCCESS_HIRE $it".toast(context!!, false)
+            }
+        })
 
+        mainViewModel.hideAllWithMessage.observe(viewLifecycleOwner, Observer { text ->
+            text?.getContentIfNotHandledOrReturnNull()?.let {
+                it.toast(context!!, false)
+
+                //ToDo:Move to Model
+                if (service_Recycler_Header != null) {
+                    service_Recycler_Header.visibility = View.GONE
+                    rcyService.visibility = View.GONE
+                }
+                if (hire_Recycler_Header != null) {
+                    hire_Recycler_Header.visibility = View.GONE
+                    rcyHire.visibility = View.GONE
+                }
+
+
+            }
+        })
+
+        mainViewModel.displayToast.observe(viewLifecycleOwner, Observer { message ->
+            message?.getContentIfNotHandledOrReturnNull()?.let {
+                it.toast(context!!, false)
+                (activity as MainActivity).showMainFragment()
             }
         })
 
@@ -128,8 +180,53 @@ class HireDetailFragment : HelperFragment() {
             ).show()
         }
 
-        doValidation()
+    }
 
+    private fun doDelete(hireId: String?) {
+
+        mainViewModel.deleteHire(hireId)
+    }
+
+    private fun showHire() {
+        mainViewModel.getHirePerId(preference.getValueString(HIRE_ID)!!)
+    }
+
+    // Method to show an alert dialog with yes, no and cancel button
+    private fun showDialog() {
+        // Late initialize an alert dialog object
+        lateinit var dialog: AlertDialog
+
+
+        // Initialize a new instance of alert dialog builder object
+        val builder = AlertDialog.Builder(context)
+
+        // Set a title for alert dialog
+        builder.setTitle("Delete Hire")
+
+        // Set a message for alert dialog
+        builder.setMessage("Do you want to delete the selected Hire.")
+
+
+        // On click listener for dialog buttons
+        val dialogClickListener = DialogInterface.OnClickListener { _, which ->
+            when (which) {
+                DialogInterface.BUTTON_POSITIVE -> doDelete(preference.getValueString(HIRE_ID))
+            }
+        }
+
+
+        // Set the alert dialog positive/yes button
+        builder.setPositiveButton("YES", dialogClickListener)
+
+        // Set the alert dialog negative/no button
+        builder.setNegativeButton("NO", dialogClickListener)
+
+
+        // Initialize the AlertDialog using builder object
+        dialog = builder.create()
+
+        // Finally, display the alert dialog
+        dialog.show()
     }
 
     private fun clearFields() {
@@ -140,6 +237,7 @@ class HireDetailFragment : HelperFragment() {
         hire_email.setText("")
         hire_name.setText("")
         hire_days.setText("")
+        hire_kms.setText("")
     }
 
     private fun setupDateFields() {
@@ -152,7 +250,6 @@ class HireDetailFragment : HelperFragment() {
     private fun saveHire() {
         val hire = Hire()
         with(hire) {
-            //id = _serviceId
             id = ""
             milliseconds = System.currentTimeMillis()
             startDate = hire_start_date.text.toString()
@@ -163,9 +260,11 @@ class HireDetailFragment : HelperFragment() {
             price = hire_price.text.toString().toDouble()
             days = hire_days.text.toString().toInt()
             rego = preference.getValueString(REGO)!!
+            kms = hire_kms.text.toString().toInt()
 
         }
         mainViewModel.saveHire(hire)
+        clearFields()
     }
 
 
@@ -177,6 +276,7 @@ class HireDetailFragment : HelperFragment() {
         hire_note.validate(Constants.REQUIRED) { s -> s.textIsEmpty() }
         hire_price.validate(Constants.REQUIRED) { s -> s.textIsEmpty() }
         hire_days.validate(Constants.REQUIRED) { s -> s.textIsEmpty() }
+        hire_kms.validate(Constants.REQUIRED) { s -> s.textIsEmpty() }
     }
 
     private fun updateStartDate() {

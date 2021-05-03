@@ -6,17 +6,14 @@ import android.util.Log
 import android.view.View
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.recyclerview.widget.DefaultItemAnimator
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.au.a4x4vehiclehirefraser.R
 import com.au.a4x4vehiclehirefraser.dto.*
-import com.au.a4x4vehiclehirefraser.examples.DocSnippets
 import com.au.a4x4vehiclehirefraser.helper.Constants.ADDED_SERVICE_ITEM
+import com.au.a4x4vehiclehirefraser.helper.Constants.DELETED_HIRE
 import com.au.a4x4vehiclehirefraser.helper.Constants.DELETED_SERVICE
 import com.au.a4x4vehiclehirefraser.helper.Constants.DELETED_SERVICE_ITEM
 import com.au.a4x4vehiclehirefraser.helper.Constants.DELETED_VEHICLE
 import com.au.a4x4vehiclehirefraser.helper.Constants.NOTHING_TO_DISPLAY
-import com.au.a4x4vehiclehirefraser.helper.Helper.toast
 import com.au.a4x4vehiclehirefraser.helper.OneTimeOnly
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.DocumentReference
@@ -47,6 +44,9 @@ class MainViewModel : ViewModel() {
     var showServiceDetail = MutableLiveData<OneTimeOnly<Service>>()
     var showServiceDetailPerRego = MutableLiveData<OneTimeOnly<ArrayList<Service>>>()
     var hideServiceDetailPerRego = MutableLiveData<OneTimeOnly<String>>()
+    var hideAllWithMessage = MutableLiveData<OneTimeOnly<String>>()
+    var showHireDetail = MutableLiveData<OneTimeOnly<ArrayList<Hire>>>()
+    var showHireDetailSingle = MutableLiveData<OneTimeOnly<Hire>>()
     var showServiceItems = MutableLiveData<OneTimeOnly<ArrayList<ServiceItem>>>()
     var showServiceItem = MutableLiveData<OneTimeOnly<ServiceItem>>()
     var serviceSaveBtnVisibility = MutableLiveData<OneTimeOnly<Int>>()
@@ -328,6 +328,24 @@ class MainViewModel : ViewModel() {
 
     }
 
+    fun deleteHire(hireId: String?) {
+        firestore.collection("hire").whereEqualTo("id", hireId).get()
+            .addOnSuccessListener {
+                var batch = firestore.batch();
+                it.forEach {
+                    it.reference.delete()
+                }
+
+                batch.commit();
+                Log.w("firestore", "Deleted $hireId")
+                displayToast.value = OneTimeOnly(DELETED_HIRE)
+
+            }
+            .addOnFailureListener {
+                Log.w("firestore", "Unable to delete $hireId")
+            }
+    }
+
     fun validateService(
         serviceDate: Int,
         serviceDescription: Int,
@@ -344,11 +362,13 @@ class MainViewModel : ViewModel() {
     fun validateHire(
         hireStartDate: Int,
         hireEndDate: Int,
+        hireDays:Int,
         hireName: Int,
         hireEmail: Int,
-        hireNote:Int
+        hireNote: Int,
+        hireKms:Int
     ) {
-        if ((hireStartDate > 0) && (hireEndDate > 0) && (hireName > 0) && (hireEmail > 0) && (hireNote > 0)) {
+        if ((hireStartDate > 0) && (hireEndDate > 0) && (hireDays > 0) && (hireName > 0) && (hireEmail > 0) && (hireNote > 0) &&(hireKms > 0)) {
             validToAddHire.value = OneTimeOnly(true)
         } else {
             validToAddHire.value = OneTimeOnly(false)
@@ -442,7 +462,7 @@ class MainViewModel : ViewModel() {
                 }
 
                 if (serviceArrayList.size == 0) {
-                    hideServiceDetailPerRego.value = OneTimeOnly(NOTHING_TO_DISPLAY)
+                    hideAllWithMessage.value = OneTimeOnly(NOTHING_TO_DISPLAY)
                 } else {
                     showServiceDetailPerRego.value = OneTimeOnly(serviceArrayList)
                 }
@@ -451,6 +471,90 @@ class MainViewModel : ViewModel() {
             }
             .addOnFailureListener {
                 Log.d("firestore", "Unable to find Service in Firestore:Message $it")
+                hideAllWithMessage.value = OneTimeOnly(it.message!!)
+            }
+
+
+    }
+
+    fun getHirePerRego(rego: String) {
+
+        var hireArrayList = java.util.ArrayList<Hire>()
+        firestore.collection("hire")
+            .whereEqualTo("rego", rego)
+            .orderBy("milliseconds", Query.Direction.DESCENDING)
+            .get()
+            .addOnSuccessListener { documents ->
+
+                for (document in documents) {
+                    hireArrayList.add(
+                        Hire(
+                            id = document.get("id").toString(),
+                            rego = document.get("rego").toString(),
+                            startDate = document.get("startDate").toString(),
+                            endDate = document.get("endDate").toString(),
+                            days = document.get("days").toString().toInt(),
+                            name = document.get("name").toString(),
+                            email = document.get("email").toString(),
+                            note = document.get("note").toString(),
+                            price = document.get("price").toString().toDouble(),
+                            milliseconds = document.get("milliseconds").toString().toLong()
+                        )
+                    )
+                }
+
+                if (hireArrayList.size == 0) {
+                    hideAllWithMessage.value = OneTimeOnly(NOTHING_TO_DISPLAY)
+                } else {
+                    showHireDetail.value = OneTimeOnly(hireArrayList)
+                }
+
+
+            }
+            .addOnFailureListener {
+                Log.d("firestore", "Unable to find Hire in Firestore:Message $it")
+                hideAllWithMessage.value = OneTimeOnly(it.message!!)
+            }
+
+
+    }
+
+
+    fun getHirePerId(id: String) {
+
+        var hire = Hire()
+        firestore.collection("hire")
+            .whereEqualTo("id", id)
+            .orderBy("milliseconds", Query.Direction.DESCENDING)
+            .get()
+            .addOnSuccessListener { documents ->
+
+                for (document in documents) {
+                    hire =
+                        Hire(
+                            id = document.get("id").toString(),
+                            rego = document.get("rego").toString(),
+                            startDate = document.get("startDate").toString(),
+                            endDate = document.get("endDate").toString(),
+                            days = document.get("days").toString().toInt(),
+                            name = document.get("name").toString(),
+                            email = document.get("email").toString(),
+                            note = document.get("note").toString(),
+                            price = document.get("price").toString().toDouble(),
+                            milliseconds = document.get("milliseconds").toString().toLong()
+                        )
+
+                }
+
+                if (hire != null) {
+                    showHireDetailSingle.value = OneTimeOnly(hire!!)
+                }
+
+
+            }
+            .addOnFailureListener {
+                Log.d("firestore", "Unable to find Hire in Firestore:Message $it")
+                hideAllWithMessage.value = OneTimeOnly(it.message!!)
             }
 
 
@@ -600,6 +704,8 @@ class MainViewModel : ViewModel() {
                 Log.w("firestore", "Unable to delete ServiceItem $id")
             }
     }
+
+
 
 
     internal var vehicle: MutableLiveData<ArrayList<Vehicle>>

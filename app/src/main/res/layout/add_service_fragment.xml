@@ -11,14 +11,7 @@
 
         <TextView
             android:id="@+id/service_add_header"
-            android:gravity="center"
-            android:textSize="28dp"
-            android:textStyle="bold"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="24dp"
+            style="@style/TextTheme"
             android:text="@string/service_page_heading"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -27,30 +20,16 @@
 
         <EditText
             android:id="@+id/service_date"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="24dp"
-            android:background="@drawable/rounded_corners"
+            style="@style/EditTextTheme"
             android:hint="@string/service_date"
             android:inputType="date"
-            android:paddingLeft="10dp"
-            android:textAllCaps="false"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/service_add_header" />
 
         <EditText
             android:id="@+id/service_description"
-            android:paddingLeft="10dp"
-            android:background="@drawable/rounded_corners"
-            android:textAllCaps="false"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="24dp"
+            style="@style/EditTextTheme"
             android:hint="@string/service_description"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -58,14 +37,7 @@
 
         <EditText
             android:id="@+id/service_kms"
-            android:paddingLeft="10dp"
-            android:background="@drawable/rounded_corners"
-            android:textAllCaps="false"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="24dp"
+            style="@style/EditTextTheme"
             android:hint="@string/vehicle_kms"
             android:inputType="number"
             app:layout_constraintEnd_toEndOf="parent"
@@ -74,14 +46,7 @@
 
         <EditText
             android:id="@+id/service_price"
-            android:paddingLeft="10dp"
-            android:background="@drawable/rounded_corners"
-            android:textAllCaps="false"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="24dp"
+            style="@style/EditTextTheme"
             android:hint="@string/service_price"
             android:inputType="numberDecimal"
             app:layout_constraintEnd_toEndOf="parent"
@@ -90,14 +55,7 @@
 
         <Button
             android:id="@+id/addServiceBtn"
-            android:textColor="@color/white"
-            android:background="@drawable/button_blue"
-            android:textAllCaps="false"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="24dp"
+            style="@style/ButtonTheme"
             android:text="@string/add_service"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -105,31 +63,16 @@
 
         <Button
             android:id="@+id/addServiceItemBtn"
-            android:textColor="@color/white"
-            android:background="@drawable/button_blue"
-            android:textAllCaps="false"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="24dp"
+            style="@style/ButtonTheme"
             android:text="@string/add_service_item"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/addServiceBtn" />
 
-
         <Button
             android:id="@+id/serviceDelete"
-            android:textColor="@color/white"
-            android:background="@drawable/button_blue"
-            android:textAllCaps="false"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="24dp"
+            style="@style/ButtonTheme"
             android:text="@string/delete"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -137,14 +80,7 @@
 
         <Button
             android:id="@+id/serviceBack"
-            android:textColor="@color/white"
-            android:background="@drawable/button_blue"
-            android:textAllCaps="false"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="24dp"
+            style="@style/ButtonTheme"
             android:text="Back"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -152,15 +88,8 @@
 
         <TextView
             android:id="@+id/service_Recycler_Header"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="24dp"
-            android:gravity="center"
+            style="@style/TextTheme"
             android:text="@string/service_item"
-            android:textSize="28dp"
-            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/serviceBack" />

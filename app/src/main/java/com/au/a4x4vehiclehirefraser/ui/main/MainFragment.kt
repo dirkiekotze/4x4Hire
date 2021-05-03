@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -17,9 +16,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.au.a4x4vehiclehirefraser.MainActivity
 import com.firebase.ui.auth.AuthUI
 import com.au.a4x4vehiclehirefraser.R
+import com.au.a4x4vehiclehirefraser.dto.Hire
 import com.au.a4x4vehiclehirefraser.dto.Service
 import com.au.a4x4vehiclehirefraser.dto.Type
 import com.au.a4x4vehiclehirefraser.dto.Vehicle
+import com.au.a4x4vehiclehirefraser.helper.Constants.HIRE_DETAILS
+import com.au.a4x4vehiclehirefraser.helper.Constants.HIRE_ID
 import com.au.a4x4vehiclehirefraser.helper.Constants.NOTHING_TO_DISPLAY
 import com.au.a4x4vehiclehirefraser.helper.Constants.REGO
 import com.au.a4x4vehiclehirefraser.helper.Constants.REPAIRS_OR_SERVICE
@@ -96,9 +98,10 @@ class MainFragment : HelperFragment() {
                     preference.save(VEHICLE_INDEX, position)
                     if (typeSpinner.selectedItem.toString().equals(REPAIRS_OR_SERVICE)) {
                         displayServices()
+                    }else if (typeSpinner.selectedItem.toString().equals(HIRE_DETAILS)){
+                        displayHireDetails()
                     }
                 }
-
             }
 
 
@@ -120,6 +123,8 @@ class MainFragment : HelperFragment() {
 
                     if (type.value.equals(REPAIRS_OR_SERVICE)) {
                         displayServices()
+                    } else if(type.value.equals(HIRE_DETAILS)){
+                        displayHireDetails()
                     }
                 }
 
@@ -166,22 +171,28 @@ class MainFragment : HelperFragment() {
 
         })
 
-        mainViewModel.hideServiceDetailPerRego.observe(viewLifecycleOwner, Observer { text ->
+        mainViewModel.hideAllWithMessage.observe(viewLifecycleOwner, Observer { text ->
             text?.getContentIfNotHandledOrReturnNull()?.let {
                 it.toast(context!!, false)
                 service_Recycler_Header.visibility = View.GONE
                 rcyService.visibility = View.GONE
+
+                hire_Recycler_Header.visibility = View.GONE
+                rcyHire.visibility = View.GONE
             }
         })
 
         mainViewModel.showServiceDetailPerRego.observe(viewLifecycleOwner, Observer { serviceList ->
             serviceList?.getContentIfNotHandledOrReturnNull()?.let {
+                removePrevious()
                 if (it.size == 0) {
                     //makeToast(context, false, "Nothing to Display")
                     NOTHING_TO_DISPLAY.toString().toast(context!!, false)
                     service_Recycler_Header.visibility = View.GONE
+                    hire_Recycler_Header.visibility = View.GONE
                 } else {
                     service_Recycler_Header.visibility = View.VISIBLE
+                    hire_Recycler_Header.visibility = View.GONE
                     rcyService.visibility = View.VISIBLE
                     rcyService.hasFixedSize()
                     rcyService.layoutManager = LinearLayoutManager(context)
@@ -194,6 +205,37 @@ class MainFragment : HelperFragment() {
 
             }
         })
+
+        mainViewModel.showHireDetail.observe(viewLifecycleOwner, Observer { hireList ->
+            hireList?.getContentIfNotHandledOrReturnNull()?.let {
+                removePrevious()
+                if (it.size == 0) {
+                    NOTHING_TO_DISPLAY.toString().toast(context!!, false)
+                    service_Recycler_Header.visibility = View.GONE
+                    hire_Recycler_Header.visibility = View.GONE
+
+                } else {
+                    hire_Recycler_Header.visibility = View.VISIBLE
+                    service_Recycler_Header.visibility = View.GONE
+                    rcyHire.visibility = View.VISIBLE
+                    rcyHire.hasFixedSize()
+                    rcyHire.layoutManager = LinearLayoutManager(context)
+                    rcyHire.itemAnimator = DefaultItemAnimator()
+                    rcyHire.adapter = HireAdapter(
+                        it,
+                        R.layout.hire_row,
+                        onClickListener = { view, hire -> openHire(view, hire) })
+                }
+
+            }
+        })
+    }
+
+    private fun removePrevious() {
+        service_Recycler_Header.visibility = View.GONE
+        rcyService.visibility = View.GONE
+        hire_Recycler_Header.visibility = View.GONE
+        rcyHire.visibility = View.GONE
     }
 
 
@@ -202,11 +244,23 @@ class MainFragment : HelperFragment() {
         mainViewModel.getServicePerRego(preference.getValueString("rego").toString())
     }
 
-    private fun openService(view: View, service: Service) {
+    private fun displayHireDetails(){
 
+        mainViewModel .getHirePerRego(preference.getValueString("rego").toString())
+    }
+
+
+
+    private fun openService(view: View, service: Service) {
         preference.save(SERVICE_ID, service.id)
         preference.save(SERVICE_ITEM_ID, service.id)
         (activity as MainActivity).showServiceFragment()
+    }
+
+    private fun openHire(view: View, hire: Hire) {
+
+        preference.save(HIRE_ID, hire.id)
+        (activity as MainActivity).showHireFragment()
     }
 
     private fun logon() {
@@ -243,3 +297,5 @@ class MainFragment : HelperFragment() {
     }
 
 }
+
+

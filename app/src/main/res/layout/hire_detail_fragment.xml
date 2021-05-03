@@ -11,14 +11,7 @@
 
         <TextView
             android:id="@+id/hire_header"
-            android:gravity="center"
-            android:textSize="28dp"
-            android:textStyle="bold"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="24dp"
+            style="@style/TextTheme"
             android:text="@string/hire_page_heading"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -26,47 +19,24 @@
 
         <EditText
             android:id="@+id/hire_start_date"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="24dp"
-            android:background="@drawable/rounded_corners"
+            style="@style/EditTextTheme"
             android:hint="@string/hire_start_date"
             android:inputType="date"
-            android:paddingLeft="10dp"
-            android:textAllCaps="false"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/hire_header" />
 
         <EditText
             android:id="@+id/hire_end_date"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="24dp"
-            android:background="@drawable/rounded_corners"
+            style="@style/EditTextTheme"
             android:hint="@string/hire_end_date"
-            android:inputType="date"
-            android:paddingLeft="10dp"
-            android:textAllCaps="false"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/hire_start_date" />
 
         <EditText
             android:id="@+id/hire_days"
-            android:paddingLeft="10dp"
-            android:background="@drawable/rounded_corners"
-            android:inputType="number"
-            android:textAllCaps="false"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="24dp"
+            style="@style/EditTextTheme"
             android:hint="@string/hire_days"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -74,14 +44,8 @@
 
         <EditText
             android:id="@+id/hire_name"
+            style="@style/EditTextTheme"
             android:paddingLeft="10dp"
-            android:background="@drawable/rounded_corners"
-            android:textAllCaps="false"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="24dp"
             android:hint="@string/hire_name"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -89,14 +53,7 @@
 
         <EditText
             android:id="@+id/hire_email"
-            android:paddingLeft="10dp"
-            android:background="@drawable/rounded_corners"
-            android:textAllCaps="false"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="24dp"
+            style="@style/EditTextTheme"
             android:hint="@string/hire_email"
             android:inputType="textEmailAddress"
             app:layout_constraintEnd_toEndOf="parent"
@@ -105,14 +62,7 @@
 
         <EditText
             android:id="@+id/hire_price"
-            android:paddingLeft="10dp"
-            android:background="@drawable/rounded_corners"
-            android:textAllCaps="false"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="24dp"
+            style="@style/EditTextTheme"
             android:hint="@string/hire_price"
             android:inputType="numberDecimal"
             app:layout_constraintEnd_toEndOf="parent"
@@ -120,49 +70,45 @@
             app:layout_constraintTop_toBottomOf="@+id/hire_email" />
 
         <EditText
-            android:id="@+id/hire_note"
-            android:paddingLeft="10dp"
-            android:background="@drawable/rounded_corners"
-            android:textAllCaps="false"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="24dp"
-            android:hint="@string/hire_note"
+            android:id="@+id/hire_kms"
+            style="@style/EditTextTheme"
+            android:hint="@string/hire_kms"
+            android:inputType="numberDecimal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/hire_price" />
 
+        <EditText
+            android:id="@+id/hire_note"
+            style="@style/EditTextTheme"
+            android:hint="@string/hire_note"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/hire_kms" />
+
         <Button
             android:id="@+id/hireAddBtn"
-            android:textColor="@color/white"
-            android:background="@drawable/button_blue"
-            android:textAllCaps="false"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="24dp"
+            style="@style/ButtonTheme"
             android:text="@string/hire_add"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/hire_note" />
 
         <Button
-            android:id="@+id/hireBack"
-            android:textColor="@color/white"
-            android:background="@drawable/button_blue"
-            android:textAllCaps="false"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="24dp"
-            android:text="@string/hire_back"
+            android:id="@+id/hireDeleteBtn"
+            style="@style/ButtonTheme"
+            android:text="@string/hire_delete"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/hireAddBtn" />
+
+        <Button
+            android:id="@+id/hireBack"
+            style="@style/ButtonTheme"
+            android:text="@string/hire_back"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/hireDeleteBtn" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

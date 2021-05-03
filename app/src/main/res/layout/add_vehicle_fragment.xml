@@ -12,14 +12,7 @@
 
         <TextView
             android:id="@+id/vehicle_add_header"
-            android:gravity="center"
-            android:textSize="28dp"
-            android:textStyle="bold"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="24dp"
+            style="@style/TextTheme"
             android:text="Add Vehicle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -38,80 +31,46 @@
 
         <EditText
             android:id="@+id/vehicleDescripion"
-            android:background="@drawable/rounded_corners"
-            android:paddingLeft="10dp"
+            style="@style/EditTextTheme"
+            android:hint="@string/vehicle_description"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="24dp"
-            android:hint="@string/vehicle_description"
             app:layout_constraintTop_toBottomOf="@+id/vehicleModelSpinner"/>
 
         <EditText
             android:id="@+id/vehicleYearModel"
-            android:paddingLeft="10dp"
-            android:background="@drawable/rounded_corners"
+            style="@style/EditTextTheme"
+            android:hint="@string/vehicle_year_model"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/vehicleDescripion"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="24dp"
-            android:ems="10"
-            android:hint="@string/vehicle_year_model"
             android:inputType="number" />
 
         <EditText
             android:id="@+id/vehicleKms"
-            android:paddingLeft="10dp"
-            android:background="@drawable/rounded_corners"
+            style="@style/EditTextTheme"
+            android:hint="@string/vehicle_kms"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/vehicleYearModel"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="24dp"
-            android:ems="10"
-            android:hint="@string/vehicle_kms"
             android:inputType="number" />
 
         <EditText
             android:id="@+id/vehicleRego"
-            android:paddingLeft="10dp"
-            android:background="@drawable/rounded_corners"
+            style="@style/EditTextTheme"
+            android:hint="@string/vehicle_rego"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/vehicleKms"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="24dp"
-            android:ems="10"
-            android:hint="@string/vehicle_rego"
             android:inputType="textPersonName" />
 
         <EditText
             android:id="@+id/vehicleColor"
-            android:paddingLeft="10dp"
-            android:background="@drawable/rounded_corners"
+            style="@style/EditTextTheme"
+            android:hint="@string/vehicle_color"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/vehicleRego"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="24dp"
-            android:ems="10"
-            android:hint="@string/vehicle_color"
             android:inputType="textPersonName" />
 
         <ImageButton
@@ -156,30 +115,17 @@
 
         <Button
             android:id="@+id/cmdReturnFromRepairToMain"
-            android:textColor="@color/white"
-            android:background="@drawable/button_blue"
+            style="@style/EditTextTheme"
+            android:text="Back"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/deleteVehicleBtn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="24dp"
-            android:text="Back" />
+            app:layout_constraintTop_toBottomOf="@+id/deleteVehicleBtn"/>
 
         <TextView
             android:id="@+id/vehicle_Recycler_Header"
+            style="@style/TextTheme"
             android:visibility="gone"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="24dp"
-            android:gravity="center"
             android:text="Vehicle(s)"
-            android:textSize="28dp"
-            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/cmdReturnFromRepairToMain" />
