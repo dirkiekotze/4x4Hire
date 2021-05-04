@@ -46,7 +46,7 @@ class ExampleInstrumentedTest {
         firestore.firestoreSettings = FirebaseFirestoreSettings.Builder().build()
 
         givenWhenWeAddTestDataServiceRecord(vehicleType,description)
-        whenSearchForTheTestDataServiceRecord(vehicleType,description)
+        //whenSearchForTheTestDataServiceRecord(vehicleType,description)
         //thenResultContainsSetOfPradoFrontRotors()
 
     }
