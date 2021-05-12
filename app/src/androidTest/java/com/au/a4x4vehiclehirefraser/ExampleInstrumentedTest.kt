@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.au.a4x4vehiclehirefraser.dto.Service
 import com.au.a4x4vehiclehirefraser.dto.ServiceItem
 import com.au.a4x4vehiclehirefraser.ui.main.MainViewModel
 import com.google.firebase.FirebaseApp
@@ -33,37 +34,36 @@ class ExampleInstrumentedTest {
     lateinit var mvm: MainViewModel
     val appContext = InstrumentationRegistry.getInstrumentation().targetContext
     private lateinit var firestore: FirebaseFirestore
-    private var description:String = "Test Description"
-    private var vehicleType:String = "Test Vehicle"
-
-
-
+    private var description: String = "Test Description"
+    private var vehicleType: String = "Test Vehicle"
+    private var rego: String = "TestVehicle"
 
     @Test
     fun addTestServiceDetail_GetTestServiceDetailBackFromFirestore() {
         FirebaseApp.initializeApp(appContext);
         firestore = FirebaseFirestore.getInstance()
         firestore.firestoreSettings = FirebaseFirestoreSettings.Builder().build()
-
-        givenWhenWeAddTestDataServiceRecord(vehicleType,description)
-        //whenSearchForTheTestDataServiceRecord(vehicleType,description)
-        //thenResultContainsSetOfPradoFrontRotors()
+        mvm = MainViewModel()
+        givenWhenWeAddTestDataServiceRecord(vehicleType, rego)
+        whenSearchForTheTestDataServiceRecord(rego)
+        thenServiceRecordContainsTheAddedTestData()
 
     }
 
     @Test
-    fun deleteAddedTestData(){
+    fun deleteAddedTestData() {
 
-        try{
+        try {
             FirebaseApp.initializeApp(appContext);
             firestore = FirebaseFirestore.getInstance()
             firestore.firestoreSettings = FirebaseFirestoreSettings.Builder().build()
-            Log.d("test","In deleteAddedTestData()")
-            givenServiceTestRecord(vehicleType,description)
-            whenYouDeleteTheServiceEntry()
-            //thenTheTestEntryShouldBeGone()
-        }catch(exception:Error){
-            Log.d("test",exception.message.toString())
+            Log.d("test", "In deleteAddedTestData()")
+            mvm = MainViewModel()
+            givenWhenWeAddTestDataServiceRecord(vehicleType, rego)
+            whenYouDeleteTheServiceEntry(rego)
+            thenTheTestEntryShouldBeGone()
+        } catch (exception: Error) {
+            Log.d("test", exception.message.toString())
         }
 
     }
@@ -72,97 +72,60 @@ class ExampleInstrumentedTest {
         addServiceRecord(description, vehicleType)
     }
 
-    private fun whenYouDeleteTheServiceEntry() {
+    private fun whenYouDeleteTheServiceEntry(rego:String) {
 
-        try{
-            var value:String = ""
-            Log.d("test","In whenYouDeleteTheServiceEntry()")
-            firestore.collection("service")
-                .whereEqualTo("vehicleType", vehicleType)
-                //.whereEqualTo("description", description)
-                .get()
-                .addOnSuccessListener {
-                    for (document in it.documents) {
-                        value = document.get("id").toString()
-                    }
-                    Log.d("test","In whenYouDeleteTheServiceEntry() Just Before calling mvm.deleteServicePerId")
-                    mvm.deleteServicePerId(value)
-                    thenTheTestEntryShouldBeGone()
-                }
-                .addOnFailureListener {
-                    assertTrue(1 == 2)
-                }
-        }catch(err:Exception){
-            Log.d("test",err.message.toString())
-        }
+        mvm.deleteServicePerRego(rego,false)
 
     }
 
     private fun thenTheTestEntryShouldBeGone() {
-        var value:String = ""
-        Log.d("test","In thenTheTestEntryShouldBeGone()")
-        firestore.collection("service")
-            .whereEqualTo("vehicleType", vehicleType)
-            .whereEqualTo("description", description)
-            .get()
-            .addOnSuccessListener {
-                for (document in it.documents) {
-                    value = document.get("id").toString()
-                }
-                //Entry found
-                assertTrue(1==2)
-            }
-            .addOnFailureListener {
-                //Correct entry wasnt found
-                assertTrue(1==1)
-            }
-    }
-
-    private fun givenWhenWeAddTestDataServiceRecord(vehicleType: String, description: String) {
-        addServiceRecord(description, vehicleType)
-    }
-
-    private fun addServiceRecord(description: String, vehicleType: String) {
-        mvm = MainViewModel()
-        val service = ServiceItem()
-        service.description = description
-        service.vehicleType = vehicleType
-        mvm.saveService(service)
-    }
-
-    private fun whenSearchForTheTestDataServiceRecord(vehicleType: String, description: String) {
-        firestore.collection("Service")
-            .whereEqualTo("vehicleType", vehicleType)
-            .whereEqualTo("description", description)
-            .get()
-            .addOnSuccessListener {
-                for (document in it.documents) {
-                    var retValue = document.get("description").toString()
-                }
-                thenResultContainsTheAddedTestData()
-            }
-            .addOnFailureListener {
-                thenResultContainsTheAddedTestData()
-            }
-    }
-
-    private fun thenResultContainsTheAddedTestData() {
-        var found = false
-        mvm.service.observeForever {
+        var vehicleFound = false;
+        mvm.vehicle.observeForever {
+            // /here is where we do the observing
             assertNotNull(it)
-            assertNotNull(it.size > 0)
+            assertTrue(it.size > 0)
             it.forEach {
-                if ((it.description == description) && (it.vehicleType == vehicleType)) {
-                    found = true
-                    assertTrue(found)
-                } else {
-                    assertTrue(found)
-
+                if (it.rego == rego) {
+                    vehicleFound = true
                 }
             }
+            assertFalse(vehicleFound)
         }
     }
 
+    private fun givenWhenWeAddTestDataServiceRecord(vehicleType: String, rego: String) {
+        addServiceRecord(description, rego)
+    }
+
+    private fun addServiceRecord(description: String, rego: String) {
+        val service = Service()
+        service.description = description
+        service.rego = rego
+        service.kms = 1.0
+        mvm.saveService(service)
+    }
+
+    private fun whenSearchForTheTestDataServiceRecord(rego: String) {
+        mvm.getServicePerRego(rego)
+    }
+
+
+    private fun thenServiceRecordContainsTheAddedTestData() {
+
+        var vehicleFound = false;
+        mvm.vehicle.observeForever {
+            // /here is where we do the observing
+            assertNotNull(it)
+            assertTrue(it.size > 0)
+            it.forEach {
+                if (it.rego == rego) {
+                    vehicleFound = true
+                }
+            }
+            assertTrue(vehicleFound)
+        }
+
+    }
 
 
 }

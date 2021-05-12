@@ -4,6 +4,7 @@ import android.content.ContentValues.TAG
 import android.net.Uri
 import android.util.Log
 import android.view.View
+import androidx.annotation.WorkerThread
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.au.a4x4vehiclehirefraser.R
@@ -15,23 +16,21 @@ import com.au.a4x4vehiclehirefraser.helper.Constants.DELETED_SERVICE_ITEM
 import com.au.a4x4vehiclehirefraser.helper.Constants.DELETED_VEHICLE
 import com.au.a4x4vehiclehirefraser.helper.Constants.NOTHING_TO_DISPLAY
 import com.au.a4x4vehiclehirefraser.helper.OneTimeOnly
+import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.FirebaseFirestoreSettings
-import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.*
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.add_service_fragment.*
 import kotlinx.android.synthetic.main.add_vehicle_fragment.*
 import kotlinx.android.synthetic.main.main_fragment.*
+import java.util.concurrent.*
 
 class MainViewModel : ViewModel() {
 
     public lateinit var firestore: FirebaseFirestore
-    private var _vehicles: MutableLiveData<ArrayList<Vehicle>> =
-        MutableLiveData<ArrayList<Vehicle>>()
-    private var _service: MutableLiveData<ArrayList<ServiceItem>> =
-        MutableLiveData<ArrayList<ServiceItem>>()
+    private var _vehicles: MutableLiveData<ArrayList<Vehicle>> = MutableLiveData<ArrayList<Vehicle>>()
+    private var _service: MutableLiveData<ArrayList<Service>> = MutableLiveData<ArrayList<Service>>()
     private var _type: MutableLiveData<ArrayList<Type>> = MutableLiveData<ArrayList<Type>>()
     private var storageReferenence = FirebaseStorage.getInstance().getReference()
     private var _user: FirebaseUser? = null
@@ -58,6 +57,9 @@ class MainViewModel : ViewModel() {
     var validToAddHire = MutableLiveData<OneTimeOnly<Boolean>>()
     var displayToast = MutableLiveData<OneTimeOnly<String>>()
     var deletedServiceItem = MutableLiveData<OneTimeOnly<String>>()
+    private val _executor = ThreadPoolExecutor(2, 4,
+        60, TimeUnit.SECONDS, LinkedBlockingQueue()
+    )
 
 
     init {
@@ -107,10 +109,10 @@ class MainViewModel : ViewModel() {
             }
 
             if (snapshot != null) {
-                val allServices = ArrayList<ServiceItem>()
+                val allServices = ArrayList<Service>()
                 val documents = snapshot.documents
                 documents.forEach {
-                    val service = it.toObject(ServiceItem::class.java)
+                    val service = it.toObject(Service::class.java)
                     if (service != null) {
                         allServices.add(service)
                     }
@@ -327,6 +329,30 @@ class MainViewModel : ViewModel() {
 
 
     }
+
+    fun deleteServicePerRego(rego: String,show:Boolean) {
+
+        //This one works::
+        firestore.collection("service").whereEqualTo("rego",rego).get()
+            .addOnSuccessListener {
+
+                var batch = firestore.batch()
+                it.forEach {
+
+                    batch.delete(it.reference)
+                    Log.w("firestore", "Deleted $rego $it.id")
+                }
+
+                batch.commit();
+
+            }
+            .addOnFailureListener{
+
+                Log.w("firestore", "Unable to delete $rego")
+            }
+
+    }
+
 
     fun deleteHire(hireId: String?) {
         firestore.collection("hire").whereEqualTo("id", hireId).get()
@@ -705,7 +731,56 @@ class MainViewModel : ViewModel() {
             }
     }
 
+    private fun deleteCollection(
+        collection: CollectionReference,
+        batchSize: Int,
+        executor: Executor
+    ): Task<Void> {
 
+        // Perform the delete operation on the provided Executor, which allows us to use
+        // simpler synchronous logic without blocking the main thread.
+        return Tasks.call(executor, Callable<Void> {
+            // Get the first batch of documents in the collection
+            var query = collection.orderBy(FieldPath.documentId()).limit(batchSize.toLong())
+
+            // Get a list of deleted documents
+            var deleted = deleteQueryBatch(query)
+
+            // While the deleted documents in the last batch indicate that there
+            // may still be more documents in the collection, page down to the
+            // next batch and delete again
+            while (deleted.size >= batchSize) {
+                // Move the query cursor to start after the last doc in the batch
+                val last = deleted[deleted.size - 1]
+                query = collection.orderBy(FieldPath.documentId())
+                    .startAfter(last.id)
+                    .limit(batchSize.toLong())
+
+                deleted = deleteQueryBatch(query)
+            }
+
+            null
+        })
+    }
+
+    /**
+     * Delete all results from a query in a single WriteBatch. Must be run on a worker thread
+     * to avoid blocking/crashing the main thread.
+     */
+    @WorkerThread
+    @Throws(Exception::class)
+    private fun deleteQueryBatch(query: Query): List<DocumentSnapshot> {
+        val querySnapshot = Tasks.await(query.get())
+
+        val batch = query.firestore.batch()
+        for (snapshot in querySnapshot) {
+            batch.delete(snapshot.reference)
+        }
+        Tasks.await(batch.commit())
+
+        return querySnapshot.documents
+    }
+    // [END delete_collection]
 
 
     internal var vehicle: MutableLiveData<ArrayList<Vehicle>>
@@ -716,7 +791,7 @@ class MainViewModel : ViewModel() {
             _vehicles = value
         }
 
-    internal var service: MutableLiveData<ArrayList<ServiceItem>>
+    internal var service: MutableLiveData<ArrayList<Service>>
         get() {
             return _service
         }

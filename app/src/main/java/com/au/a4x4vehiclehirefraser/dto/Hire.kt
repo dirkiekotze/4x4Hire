@@ -7,4 +7,8 @@ data class Hire(var id: String = "",var rego:String = "",
                 var milliseconds: Long = 0,
                 var kms:Int = 0) {
 
+    override fun toString(): String {
+        return "$name $startDate $endDate $email $note"
+    }
+
 }

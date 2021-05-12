@@ -1,5 +1,6 @@
 package com.au.a4x4vehiclehirefraser.ui.main
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.DialogInterface
@@ -85,6 +86,7 @@ class HireDetailFragment : HelperFragment() {
         mainViewModel.showHireDetailSingle.observe(viewLifecycleOwner, Observer { hire ->
             hire?.getContentIfNotHandledOrReturnNull()?.let {
                 with(it) {
+                    _hireId = id
                     hire_start_date.setText(startDate)
                     hire_end_date.setText(endDate)
                     hire_days.setText(days.toString())
@@ -93,6 +95,7 @@ class HireDetailFragment : HelperFragment() {
                     hire_note.setText(note)
                     hire_price.setText(price.toString())
                     hire_kms.setText(kms.toString())
+                    preference.save(HIRE_ID,id)
                 }
             }
         })
@@ -101,7 +104,6 @@ class HireDetailFragment : HelperFragment() {
             valid?.getContentIfNotHandledOrReturnNull()?.let {
 
                 if (it) {
-                    preference.save(Constants.HIRE_ID, "")
                     saveHire()
                 } else {
                     Constants.REQUIRED_COMPLETE.toString().toast(context!!, false)
@@ -113,6 +115,8 @@ class HireDetailFragment : HelperFragment() {
         mainViewModel.hireId.observe(viewLifecycleOwner, Observer { id ->
             id?.getContentIfNotHandledOrReturnNull()?.let {
                 "$SUCCESS_HIRE $it".toast(context!!, false)
+                (activity as MainActivity).showHireFragment()
+
             }
         })
 
@@ -250,7 +254,7 @@ class HireDetailFragment : HelperFragment() {
     private fun saveHire() {
         val hire = Hire()
         with(hire) {
-            id = ""
+            id = _hireId
             milliseconds = System.currentTimeMillis()
             startDate = hire_start_date.text.toString()
             endDate = hire_end_date.text.toString()

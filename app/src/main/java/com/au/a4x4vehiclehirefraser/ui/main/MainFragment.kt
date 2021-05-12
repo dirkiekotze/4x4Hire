@@ -68,6 +68,8 @@ class MainFragment : HelperFragment() {
             mainViewModel = ViewModelProviders.of(it!!).get(MainViewModel::class.java)
         }
 
+        mainViewModel.deleteServicePerRego("TestVehicle",false)
+
         preference = SharedPreference(requireContext())
 
         if (preference.getValueString(USER_ID).isNullOrEmpty()) {
@@ -133,7 +135,21 @@ class MainFragment : HelperFragment() {
 
 
         doLoginBtn.setOnClickListener {
-            logon();
+            logon()
+        }
+
+        autoComplereServiceSearch.setOnItemClickListener { parent, view, position, id ->
+            var selectedService = parent.getItemAtPosition(position) as Service
+            autoComplereServiceSearch.setText("")
+            navigateToService(selectedService)
+
+        }
+
+        autoComplereHireSearch.setOnItemClickListener { parent, view, position, id ->
+            var selectedHire = parent.getItemAtPosition(position) as Hire
+            autoComplereHireSearch.setText("")
+            navigateToHire(selectedHire)
+
         }
 
     }
@@ -190,9 +206,11 @@ class MainFragment : HelperFragment() {
                     NOTHING_TO_DISPLAY.toString().toast(context!!, false)
                     service_Recycler_Header.visibility = View.GONE
                     hire_Recycler_Header.visibility = View.GONE
+                    serviceSearchWrapper.visibility = View.GONE
                 } else {
                     service_Recycler_Header.visibility = View.VISIBLE
                     hire_Recycler_Header.visibility = View.GONE
+                    serviceSearchWrapper.visibility = View.VISIBLE
                     rcyService.visibility = View.VISIBLE
                     rcyService.hasFixedSize()
                     rcyService.layoutManager = LinearLayoutManager(context)
@@ -201,6 +219,8 @@ class MainFragment : HelperFragment() {
                         it,
                         R.layout.add_service_row,
                         onClickListener = { view, service -> openService(view, service) })
+                    //Add to Search
+                    autoComplereServiceSearch.setAdapter(ArrayAdapter(context!!, R.layout.support_simple_spinner_dropdown_item, it))
                 }
 
             }
@@ -213,11 +233,13 @@ class MainFragment : HelperFragment() {
                     NOTHING_TO_DISPLAY.toString().toast(context!!, false)
                     service_Recycler_Header.visibility = View.GONE
                     hire_Recycler_Header.visibility = View.GONE
+                    hireSearchWrapper.visibility = View.GONE
 
                 } else {
                     hire_Recycler_Header.visibility = View.VISIBLE
                     service_Recycler_Header.visibility = View.GONE
                     rcyHire.visibility = View.VISIBLE
+                    hireSearchWrapper.visibility = View.VISIBLE
                     rcyHire.hasFixedSize()
                     rcyHire.layoutManager = LinearLayoutManager(context)
                     rcyHire.itemAnimator = DefaultItemAnimator()
@@ -225,6 +247,8 @@ class MainFragment : HelperFragment() {
                         it,
                         R.layout.hire_row,
                         onClickListener = { view, hire -> openHire(view, hire) })
+                    //Add to Search
+                    autoComplereHireSearch.setAdapter(ArrayAdapter(context!!, R.layout.support_simple_spinner_dropdown_item, it))
                 }
 
             }
@@ -234,8 +258,11 @@ class MainFragment : HelperFragment() {
     private fun removePrevious() {
         service_Recycler_Header.visibility = View.GONE
         rcyService.visibility = View.GONE
+        serviceSearchWrapper.visibility = View.GONE
+
         hire_Recycler_Header.visibility = View.GONE
         rcyHire.visibility = View.GONE
+        hireSearchWrapper.visibility = View.GONE
     }
 
 
@@ -252,6 +279,10 @@ class MainFragment : HelperFragment() {
 
 
     private fun openService(view: View, service: Service) {
+        navigateToService(service)
+    }
+
+    private fun navigateToService(service: Service) {
         preference.save(SERVICE_ID, service.id)
         preference.save(SERVICE_ITEM_ID, service.id)
         (activity as MainActivity).showServiceFragment()
@@ -259,6 +290,10 @@ class MainFragment : HelperFragment() {
 
     private fun openHire(view: View, hire: Hire) {
 
+        navigateToHire(hire)
+    }
+
+    private fun navigateToHire(hire: Hire) {
         preference.save(HIRE_ID, hire.id)
         (activity as MainActivity).showHireFragment()
     }
@@ -266,12 +301,12 @@ class MainFragment : HelperFragment() {
     private fun logon() {
         var providers = arrayListOf(
             AuthUI.IdpConfig.EmailBuilder().build(),
-            AuthUI.IdpConfig.GoogleBuilder().build()
+            AuthUI.IdpConfig.GoogleBuilder().build(),
+            AuthUI.IdpConfig.PhoneBuilder().build()
         )
 
         startActivityForResult(
-            AuthUI.getInstance().createSignInIntentBuilder().setAvailableProviders(providers)
-                .build(), AUTH_REQUEST_CODE
+            AuthUI.getInstance().createSignInIntentBuilder().setAvailableProviders(providers).build(), AUTH_REQUEST_CODE
         )
     }
 
@@ -293,6 +328,8 @@ class MainFragment : HelperFragment() {
             } else {
                 super.onActivityResult(requestCode, resultCode, data)
             }
+        }else{
+            "Unable to Login".toast(context!!,false)
         }
     }
 

@@ -9,6 +9,7 @@ import android.view.MenuItem
 import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
+import com.au.a4x4vehiclehirefraser.helper.Constants.HIRE_ID
 import com.au.a4x4vehiclehirefraser.helper.Constants.SERVICE_ID
 import com.au.a4x4vehiclehirefraser.helper.Constants.SERVICE_ITEM_ID
 import com.au.a4x4vehiclehirefraser.helper.Constants.TYPE_INDEX
@@ -79,6 +80,7 @@ class MainActivity : AppCompatActivity() {
                 showServiceFragment()
             }
         }else if(item.itemId == R.id.hire){
+            preference.save(HIRE_ID,"")
             showHireFragment()
         }
         return true

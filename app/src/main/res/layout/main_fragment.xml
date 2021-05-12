@@ -51,26 +51,27 @@
 
         <Button
             android:id="@+id/doLoginBtn"
-            android:visibility="gone"
-            android:background="@drawable/button_blue"
-            android:textColor="@color/white"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="24dp"
             android:layout_marginEnd="24dp"
             android:layout_marginBottom="24dp"
+            android:background="@drawable/button_blue"
             android:text="@string/do_login"
+            android:textColor="@color/white"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/typeSpinner" />
+
 
         <TextView
             android:id="@+id/service_Recycler_Header"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
             android:layout_marginTop="24dp"
+            android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
             android:gravity="center"
             android:text="Service(s)"
@@ -80,6 +81,52 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/doLoginBtn" />
+
+        <LinearLayout
+            android:visibility="gone"
+            android:id="@+id/serviceSearchWrapper"
+            android:background="@drawable/rounded_corners"
+            android:layout_marginTop="24dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/service_Recycler_Header">
+
+            <ImageView
+                android:id="@+id/imageSearchService"
+                android:paddingLeft="5dp"
+                android:layout_weight="0.1"
+                android:layout_width="0dp"
+                android:layout_height="25dp"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:layout_marginTop="16dp"
+                android:src="@drawable/search_fixed_size" />
+
+        <AutoCompleteTextView
+            android:id="@+id/autoComplereServiceSearch"
+            android:layout_weight=".95"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="28dp" />
+
+        </LinearLayout>
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rcyService"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/serviceSearchWrapper" />
 
         <TextView
             android:id="@+id/hire_Recycler_Header"
@@ -97,18 +144,41 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/doLoginBtn" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rcyService"
+        <LinearLayout
+            android:visibility="gone"
+            android:id="@+id/hireSearchWrapper"
+            android:background="@drawable/rounded_corners"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginStart="24dp"
             android:layout_marginTop="24dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginEnd="24dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/service_Recycler_Header" />
+            app:layout_constraintTop_toBottomOf="@+id/hire_Recycler_Header">
 
-        <androidx.recyclerview.widget.RecyclerView
+            <ImageView
+                android:id="@+id/imageHireService"
+                android:paddingLeft="5dp"
+                android:layout_weight="0.1"
+                android:layout_width="0dp"
+                android:layout_height="25dp"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:layout_marginTop="16dp"
+                android:src="@drawable/search_fixed_size" />
+
+            <AutoCompleteTextView
+                android:id="@+id/autoComplereHireSearch"
+                android:layout_weight=".90"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textSize="28dp" />
+
+        </LinearLayout>
+
+       <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rcyHire"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -117,7 +187,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/hire_Recycler_Header" />
+            app:layout_constraintTop_toBottomOf="@+id/hireSearchWrapper" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </ScrollView>

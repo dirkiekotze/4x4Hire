@@ -40,6 +40,7 @@
     <string name="hire_back">Back</string>
     <string name="do_login">Login</string>
     <string name="home_page">Home Page</string>
+    <string name="search_frase">Enter search text</string>
     <string-array name="vehicle_model">
         <item>Please Select</item>
         <item>Landcruiser 4.2 Diesel Manual</item>

@@ -116,9 +116,9 @@ class AddServiceItemFragment : HelperFragment() {
             showDialog()
         }
 
-        serviceDescription.validate(Constants.REQUIRED) { s -> s.textIsEmpty()}
-        servicePrice.validate(Constants.REQUIRED) { s -> s.textIsEmpty()}
-        serviceQuantity.validate(Constants.REQUIRED){ s -> s.textIsEmpty()}
+//        serviceDescription.validate(Constants.REQUIRED) { s -> s.textIsEmpty()}
+//        servicePrice.validate(Constants.REQUIRED) { s -> s.textIsEmpty()}
+//        serviceQuantity.validate(Constants.REQUIRED){ s -> s.textIsEmpty()}
 
     }
 
