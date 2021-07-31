@@ -110,7 +110,7 @@ class AddVehicleFragment : HelperFragment() {
                 //Todo:Fix This
                 run breaker@{
                     models.forEach {
-                        if (it.equals(vehicle.model)) {
+                        if (it.equals(vehicle.Model)) {
                             return@breaker
                         }
                         index++
@@ -119,14 +119,14 @@ class AddVehicleFragment : HelperFragment() {
 
                 with(vehicle) {
                     vehicleModelSpinner.setSelection(index)
-                    vehicleDescripion.setText(description)
-                    vehicleYearModel.setText(yearModel.toString())
-                    vehicleKms.setText(kms.toString())
-                    vehicleRego.setText(rego)
-                    vehicleColor.setText(color)
+                    vehicleDescripion.setText(Description)
+                    vehicleYearModel.setText(YearModel.toString())
+                    vehicleKms.setText(Kms.toString())
+                    vehicleRego.setText(Rego)
+                    vehicleColor.setText(Color)
                 }
 
-                preference.save(REGO,vehicle.rego)
+                preference.save(REGO,vehicle.Rego)
                 vehicle_add_scrollview.fullScroll(ScrollView.FOCUS_UP)
             }
         })
@@ -147,7 +147,7 @@ class AddVehicleFragment : HelperFragment() {
     }
 
     private fun openVehicle(view: View, vehicle: Vehicle) {
-        mainViewModel.getVehiclePerRego(vehicle.rego)
+        mainViewModel.getVehiclePerRego(vehicle.Rego)
     }
 
 
@@ -170,12 +170,12 @@ class AddVehicleFragment : HelperFragment() {
         preference.getValueString(USER_ID) ?: return
 
         vehicle.apply {
-            rego = vehicleRego.text.toString()
-            description = vehicleDescripion.text.toString()
-            kms = vehicleKms.text.toString().toInt()
-            model = vehicleModelSpinner.selectedItem.toString()
-            yearModel = vehicleYearModel.text.toString().toInt()
-            color = vehicleColor.text.toString()
+            Rego = vehicleRego.text.toString()
+            Description = vehicleDescripion.text.toString()
+            Kms = vehicleKms.text.toString().toInt()
+            Model = vehicleModelSpinner.selectedItem.toString()
+            YearModel = vehicleYearModel.text.toString().toInt()
+            Color = vehicleColor.text.toString()
         }.apply {
             clearFields()
             //rcyVehicle.adapter?.notifyDataSetChanged()

@@ -1,17 +1,14 @@
 package com.au.a4x4vehiclehirefraser
 
-import android.nfc.Tag
 import android.util.Log
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.au.a4x4vehiclehirefraser.dto.Service
-import com.au.a4x4vehiclehirefraser.dto.ServiceItem
 import com.au.a4x4vehiclehirefraser.ui.main.MainViewModel
 import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
-import kotlinx.android.synthetic.main.add_service_item_fragment.*
 
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -19,7 +16,6 @@ import org.junit.runner.RunWith
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.rules.TestRule
-import java.lang.Exception
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -85,7 +81,7 @@ class ExampleInstrumentedTest {
             assertNotNull(it)
             assertTrue(it.size > 0)
             it.forEach {
-                if (it.rego == rego) {
+                if (it.Rego == rego) {
                     vehicleFound = true
                 }
             }
@@ -118,7 +114,7 @@ class ExampleInstrumentedTest {
             assertNotNull(it)
             assertTrue(it.size > 0)
             it.forEach {
-                if (it.rego == rego) {
+                if (it.Rego == rego) {
                     vehicleFound = true
                 }
             }

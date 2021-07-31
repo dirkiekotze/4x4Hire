@@ -26,21 +26,18 @@ import com.au.a4x4vehiclehirefraser.helper.Constants.SERVICE_ID
 import com.au.a4x4vehiclehirefraser.helper.Constants.SERVICE_ITEM_ID
 import com.au.a4x4vehiclehirefraser.helper.Constants.SUCCESSFULLY_ADDED_SERVICE
 import com.au.a4x4vehiclehirefraser.helper.Helper.textIsEmpty
-import com.au.a4x4vehiclehirefraser.helper.Helper.toMillis
 import com.au.a4x4vehiclehirefraser.helper.Helper.toast
 import com.au.a4x4vehiclehirefraser.helper.Helper.validate
 import com.au.a4x4vehiclehirefraser.helper.SharedPreference
-import kotlinx.android.synthetic.main.add_repair_fragment.*
 import kotlinx.android.synthetic.main.add_service_fragment.*
 import kotlinx.android.synthetic.main.add_service_fragment.addServiceBtn
 import kotlinx.android.synthetic.main.add_service_fragment.service_date
 import kotlinx.android.synthetic.main.add_service_fragment.service_description
 import kotlinx.android.synthetic.main.add_service_fragment.service_kms
-import kotlinx.android.synthetic.main.add_service_item_fragment.*
 import java.text.SimpleDateFormat
 import java.util.*
 
-class AddServiceFragment : HelperFragment() {
+class AddServiceFragment : HelperFragment()  {
 
     var _cal = Calendar.getInstance()
     var _valid = false
@@ -63,6 +60,7 @@ class AddServiceFragment : HelperFragment() {
         super.onActivityCreated(savedInstanceState)
         activity.let {
             mainViewModel = ViewModelProviders.of(it!!).get(MainViewModel::class.java)
+
         }
 
         preference = SharedPreference(requireContext())

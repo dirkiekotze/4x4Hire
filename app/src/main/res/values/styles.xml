@@ -43,6 +43,18 @@
         <item name="android:layout_marginEnd">24dp</item>
     </style>
 
+    <style name="spinnerItemStyle">
+        <item name="android:padding">10dp</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
+
+    <style name="spinnerDropDownItemStyle">
+        <item name="android:padding">20dp</item>
+        <item name="android:textSize">30dp</item>
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
+
 
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"

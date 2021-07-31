@@ -51,6 +51,7 @@ class AddServiceItemFragment : HelperFragment() {
         super.onActivityCreated(savedInstanceState)
         activity.let {
             mainViewModel = ViewModelProviders.of(it!!).get(MainViewModel::class.java)
+
         }
         preference = SharedPreference(requireContext())
         clearFields()

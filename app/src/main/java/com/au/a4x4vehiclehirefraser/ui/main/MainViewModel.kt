@@ -18,7 +18,6 @@ import com.au.a4x4vehiclehirefraser.helper.Constants.NOTHING_TO_DISPLAY
 import com.au.a4x4vehiclehirefraser.helper.OneTimeOnly
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.*
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.add_service_fragment.*
@@ -28,12 +27,12 @@ import java.util.concurrent.*
 
 class MainViewModel : ViewModel() {
 
-    public lateinit var firestore: FirebaseFirestore
+    private var firestore: FirebaseFirestore
     private var _vehicles: MutableLiveData<ArrayList<Vehicle>> = MutableLiveData<ArrayList<Vehicle>>()
     private var _service: MutableLiveData<ArrayList<Service>> = MutableLiveData<ArrayList<Service>>()
     private var _type: MutableLiveData<ArrayList<Type>> = MutableLiveData<ArrayList<Type>>()
+    private var _hire: MutableLiveData<ArrayList<Hire>> = MutableLiveData<ArrayList<Hire>>()
     private var storageReferenence = FirebaseStorage.getInstance().getReference()
-    private var _user: FirebaseUser? = null
     private var _photos: java.util.ArrayList<Photo> = java.util.ArrayList<Photo>()
     var addServiceId = MutableLiveData<OneTimeOnly<String>>()
     var hireId = MutableLiveData<OneTimeOnly<String>>()
@@ -42,7 +41,7 @@ class MainViewModel : ViewModel() {
     var showAllVehicles = MutableLiveData<OneTimeOnly<ArrayList<Vehicle>>>()
     var showServiceDetail = MutableLiveData<OneTimeOnly<Service>>()
     var showServiceDetailPerRego = MutableLiveData<OneTimeOnly<ArrayList<Service>>>()
-    var hideServiceDetailPerRego = MutableLiveData<OneTimeOnly<String>>()
+    var showServiceDetailPerRegoFromLocalDb = MutableLiveData<OneTimeOnly<String>>()
     var hideAllWithMessage = MutableLiveData<OneTimeOnly<String>>()
     var showHireDetail = MutableLiveData<OneTimeOnly<ArrayList<Hire>>>()
     var showHireDetailSingle = MutableLiveData<OneTimeOnly<Hire>>()
@@ -57,24 +56,18 @@ class MainViewModel : ViewModel() {
     var validToAddHire = MutableLiveData<OneTimeOnly<Boolean>>()
     var displayToast = MutableLiveData<OneTimeOnly<String>>()
     var deletedServiceItem = MutableLiveData<OneTimeOnly<String>>()
-    private val _executor = ThreadPoolExecutor(2, 4,
-        60, TimeUnit.SECONDS, LinkedBlockingQueue()
-    )
 
 
     init {
         //Cloud Firestore Initialization
         firestore = FirebaseFirestore.getInstance()
         firestore.firestoreSettings = FirebaseFirestoreSettings.Builder().build()
+
         listenToVehicles()
         listenToService()
         listenToType()
+        listenToHire()
 
-        // Run snippets
-
-        // Run snippets
-//        val docSnippets = DocSnippets(firestore)
-//        docSnippets.runAll()
     }
 
     private fun listenToVehicles() {
@@ -146,9 +139,34 @@ class MainViewModel : ViewModel() {
             }
     }
 
+    private fun listenToHire(){
+
+        firestore.collection("hire")
+            .orderBy("id", Query.Direction.ASCENDING)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    Log.w(TAG, "Listener for Hire failed")
+                    return@addSnapshotListener
+                }
+
+                if (snapshot != null) {
+                    val allHire = ArrayList<Hire>()
+                    val documents = snapshot.documents
+                    documents.forEach {
+                        val hire = it.toObject(Hire::class.java)
+                        if (hire != null) {
+                            allHire.add(hire)
+                        }
+                    }
+                    Log.w(TAG, "Listener for Hire found values")
+                    _hire.value = allHire
+                }
+            }
+    }
+
     fun saveVehicle(vehicle: Vehicle, photos: java.util.ArrayList<Photo>, userId: String?) {
 
-        val document: DocumentReference = firestore.collection("vehicle").document(vehicle.rego)
+        val document: DocumentReference = firestore.collection("vehicle").document(vehicle.Rego)
         val set = document.set(vehicle)
         set.addOnSuccessListener {
             Log.d("Firebase", "Vehicle Saved")
@@ -168,7 +186,7 @@ class MainViewModel : ViewModel() {
 
         //Create document as child of vehicle doc
         val collection = firestore.collection("vehicle")
-            .document(vehicle.rego)
+            .document(vehicle.Rego)
             .collection("photos")
         photos.forEach { photo ->
             val task = collection.add(photo)
@@ -202,7 +220,7 @@ class MainViewModel : ViewModel() {
 
     private fun updatePhotoDatabase(vehicle: Vehicle, photo: Photo) {
         firestore.collection("vehicle")
-            .document(vehicle.rego)
+            .document(vehicle.Rego)
             .collection("photos")
             .document(photo.id)
             .set(photo)
@@ -330,10 +348,10 @@ class MainViewModel : ViewModel() {
 
     }
 
-    fun deleteServicePerRego(rego: String,show:Boolean) {
+    fun deleteServicePerRego(rego: String, show: Boolean) {
 
         //This one works::
-        firestore.collection("service").whereEqualTo("rego",rego).get()
+        firestore.collection("service").whereEqualTo("rego", rego).get()
             .addOnSuccessListener {
 
                 var batch = firestore.batch()
@@ -346,7 +364,7 @@ class MainViewModel : ViewModel() {
                 batch.commit();
 
             }
-            .addOnFailureListener{
+            .addOnFailureListener {
 
                 Log.w("firestore", "Unable to delete $rego")
             }
@@ -388,13 +406,13 @@ class MainViewModel : ViewModel() {
     fun validateHire(
         hireStartDate: Int,
         hireEndDate: Int,
-        hireDays:Int,
+        hireDays: Int,
         hireName: Int,
         hireEmail: Int,
         hireNote: Int,
-        hireKms:Int
+        hireKms: Int
     ) {
-        if ((hireStartDate > 0) && (hireEndDate > 0) && (hireDays > 0) && (hireName > 0) && (hireEmail > 0) && (hireNote > 0) &&(hireKms > 0)) {
+        if ((hireStartDate > 0) && (hireEndDate > 0) && (hireDays > 0) && (hireName > 0) && (hireEmail > 0) && (hireNote > 0) && (hireKms > 0)) {
             validToAddHire.value = OneTimeOnly(true)
         } else {
             validToAddHire.value = OneTimeOnly(false)
@@ -419,9 +437,9 @@ class MainViewModel : ViewModel() {
                 for (document in documents) {
                     vehicleArrayList.add(
                         Vehicle(
-                            document.get("model").toString(),
-                            document.get("rego").toString(),
-                            document.get("description").toString()
+                            document.get("Model").toString(),
+                            document.get("Rego").toString(),
+                            document.get("Description").toString()
                         )
                     )
                 }
@@ -447,7 +465,7 @@ class MainViewModel : ViewModel() {
                     date = document.get("date").toString()
                     kms = document.get("kms").toString().toDouble()
                     price = document.get("price").toString().toDouble()
-                    dateMilliseconds = document.get("dateMilliseconds").toString().toLong()
+                    dateMilliseconds = document.get("dateMilliSeconds").toString().toLong()
                 }
 
                 //Callback to AddService
@@ -471,7 +489,6 @@ class MainViewModel : ViewModel() {
             .get()
             .addOnSuccessListener { documents ->
 
-
                 for (document in documents) {
                     serviceArrayList.add(
                         Service(
@@ -491,6 +508,7 @@ class MainViewModel : ViewModel() {
                     hideAllWithMessage.value = OneTimeOnly(NOTHING_TO_DISPLAY)
                 } else {
                     showServiceDetailPerRego.value = OneTimeOnly(serviceArrayList)
+                    showServiceDetailPerRegoFromLocalDb.value = OneTimeOnly(rego)
                 }
 
 
@@ -502,6 +520,10 @@ class MainViewModel : ViewModel() {
 
 
     }
+
+
+
+
 
     fun getHirePerRego(rego: String) {
 
@@ -669,12 +691,12 @@ class MainViewModel : ViewModel() {
 
                 for (document in documents) {
                     with(vehicle) {
-                        model = document.get("model").toString()
-                        rego = document.get("rego").toString()
-                        description = document.get("description").toString()
-                        yearModel = document.get("yearModel").toString().toInt()
-                        kms = document.get("kms").toString().toInt()
-                        color = document.get("color").toString()
+                        Model = document.get("model").toString()
+                        Rego = document.get("rego").toString()
+                        Description = document.get("description").toString()
+                        YearModel = document.get("yearModel").toString().toInt()
+                        Kms = document.get("kms").toString().toInt()
+                        Color = document.get("color").toString()
 
                     }
 
@@ -807,4 +829,11 @@ class MainViewModel : ViewModel() {
             _type = value
         }
 
+    internal var hire: MutableLiveData<ArrayList<Hire>>
+        get() {
+            return _hire
+        }
+        set(value) {
+            _hire = value
+        }
 }

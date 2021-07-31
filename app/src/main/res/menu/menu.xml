@@ -13,4 +13,7 @@
     <item
         android:id="@+id/hire"
         android:title="@string/hire_detail" />
+    <item
+        android:id="@+id/expense"
+        android:title="@string/expense_detail" />
 </menu>

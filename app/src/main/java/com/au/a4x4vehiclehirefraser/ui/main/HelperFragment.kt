@@ -9,7 +9,6 @@ import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -21,7 +20,6 @@ import com.au.a4x4vehiclehirefraser.dto.Hire
 import com.au.a4x4vehiclehirefraser.dto.Service
 import com.au.a4x4vehiclehirefraser.dto.ServiceItem
 import com.au.a4x4vehiclehirefraser.dto.Vehicle
-import com.au.a4x4vehiclehirefraser.helper.Constants.SERVICE_ITEM_ID
 import com.au.a4x4vehiclehirefraser.helper.Helper.roundTo
 import com.au.a4x4vehiclehirefraser.helper.SharedPreference
 import java.io.File
@@ -131,8 +129,8 @@ open class HelperFragment:Fragment() {
 
             fun showVehicles(vehicle: Vehicle) {
 
-                lblYearModel.setText(vehicle.yearModel.toString())
-                lblRego.setText(vehicle.rego)
+                lblYearModel.setText(vehicle.YearModel.toString())
+                lblRego.setText(vehicle.Rego)
                 lblVehicleDescription.setText(vehicle.toString())
 
             }

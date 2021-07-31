@@ -1,16 +1,16 @@
 package com.au.a4x4vehiclehirefraser.ui.main
 
-import android.app.Activity
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.DatePicker
-import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import com.au.a4x4vehiclehirefraser.MainActivity
 import com.au.a4x4vehiclehirefraser.R
 import com.au.a4x4vehiclehirefraser.dto.Hire
@@ -19,20 +19,23 @@ import com.au.a4x4vehiclehirefraser.helper.Constants.HIRE_ID
 import com.au.a4x4vehiclehirefraser.helper.Constants.REGO
 import com.au.a4x4vehiclehirefraser.helper.Constants.SUCCESS_HIRE
 import com.au.a4x4vehiclehirefraser.helper.Helper.textIsEmpty
+import com.au.a4x4vehiclehirefraser.helper.Helper.toMillis
 import com.au.a4x4vehiclehirefraser.helper.Helper.toast
 import com.au.a4x4vehiclehirefraser.helper.Helper.validate
 import com.au.a4x4vehiclehirefraser.helper.SharedPreference
-import kotlinx.android.synthetic.main.add_service_fragment.*
 import kotlinx.android.synthetic.main.add_service_fragment.service_Recycler_Header
 import kotlinx.android.synthetic.main.hire_detail_fragment.*
 import kotlinx.android.synthetic.main.main_fragment.*
+import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
 class HireDetailFragment : HelperFragment() {
 
-    var _cal = Calendar.getInstance()
+    var _calStart = Calendar.getInstance()
+    var _calEnd = Calendar.getInstance()
     var _hireId = ""
+    val df: DateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.US)
 
     companion object {
         fun newInstance() = HireDetailFragment()
@@ -87,7 +90,9 @@ class HireDetailFragment : HelperFragment() {
             hire?.getContentIfNotHandledOrReturnNull()?.let {
                 with(it) {
                     _hireId = id
+                    _calStart.timeInMillis = df.parse(startDate).toMillis()
                     hire_start_date.setText(startDate)
+                    _calEnd.timeInMillis = df.parse(endDate).toMillis()
                     hire_end_date.setText(endDate)
                     hire_days.setText(days.toString())
                     hire_name.setText(name)
@@ -95,7 +100,7 @@ class HireDetailFragment : HelperFragment() {
                     hire_note.setText(note)
                     hire_price.setText(price.toString())
                     hire_kms.setText(kms.toString())
-                    preference.save(HIRE_ID,id)
+                    preference.save(HIRE_ID, id)
                 }
             }
         })
@@ -115,7 +120,8 @@ class HireDetailFragment : HelperFragment() {
         mainViewModel.hireId.observe(viewLifecycleOwner, Observer { id ->
             id?.getContentIfNotHandledOrReturnNull()?.let {
                 "$SUCCESS_HIRE $it".toast(context!!, false)
-                (activity as MainActivity).showHireFragment()
+                preference.save(Constants.HIRE_ID, 0)
+                startActivity(Intent(activity, MainActivity::class.java))
 
             }
         })
@@ -148,18 +154,18 @@ class HireDetailFragment : HelperFragment() {
 
         val dateSetStartDateListener = object : DatePickerDialog.OnDateSetListener {
             override fun onDateSet(view: DatePicker, year: Int, monthOfYear: Int, dayOfMonth: Int) {
-                _cal.set(Calendar.YEAR, year)
-                _cal.set(Calendar.MONTH, monthOfYear)
-                _cal.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+                _calStart.set(Calendar.YEAR, year)
+                _calStart.set(Calendar.MONTH, monthOfYear)
+                _calStart.set(Calendar.DAY_OF_MONTH, dayOfMonth)
                 updateStartDate()
             }
         }
 
         val dateSetEndDateListener = object : DatePickerDialog.OnDateSetListener {
             override fun onDateSet(view: DatePicker, year: Int, monthOfYear: Int, dayOfMonth: Int) {
-                _cal.set(Calendar.YEAR, year)
-                _cal.set(Calendar.MONTH, monthOfYear)
-                _cal.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+                _calEnd.set(Calendar.YEAR, year)
+                _calEnd.set(Calendar.MONTH, monthOfYear)
+                _calEnd.set(Calendar.DAY_OF_MONTH, dayOfMonth)
                 updateEndDate()
             }
         }
@@ -168,9 +174,9 @@ class HireDetailFragment : HelperFragment() {
             DatePickerDialog(
                 requireContext(),
                 dateSetStartDateListener,
-                _cal.get(Calendar.YEAR),
-                _cal.get(Calendar.MONTH),
-                _cal.get(Calendar.DAY_OF_MONTH)
+                _calStart.get(Calendar.YEAR),
+                _calStart.get(Calendar.MONTH),
+                _calStart.get(Calendar.DAY_OF_MONTH)
             ).show()
         }
 
@@ -178,9 +184,9 @@ class HireDetailFragment : HelperFragment() {
             DatePickerDialog(
                 requireContext(),
                 dateSetEndDateListener,
-                _cal.get(Calendar.YEAR),
-                _cal.get(Calendar.MONTH),
-                _cal.get(Calendar.DAY_OF_MONTH)
+                _calEnd.get(Calendar.YEAR),
+                _calEnd.get(Calendar.MONTH),
+                _calEnd.get(Calendar.DAY_OF_MONTH)
             ).show()
         }
 
@@ -286,14 +292,14 @@ class HireDetailFragment : HelperFragment() {
     private fun updateStartDate() {
         val myFormat = "dd/MM/yyyy" // mention the format you need
         val sdf = SimpleDateFormat(myFormat, Locale.US)
-        hire_start_date!!.setText(sdf.format(_cal.getTime()))
+        hire_start_date!!.setText(sdf.format(_calStart.getTime()))
         //preference.save(Constants.MILLISECONDS,_cal.timeInMillis.toString())
     }
 
     private fun updateEndDate() {
         val myFormat = "dd/MM/yyyy" // mention the format you need
         val sdf = SimpleDateFormat(myFormat, Locale.US)
-        hire_end_date!!.setText(sdf.format(_cal.getTime()))
+        hire_end_date!!.setText(sdf.format(_calStart.getTime()))
         //preference.save(Constants.MILLISECONDS,_cal.timeInMillis.toString())
     }
 

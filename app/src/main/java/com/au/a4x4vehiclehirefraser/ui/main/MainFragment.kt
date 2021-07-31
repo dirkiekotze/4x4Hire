@@ -1,20 +1,20 @@
 package com.au.a4x4vehiclehirefraser.ui.main
 
 import android.app.Activity
+import android.content.ContentValues.TAG
 import android.content.Intent
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.au.a4x4vehiclehirefraser.MainActivity
-import com.firebase.ui.auth.AuthUI
 import com.au.a4x4vehiclehirefraser.R
 import com.au.a4x4vehiclehirefraser.dto.Hire
 import com.au.a4x4vehiclehirefraser.dto.Service
@@ -32,12 +32,12 @@ import com.au.a4x4vehiclehirefraser.helper.Constants.TYPE_INDEX
 import com.au.a4x4vehiclehirefraser.helper.Constants.USER_ID
 import com.au.a4x4vehiclehirefraser.helper.Constants.VEHICLE_INDEX
 import com.au.a4x4vehiclehirefraser.helper.Helper.toast
-import com.au.a4x4vehiclehirefraser.helper.OneTimeOnly
 import com.au.a4x4vehiclehirefraser.helper.SharedPreference
+import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.android.synthetic.main.main_fragment.*
-import kotlinx.android.synthetic.main.main_fragment.service_Recycler_Header
+
 
 class MainFragment : HelperFragment() {
 
@@ -46,10 +46,15 @@ class MainFragment : HelperFragment() {
     }
 
     private lateinit var mainViewModel: MainViewModel
+    private lateinit var serviceRoomViewModel: ServiceRoomViewModel
+    private lateinit var hireRoomViewModel: HireRoomViewModel
     private val AUTH_REQUEST_CODE = 2002
     private var user: FirebaseUser? = null
-    var redirectToMainActivity = MutableLiveData<OneTimeOnly<Boolean>>()
 
+
+    init {
+
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -63,12 +68,11 @@ class MainFragment : HelperFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-
         activity.let {
             mainViewModel = ViewModelProviders.of(it!!).get(MainViewModel::class.java)
+            serviceRoomViewModel = ViewModelProviders.of(it!!).get(ServiceRoomViewModel::class.java)
+            hireRoomViewModel = ViewModelProviders.of(it!!).get(HireRoomViewModel::class.java)
         }
-
-        mainViewModel.deleteServicePerRego("TestVehicle",false)
 
         preference = SharedPreference(requireContext())
 
@@ -76,7 +80,7 @@ class MainFragment : HelperFragment() {
             doLoginBtn.visibility = View.VISIBLE
             typeSpinner.visibility = View.GONE
             vehicleSpinner.visibility = View.GONE
-        } else{
+        } else {
             doLoginBtn.visibility = View.GONE
             typeSpinner.visibility = View.VISIBLE
             vehicleSpinner.visibility = View.VISIBLE
@@ -96,11 +100,11 @@ class MainFragment : HelperFragment() {
                     id: Long
                 ) {
                     var vehicle = parent?.getItemAtPosition(position) as Vehicle
-                    preference.save(REGO, vehicle.rego)
+                    preference.save(REGO, vehicle.Rego)
                     preference.save(VEHICLE_INDEX, position)
                     if (typeSpinner.selectedItem.toString().equals(REPAIRS_OR_SERVICE)) {
                         displayServices()
-                    }else if (typeSpinner.selectedItem.toString().equals(HIRE_DETAILS)){
+                    } else if (typeSpinner.selectedItem.toString().equals(HIRE_DETAILS)) {
                         displayHireDetails()
                     }
                 }
@@ -120,12 +124,12 @@ class MainFragment : HelperFragment() {
                     id: Long
                 ) {
                     var type = parent?.getItemAtPosition(position) as Type
-                    preference.save(TYPE, type.id)
+                    preference.save(TYPE, type.Id)
                     preference.save(TYPE_INDEX, position)
 
-                    if (type.value.equals(REPAIRS_OR_SERVICE)) {
+                    if (type.Value.equals(REPAIRS_OR_SERVICE)) {
                         displayServices()
-                    } else if(type.value.equals(HIRE_DETAILS)){
+                    } else if (type.Value.equals(HIRE_DETAILS)) {
                         displayHireDetails()
                     }
                 }
@@ -151,15 +155,44 @@ class MainFragment : HelperFragment() {
             navigateToHire(selectedHire)
 
         }
-
     }
 
+
     private fun doStartup() {
+
+        //Every time Service changes this will execute
+        mainViewModel.service.observe(viewLifecycleOwner, Observer { service ->
+
+            try {
+
+                populateDbWithServiceData(service)
+
+            } catch (err: Exception) {
+                Log.e(TAG, err.message)
+            }
+
+
+        })
+
+        mainViewModel.hire.observe(viewLifecycleOwner, Observer { hire ->
+
+            try {
+
+                populateDbWithHireData(hire)
+
+            } catch (err: Exception) {
+                Log.e(TAG, err.message)
+            }
+
+
+        })
+
         mainViewModel.type.observe(viewLifecycleOwner, Observer { type ->
+
             typeSpinner.setAdapter(
                 ArrayAdapter(
                     context!!,
-                    R.layout.support_simple_spinner_dropdown_item,
+                    R.layout.spinner_text_size,
                     type
                 )
             )
@@ -172,13 +205,13 @@ class MainFragment : HelperFragment() {
         mainViewModel.vehicle.observe(viewLifecycleOwner, Observer { vehicle ->
 
             vehicle.sortBy {
-                it.yearModel
+                it.YearModel
             }
 
             vehicleSpinner.setAdapter(
                 ArrayAdapter(
                     context!!,
-                    R.layout.support_simple_spinner_dropdown_item,
+                    R.layout.spinner_text_size,
                     vehicle
                 )
             )
@@ -198,9 +231,10 @@ class MainFragment : HelperFragment() {
             }
         })
 
+
         mainViewModel.showServiceDetailPerRego.observe(viewLifecycleOwner, Observer { serviceList ->
             serviceList?.getContentIfNotHandledOrReturnNull()?.let {
-                removePrevious()
+                doCleanup()
                 if (it.size == 0) {
                     //makeToast(context, false, "Nothing to Display")
                     NOTHING_TO_DISPLAY.toString().toast(context!!, false)
@@ -219,8 +253,7 @@ class MainFragment : HelperFragment() {
                         it,
                         R.layout.add_service_row,
                         onClickListener = { view, service -> openService(view, service) })
-                    //Add to Search
-                    autoComplereServiceSearch.setAdapter(ArrayAdapter(context!!, R.layout.support_simple_spinner_dropdown_item, it))
+
                 }
 
             }
@@ -228,7 +261,7 @@ class MainFragment : HelperFragment() {
 
         mainViewModel.showHireDetail.observe(viewLifecycleOwner, Observer { hireList ->
             hireList?.getContentIfNotHandledOrReturnNull()?.let {
-                removePrevious()
+                doCleanup()
                 if (it.size == 0) {
                     NOTHING_TO_DISPLAY.toString().toast(context!!, false)
                     service_Recycler_Header.visibility = View.GONE
@@ -247,15 +280,25 @@ class MainFragment : HelperFragment() {
                         it,
                         R.layout.hire_row,
                         onClickListener = { view, hire -> openHire(view, hire) })
-                    //Add to Search
-                    autoComplereHireSearch.setAdapter(ArrayAdapter(context!!, R.layout.support_simple_spinner_dropdown_item, it))
+                    
                 }
 
             }
         })
     }
 
-    private fun removePrevious() {
+    fun populateDbWithServiceData(service: ArrayList<Service>) {
+
+        serviceRoomViewModel.populateDbWithServiceData(service)
+
+    }
+
+    private fun populateDbWithHireData(hire: ArrayList<Hire>) {
+
+        hireRoomViewModel.populateDbWithHireData(hire)
+    }
+
+    private fun doCleanup() {
         service_Recycler_Header.visibility = View.GONE
         rcyService.visibility = View.GONE
         serviceSearchWrapper.visibility = View.GONE
@@ -269,13 +312,42 @@ class MainFragment : HelperFragment() {
     private fun displayServices() {
 
         mainViewModel.getServicePerRego(preference.getValueString("rego").toString())
+
+        serviceRoomViewModel.getServiceDetailPerRego(preference.getValueString("rego").toString())?.observe(this, Observer { service ->
+            service?.let {
+
+                autoComplereServiceSearch.setAdapter(
+                    ArrayAdapter(
+                        context!!,
+                        R.layout.spinner_text_size,
+                        service
+
+                    )
+                )
+
+            }
+        })
     }
 
-    private fun displayHireDetails(){
+    private fun displayHireDetails() {
 
-        mainViewModel .getHirePerRego(preference.getValueString("rego").toString())
+        mainViewModel.getHirePerRego(preference.getValueString("rego").toString())
+
+        hireRoomViewModel.getHireDetailPerRego(preference.getValueString("rego").toString())?.observe(this, Observer { hire ->
+            hire?.let {
+
+                autoComplereHireSearch.setAdapter(
+                    ArrayAdapter(
+                        context!!,
+                        R.layout.spinner_text_size,
+                        hire
+
+                    )
+                )
+
+            }
+        })
     }
-
 
 
     private fun openService(view: View, service: Service) {
@@ -306,14 +378,14 @@ class MainFragment : HelperFragment() {
         )
 
         startActivityForResult(
-            AuthUI.getInstance().createSignInIntentBuilder().setAvailableProviders(providers).build(), AUTH_REQUEST_CODE
+            AuthUI.getInstance().createSignInIntentBuilder().setAvailableProviders(providers)
+                .build(), AUTH_REQUEST_CODE
         )
     }
 
     fun redirectToMainActivity() {
         (activity as MainActivity).redirectToMainFragment()
     }
-
 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -328,8 +400,8 @@ class MainFragment : HelperFragment() {
             } else {
                 super.onActivityResult(requestCode, resultCode, data)
             }
-        }else{
-            "Unable to Login".toast(context!!,false)
+        } else {
+            "Unable to Login".toast(context!!, false)
         }
     }
 

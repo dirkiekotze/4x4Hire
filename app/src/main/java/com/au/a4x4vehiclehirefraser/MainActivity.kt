@@ -9,6 +9,7 @@ import android.view.MenuItem
 import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
+import com.au.a4x4vehiclehirefraser.helper.Constants.EXPENSE_ID
 import com.au.a4x4vehiclehirefraser.helper.Constants.HIRE_ID
 import com.au.a4x4vehiclehirefraser.helper.Constants.SERVICE_ID
 import com.au.a4x4vehiclehirefraser.helper.Constants.SERVICE_ITEM_ID
@@ -16,6 +17,7 @@ import com.au.a4x4vehiclehirefraser.helper.Constants.TYPE_INDEX
 import com.au.a4x4vehiclehirefraser.helper.Constants.VEHICLE_INDEX
 import com.au.a4x4vehiclehirefraser.helper.SharedPreference
 import com.au.a4x4vehiclehirefraser.ui.main.*
+import com.au.a4x4vehiclehirefraser.ui.main.expense.ExpenseFragment
 import kotlinx.android.synthetic.main.main_fragment.*
 import java.lang.reflect.Array.get
 
@@ -26,6 +28,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var addVehicleFragment: AddVehicleFragment
     private lateinit var addServiceFragment: AddServiceFragment
     private lateinit var hireDetailsFragment: HireDetailFragment
+    private lateinit var expenseFragment: ExpenseFragment
     private lateinit var serviceItemFragment: AddServiceItemFragment
     private lateinit var repairFragment: RepairFragment
     private lateinit var mainViewModel: MainViewModel
@@ -44,6 +47,7 @@ class MainActivity : AppCompatActivity() {
         serviceItemFragment = AddServiceItemFragment.newInstance()
         hireDetailsFragment = HireDetailFragment.newInstance()
         repairFragment = RepairFragment.newInstance()
+        expenseFragment = ExpenseFragment.newInstance()
 
 
         //if (savedInstanceState == null) {
@@ -82,6 +86,9 @@ class MainActivity : AppCompatActivity() {
         }else if(item.itemId == R.id.hire){
             preference.save(HIRE_ID,"")
             showHireFragment()
+        }else if(item.itemId == R.id.expense){
+            preference.save(EXPENSE_ID,"")
+            showExpense()
         }
         return true
     }
@@ -122,6 +129,15 @@ class MainActivity : AppCompatActivity() {
             .commitNow()
         activeFragment = hireDetailsFragment
     }
+
+    internal fun showExpense() {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.container, expenseFragment)
+            .commitNow()
+        activeFragment = expenseFragment
+    }
+
+
 
 
     internal fun showMainFragment() {

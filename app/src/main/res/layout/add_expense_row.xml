@@ -5,29 +5,39 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="10dp">
+    android:padding="10dp"
+    android:id="@+id/expenseWrapper">
 
     <TextView
-        android:id="@+id/lblServiceDate"
+        android:id="@+id/lblRego"
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="wrap_content"
         android:text="TextView" />
 
     <TextView
-        android:id="@+id/lblServicePrice"
+        android:id="@+id/lblExpensePrice"
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="wrap_content"
         android:text="TextView" />
 
     <TextView
-        android:id="@+id/lblServiceDescription"
+        android:id="@+id/lblExpenseType"
         android:layout_width="0dp"
-        android:layout_weight="2"
+        android:layout_weight="1"
         android:layout_height="wrap_content"
         android:text="TextView" />
 
+    <TextView
+        android:id="@+id/lblExpenseDate"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:text="TextView" />
+
+    <!--White Spacer-->
+<!--    <include layout="@layout/grey_line" />-->
 
 
 </LinearLayout>
